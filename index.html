@@ -2422,7 +2422,6 @@
       header.classList.toggle('scrolled', window.scrollY > 50);
     });
 
-    // ==================== التهيئة الأولية ====================
     document.addEventListener('DOMContentLoaded', () => {
       // تعبئة الولايات
       const wilayaSelect = document.getElementById('checkoutWilaya');
@@ -2433,7 +2432,6 @@
         wilayaSelect.appendChild(opt);
       });
 
-      // ✅ طبّق إعدادات الأدمن أولاً (العناوين، الصور، الألوان، التوصيل)
       applyAdminSettings();
       updateDeliveryCost();
 
