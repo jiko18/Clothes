@@ -33,6 +33,7 @@
     html[data-theme="dark"] .form-group input,html[data-theme="dark"] .form-group select,html[data-theme="dark"] .form-group textarea{background:#252540;border-color:rgba(255,255,255,0.1)}
     html[data-theme="dark"] .delivery-info{background:#252540;border-color:rgba(255,255,255,0.1)}
     html[data-theme="dark"] .order-summary{background:#252540;border-color:rgba(255,255,255,0.1)}
+    html[data-theme="dark"] .detail-total-line{background:linear-gradient(135deg,rgba(255,107,129,0.15),rgba(108,92,231,0.15))}
     *{margin:0;padding:0;box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{font-family:'Cairo',sans-serif;background-color:var(--bg-light);color:var(--text-dark);line-height:1.7;overflow-x:hidden;transition:background-color 0.4s ease,color 0.4s ease}
@@ -116,6 +117,11 @@
     .qty-big button{width:42px;height:42px;border:none;background:transparent;color:var(--text-dark);cursor:pointer;font-size:1.1rem;font-weight:700;transition:var(--transition);display:flex;align-items:center;justify-content:center}
     .qty-big button:hover{background:var(--primary);color:#fff}
     .qty-big span{min-width:50px;text-align:center;font-weight:800;font-size:1rem;color:var(--text-dark)}
+    .detail-total-line{margin-top:14px;padding:14px 16px;background:linear-gradient(135deg,rgba(255,107,129,0.1),rgba(108,92,231,0.1));border-radius:12px;border-right:4px solid var(--primary);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    .detail-total-line .total-label{font-size:0.9rem;font-weight:700;color:var(--text-dark);display:flex;align-items:center;gap:8px}
+    .detail-total-line .total-label i{color:var(--primary);font-size:1rem}
+    .detail-total-line .total-label small{font-size:0.72rem;color:var(--text-gray);font-weight:600;display:block;margin-top:2px}
+    .detail-total-line strong{font-size:1.45rem;font-weight:800;color:var(--primary-dark);white-space:nowrap}
     .detail-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}
     .btn-add-cart,.btn-order-now{padding:16px 20px;border-radius:14px;border:none;font-size:1rem;font-weight:700;cursor:pointer;transition:var(--transition);display:flex;align-items:center;justify-content:center;gap:10px}
     .btn-add-cart{background:rgba(108,92,231,0.1);color:var(--secondary);border:2px solid var(--secondary)}
@@ -286,13 +292,13 @@
     .toast.toast-error{background:linear-gradient(135deg,#e74c3c,#c0392b)}
     .toast.toast-info{background:linear-gradient(135deg,var(--secondary),#5a4dbf)}
     @media (max-width:992px){.product-detail-grid{grid-template-columns:1fr;gap:32px}.product-gallery{position:static}.detail-title{font-size:1.7rem}.detail-price .current{font-size:1.9rem}}
-    @media (max-width:768px){.header-inner{flex-wrap:wrap;height:auto;padding:12px 16px;gap:10px}.search-bar{order:3;flex:1 1 100%;max-width:100%}.section-header h2{font-size:1.5rem}.products-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}.product-image{height:180px}.product-info{padding:12px}.product-info h3{font-size:0.85rem}.price .current{font-size:1rem}.cart-sidebar{width:100vw}.form-row{grid-template-columns:1fr}.delivery-options{grid-template-columns:1fr}.detail-actions{grid-template-columns:1fr}.detail-features{grid-template-columns:1fr}.detail-title{font-size:1.4rem}.product-detail-section{padding:24px 16px 40px}.breadcrumb{padding:0 16px}.lightbox-nav{width:44px;height:44px;font-size:1rem}.lightbox-nav.nav-next{left:10px}.lightbox-nav.nav-prev{right:10px}}
-    @media (max-width:480px){.detail-price .current{font-size:1.6rem}.detail-price{gap:10px;padding:14px 0}.cart-item img{width:65px;height:65px}.detail-swatch{width:38px;height:38px}.lightbox-close{top:8px;right:8px}.lightbox-counter{bottom:-44px;font-size:0.8rem;padding:6px 16px}.thumbnails{grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:8px}}
+    @media (max-width:768px){.header-inner{flex-wrap:wrap;height:auto;padding:12px 16px;gap:10px}.search-bar{order:3;flex:1 1 100%;max-width:100%}.section-header h2{font-size:1.5rem}.products-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}.product-image{height:180px}.product-info{padding:12px}.product-info h3{font-size:0.85rem}.price .current{font-size:1rem}.cart-sidebar{width:100vw}.form-row{grid-template-columns:1fr}.delivery-options{grid-template-columns:1fr}.detail-actions{grid-template-columns:1fr}.detail-features{grid-template-columns:1fr}.detail-title{font-size:1.4rem}.product-detail-section{padding:24px 16px 40px}.breadcrumb{padding:0 16px}.lightbox-nav{width:44px;height:44px;font-size:1rem}.lightbox-nav.nav-next{left:10px}.lightbox-nav.nav-prev{right:10px}.detail-total-line strong{font-size:1.25rem}}
+    @media (max-width:480px){.detail-price .current{font-size:1.6rem}.detail-price{gap:10px;padding:14px 0}.cart-item img{width:65px;height:65px}.detail-swatch{width:38px;height:38px}.lightbox-close{top:8px;right:8px}.lightbox-counter{bottom:-44px;font-size:0.8rem;padding:6px 16px}.thumbnails{grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:8px}.detail-total-line{padding:12px}.detail-total-line strong{font-size:1.15rem}}
   </style>
 </head>
 <body>
 
-  <div class="top-bar"><i class="fa-solid fa-truck-fast"></i> توصيل لجميع الولايات | الدفع عند الاستلام | خصم 10% على أول طلب</div>
+  <div class="top-bar"><i class="fa-solid fa-truck-fast"></i>توصيل لجميع الولايات | الدفع عند الاستلام </div>
 
   <header class="header" id="header">
     <div class="header-inner">
@@ -437,7 +443,7 @@
   </div>
 
   <script>
-    // ==================== البيانات الافتراضية (Fallback) ====================
+    // ==================== البيانات الافتراضية (Fallback) — 6 منتجات مطابقة لـ index.html ====================
     const DEFAULT_PRODUCTS = [
       {
         id: 1, name: "صدرية أطفال مبطنة", category: "winter", categoryLabel: "شتوي", gender: "both",
@@ -451,6 +457,71 @@
             images: ["https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80"] }
         ],
         ages: ["10 سنوات", "8 سنوات", "7 سنوات", "5 سنوات"]
+      },
+      {
+        id: 2, name: "قميص قطني صيفي", category: "summer", categoryLabel: "صيفي", gender: "boys",
+        price: 1800, oldPrice: 2500, badge: "خصم", badgeType: "sale",
+        description: "قميص قطني خفيف ومريح للأيام الصيفية.",
+        details: ["قطن 100%", "أكمام قصيرة", "متوفر بعدة مقاسات"],
+        colors: [
+          { name: "أبيض", hex: "#ecf0f1", image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80",
+            images: ["https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80"] },
+          { name: "أزرق", hex: "#3498db", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80",
+            images: ["https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80"] }
+        ],
+        ages: ["8 سنوات", "7 سنوات", "6 سنوات"]
+      },
+      {
+        id: 3, name: "حذاء رياضي للأطفال", category: "shoes", categoryLabel: "أحذية", gender: "both",
+        price: 4500, oldPrice: null, badge: "الأكثر مبيعاً", badgeType: "new",
+        description: "حذاء رياضي مريح ومتين للأطفال.",
+        details: ["نعل مرن مضاد للانزلاق", "خامة تنفس", "مقاوم للماء"],
+        colors: [
+          { name: "أسود", hex: "#2d3436", image: "https://images.unsplash.com/photo-1514989940723-e8e51635b782?w=900&q=80",
+            images: ["https://images.unsplash.com/photo-1514989940723-e8e51635b782?w=900&q=80"] },
+          { name: "وردي", hex: "#fd79a8", image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80",
+            images: ["https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80"] }
+        ],
+        ages: ["10 سنوات", "8 سنوات", "6 سنوات"]
+      },
+      {
+        id: 4, name: "جاكيت شتوي مبطن", category: "heavy", categoryLabel: "ثقيل", gender: "boys",
+        price: 5800, oldPrice: 7000, badge: "خصم", badgeType: "sale",
+        description: "جاكيت شتوي مبطن يقي من البرد.",
+        details: ["بطانة صوفية", "سحاب عالي الجودة", "جيبان أماميان"],
+        colors: [
+          { name: "أحمر", hex: "#e74c3c", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80",
+            images: ["https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80"] },
+          { name: "أزرق", hex: "#2980b9", image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80",
+            images: ["https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80"] }
+        ],
+        ages: ["10 سنوات", "8 سنوات", "7 سنوات", "5 سنوات"]
+      },
+      {
+        id: 5, name: "طقم بناتي خفيف", category: "light", categoryLabel: "خفيف", gender: "girls",
+        price: 2600, oldPrice: null, badge: "جديد", badgeType: "new",
+        description: "طقم بناتي خفيف وأنيق.",
+        details: ["قطن ناعم", "تصميم عصري", "سهل الغسل"],
+        colors: [
+          { name: "وردي", hex: "#fd79a8", image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80",
+            images: ["https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80"] },
+          { name: "بنفسجي", hex: "#a29bfe", image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80",
+            images: ["https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80"] }
+        ],
+        ages: ["8 سنوات", "7 سنوات", "6 سنوات"]
+      },
+      {
+        id: 6, name: "قبعة شمسية للأطفال", category: "accessories", categoryLabel: "إكسسوارات", gender: "girls",
+        price: 900, oldPrice: 1200, badge: "خصم", badgeType: "sale",
+        description: "قبعة شمسية تحمي طفلك من الشمس.",
+        details: ["حماية UV", "حزام قابل للتعديل", "خفيفة الوزن"],
+        colors: [
+          { name: "بيج", hex: "#f5cd79", image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80",
+            images: ["https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80"] },
+          { name: "أبيض", hex: "#ecf0f1", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80",
+            images: ["https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80"] }
+        ],
+        ages: ["10 سنوات", "8 سنوات", "6 سنوات"]
       }
     ];
     const DEFAULT_SETTINGS = {
@@ -772,6 +843,16 @@
       return true;
     }
 
+    // ==================== دالة تحديث السعر الإجمالي ====================
+    function updateTotalPrice() {
+      if (!currentProduct) return;
+      const totalPrice = currentProduct.price * selectedQuantity;
+      const totalEl = document.getElementById('detailTotalPrice');
+      const formulaEl = document.getElementById('detailTotalFormula');
+      if (totalEl) totalEl.textContent = totalPrice.toLocaleString() + ' د.ج';
+      if (formulaEl) formulaEl.textContent = `${selectedQuantity} × ${currentProduct.price.toLocaleString()} د.ج`;
+    }
+
     // ==================== عرض تفاصيل المنتج ====================
     function renderProductDetail() {
       if (!currentProduct) return;
@@ -811,7 +892,26 @@
             <div class="detail-section-label"><span><i class="fa-solid fa-child"></i> العمر</span><span class="selected-value">${selectedAge}</span></div>
             <div class="detail-ages">${p.ages.map(a => `<button class="detail-age ${a === selectedAge ? 'active' : ''}" onclick="selectAge('${a}', this)">${a}</button>`).join('')}</div>
           </div>
-          <div class="detail-section"><div class="qty-row"><span class="qty-label"><i class="fa-solid fa-cubes"></i> الكمية:</span><div class="qty-big"><button onclick="changeQty(-1)">−</button><span id="qtyValue">${selectedQuantity}</span><button onclick="changeQty(1)">+</button></div></div></div>
+          <div class="detail-section">
+            <div class="qty-row">
+              <span class="qty-label"><i class="fa-solid fa-cubes"></i> الكمية:</span>
+              <div class="qty-big">
+                <button onclick="changeQty(-1)">−</button>
+                <span id="qtyValue">${selectedQuantity}</span>
+                <button onclick="changeQty(1)">+</button>
+              </div>
+            </div>
+            <div class="detail-total-line">
+              <div class="total-label">
+                <i class="fa-solid fa-calculator"></i>
+                <div>
+                  المجموع الإجمالي
+                  <small id="detailTotalFormula">${selectedQuantity} × ${p.price.toLocaleString()} د.ج</small>
+                </div>
+              </div>
+              <strong id="detailTotalPrice">${(p.price * selectedQuantity).toLocaleString()} د.ج</strong>
+            </div>
+          </div>
           <div class="detail-actions">
             <button class="btn-add-cart" onclick="addCurrentToCart()"><i class="fa-solid fa-cart-plus"></i> أضف إلى السلة</button>
             <button class="btn-order-now" onclick="orderNow()"><i class="fa-solid fa-bolt"></i> اطلب الآن</button>
@@ -854,6 +954,8 @@
           thumbsContainer.innerHTML = imgs.map((url, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="selectImage(${i})"><img src="${url}" alt=""><span class="thumb-index">${i + 1}</span></div>`).join('');
         } else { thumbsContainer.style.display = 'none'; thumbsContainer.innerHTML = ''; }
       }
+      // تحديث السعر الإجمالي عند تغيير اللون (في حال كان لكل لون سعر مختلف مستقبلاً)
+      updateTotalPrice();
     }
 
     function selectAge(age, el) {
@@ -864,9 +966,11 @@
       if (ageLabel.length > 0) ageLabel[ageLabel.length - 1].textContent = age;
     }
 
+    // ✅ تعديل دالة تغيير الكمية لتحديث السعر الإجمالي
     function changeQty(delta) {
       selectedQuantity = Math.max(1, selectedQuantity + delta);
       document.getElementById('qtyValue').textContent = selectedQuantity;
+      updateTotalPrice();
     }
 
     // ==================== Lightbox ====================

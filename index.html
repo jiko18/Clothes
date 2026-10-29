@@ -189,6 +189,22 @@
       justify-content: center;
       border: 2px solid #fff;
     }
+    .wishlist-count {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+    }
     .theme-toggle { transition: transform 0.4s ease; }
     .theme-toggle:hover { transform: rotate(20deg); }
 
@@ -387,7 +403,7 @@
       z-index: 3;
     }
     .product-badge.sale { background: var(--primary); color: #fff; }
-    .product-image { position: relative; height: 260px; overflow: hidden; background: #f7f7f7; }
+    .product-image { position: relative; height: 260px; overflow: hidden; background: #f7f7f7; cursor: pointer; }
     .product-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease, opacity 0.3s ease; }
     .product-card:hover .product-image img { transform: scale(1.08); }
     .product-actions {
@@ -417,9 +433,12 @@
       justify-content: center;
     }
     .product-actions button:hover { background: var(--primary); color: #fff; transform: scale(1.1); }
-    .product-info { padding: 18px 18px 20px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .product-actions button.wishlisted { color: var(--primary); }
+    .product-actions button.wishlisted:hover { background: var(--primary); color: #fff; }
+    .product-info { padding: 18px 18px 20px; display: flex; flex-direction: column; gap: 6px; flex: 1; cursor: pointer; }
     .product-info .category-label { font-size: 0.75rem; color: var(--text-gray); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-    .product-info h3 { font-size: 1rem; font-weight: 700; color: var(--text-dark); line-height: 1.4; margin-bottom: 2px; }
+    .product-info h3 { font-size: 1rem; font-weight: 700; color: var(--text-dark); line-height: 1.4; margin-bottom: 2px; transition: var(--transition); }
+    .product-card:hover .product-info h3 { color: var(--primary); }
     .product-info .price { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
     .price .current { font-size: 1.15rem; font-weight: 800; color: var(--primary-dark); }
     .price .old { font-size: 0.85rem; color: #b2bec3; text-decoration: line-through; }
@@ -1145,7 +1164,7 @@
 
   <div class="top-bar">
     <i class="fa-solid fa-truck-fast"></i>
-    توصيل لجميع الولايات | الدفع عند الاستلام | خصم 10% على أول طلب
+    توصيل لجميع الولايات | الدفع عند الاستلام
   </div>
 
   <header class="header" id="header">
@@ -1166,7 +1185,10 @@
         <button class="theme-toggle" id="themeToggle" aria-label="تبديل الوضع الليلي">
           <i class="fa-solid fa-moon"></i>
         </button>
-        <a href="#" aria-label="المفضلة"><i class="fa-regular fa-heart"></i></a>
+        <a href="#" id="wishlistToggle" aria-label="المفضلة">
+          <i class="fa-regular fa-heart"></i>
+          <span class="wishlist-count" id="wishlistCount">0</span>
+        </a>
         <a href="#" id="cartToggle" aria-label="سلة التسوق">
           <i class="fa-solid fa-bag-shopping"></i>
           <span class="cart-count" id="cartCount">0</span>
@@ -1579,6 +1601,8 @@
     let adminTheme = JSON.parse(JSON.stringify(DEFAULT_THEME_DATA));
     let adminDelivery = JSON.parse(JSON.stringify(DEFAULT_DELIVERY_DATA));
     let products = [];
+    let cart = [];
+    let wishlist = [];
 
     // طبّق الألوان الافتراضية فوراً (قبل وصول السيرفر) لتجنب وميض
     document.documentElement.style.setProperty('--primary', adminTheme.primary);
@@ -1745,7 +1769,6 @@
     ];
 
     let activeCategory = 'all';
-    let cart = [];
 
     function generateId() {
       return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -1766,6 +1789,70 @@
         toast.classList.remove('show');
         setTimeout(() => toast.remove(), 400);
       }, 2600);
+    }
+
+    // ==================== المفضلة (Wishlist) ====================
+    function loadWishlist() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('babyshop_wishlist') || '[]');
+        wishlist = Array.isArray(saved) ? saved.filter(id => typeof id === 'number' || typeof id === 'string').map(id => Number(id)).filter(id => !isNaN(id)) : [];
+      } catch (e) {
+        wishlist = [];
+      }
+      updateWishlistBadge();
+    }
+
+    function saveWishlist() {
+      try {
+        localStorage.setItem('babyshop_wishlist', JSON.stringify(wishlist));
+      } catch (e) {}
+      updateWishlistBadge();
+    }
+
+    function isWishlisted(productId) {
+      return wishlist.includes(Number(productId));
+    }
+
+    function updateWishlistBadge() {
+      const badge = document.getElementById('wishlistCount');
+      if (!badge) return;
+      if (wishlist.length > 0) {
+        badge.textContent = wishlist.length;
+        badge.style.display = 'flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function toggleWishlist(productId, btnEl) {
+      const id = Number(productId);
+      const idx = wishlist.indexOf(id);
+      const icon = btnEl ? btnEl.querySelector('i') : null;
+
+      if (idx >= 0) {
+        wishlist.splice(idx, 1);
+        if (btnEl) {
+          if (icon) {
+            icon.className = 'fa-regular fa-heart';
+            icon.style.color = '';
+          }
+          btnEl.classList.remove('wishlisted');
+          btnEl.title = 'أضف للمفضلة';
+        }
+        showToast('تم الحذف من المفضلة', 'info');
+      } else {
+        wishlist.push(id);
+        if (btnEl) {
+          if (icon) {
+            icon.className = 'fa-solid fa-heart';
+            icon.style.color = 'var(--primary)';
+          }
+          btnEl.classList.add('wishlisted');
+          btnEl.title = 'إزالة من المفضلة';
+        }
+        showToast('تمت الإضافة إلى المفضلة ❤️', 'success');
+      }
+      saveWishlist();
     }
 
     // ==================== الوضع الليلي ====================
@@ -1927,6 +2014,51 @@
     // ==================== عرض المنتجات ====================
     const productsGrid = document.getElementById('productsGrid');
 
+    // دالة توليد بطاقة منتج واحدة (تستخدم في كل من الشبكة الرئيسية ونتائج البحث)
+    function renderProductCard(product) {
+      const firstColor = product.colors[0];
+      const fav = isWishlisted(product.id);
+      const heartClass = fav ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+      const heartColor = fav ? 'color:var(--primary);' : '';
+      const heartTitle = fav ? 'إزالة من المفضلة' : 'أضف للمفضلة';
+      const heartBtnClass = fav ? 'wishlisted' : '';
+      return `
+        <div class="product-card" data-id="${product.id}">
+          ${product.badge ? `<span class="product-badge ${product.badgeType === 'sale' ? 'sale' : ''}">${product.badge}</span>` : ''}
+          <div class="product-image" onclick="viewProduct(${product.id})">
+            <img src="${firstColor.image}" alt="${product.name}" loading="lazy" id="img-${product.id}">
+            <div class="product-actions">
+              <button title="أضف إلى السلة" onclick="event.stopPropagation(); addToCart(${product.id})"><i class="fa-solid fa-cart-plus"></i></button>
+              <button title="عرض المنتج" onclick="event.stopPropagation(); viewProduct(${product.id})"><i class="fa-regular fa-eye"></i></button>
+              <button class="${heartBtnClass}" title="${heartTitle}" onclick="event.stopPropagation(); toggleWishlist(${product.id}, this)"><i class="${heartClass}" style="${heartColor}"></i></button>
+            </div>
+          </div>
+          <div class="product-info" onclick="viewProduct(${product.id})">
+            <span class="category-label">${product.categoryLabel}</span>
+            <h3>${product.name}</h3>
+            <div class="price">
+              <span class="current">${product.price.toLocaleString()} د.ج</span>
+              ${product.oldPrice ? `<span class="old">${product.oldPrice.toLocaleString()} د.ج</span>` : ''}
+            </div>
+            <div class="color-swatches" id="swatches-${product.id}">
+              ${product.colors.map((c, i) => `
+                <span class="swatch ${i === 0 ? 'active' : ''}"
+                      style="background:${c.hex};"
+                      title="${c.name}"
+                      data-color-index="${i}"
+                      onclick="event.stopPropagation(); changeColor(${product.id}, ${i})"></span>
+              `).join('')}
+            </div>
+            <div class="age-tags" id="ages-${product.id}">
+              ${product.ages.map((a, i) => `
+                <span class="age-tag ${i === 0 ? 'active' : ''}" onclick="event.stopPropagation(); selectAge(this)">${a}</span>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
     function renderProducts(filter = 'all') {
       let filtered = products;
       if (filter === 'girls') filtered = products.filter(p => p.gender === 'girls' || p.gender === 'both');
@@ -1938,44 +2070,7 @@
         return;
       }
 
-      productsGrid.innerHTML = filtered.map(product => {
-        const firstColor = product.colors[0];
-        return `
-          <div class="product-card" data-id="${product.id}">
-            ${product.badge ? `<span class="product-badge ${product.badgeType === 'sale' ? 'sale' : ''}">${product.badge}</span>` : ''}
-            <div class="product-image">
-              <img src="${firstColor.image}" alt="${product.name}" loading="lazy" id="img-${product.id}">
-              <div class="product-actions">
-                <button title="أضف إلى السلة" onclick="addToCart(${product.id})"><i class="fa-solid fa-cart-plus"></i></button>
-                <button title="عرض المنتج" onclick="viewProduct(${product.id})"><i class="fa-regular fa-eye"></i></button>
-                <button title="أضف للمفضلة"><i class="fa-regular fa-heart"></i></button>
-              </div>
-            </div>
-            <div class="product-info">
-              <span class="category-label">${product.categoryLabel}</span>
-              <h3>${product.name}</h3>
-              <div class="price">
-                <span class="current">${product.price.toLocaleString()} د.ج</span>
-                ${product.oldPrice ? `<span class="old">${product.oldPrice.toLocaleString()} د.ج</span>` : ''}
-              </div>
-              <div class="color-swatches" id="swatches-${product.id}">
-                ${product.colors.map((c, i) => `
-                  <span class="swatch ${i === 0 ? 'active' : ''}"
-                        style="background:${c.hex};"
-                        title="${c.name}"
-                        data-color-index="${i}"
-                        onclick="changeColor(${product.id}, ${i})"></span>
-                `).join('')}
-              </div>
-              <div class="age-tags" id="ages-${product.id}">
-                ${product.ages.map((a, i) => `
-                  <span class="age-tag ${i === 0 ? 'active' : ''}" onclick="selectAge(this)">${a}</span>
-                `).join('')}
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
+      productsGrid.innerHTML = filtered.map(renderProductCard).join('');
     }
 
     function changeColor(productId, colorIndex) {
@@ -2044,29 +2139,7 @@
         productsGrid.innerHTML = `<p style="text-align:center; grid-column:1/-1; padding:40px; color:var(--text-gray);">لا توجد نتائج مطابقة لبحثك عن "${query}".</p>`;
         return;
       }
-      productsGrid.innerHTML = filtered.map(product => {
-        const firstColor = product.colors[0];
-        return `
-          <div class="product-card" data-id="${product.id}">
-            ${product.badge ? `<span class="product-badge ${product.badgeType === 'sale' ? 'sale' : ''}">${product.badge}</span>` : ''}
-            <div class="product-image">
-              <img src="${firstColor.image}" alt="${product.name}" loading="lazy" id="img-${product.id}">
-              <div class="product-actions">
-                <button title="أضف إلى السلة" onclick="addToCart(${product.id})"><i class="fa-solid fa-cart-plus"></i></button>
-                <button title="عرض المنتج" onclick="viewProduct(${product.id})"><i class="fa-regular fa-eye"></i></button>
-              </div>
-            </div>
-            <div class="product-info">
-              <span class="category-label">${product.categoryLabel}</span>
-              <h3>${product.name}</h3>
-              <div class="price">
-                <span class="current">${product.price.toLocaleString()} د.ج</span>
-                ${product.oldPrice ? `<span class="old">${product.oldPrice.toLocaleString()} د.ج</span>` : ''}
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
+      productsGrid.innerHTML = filtered.map(renderProductCard).join('');
       document.getElementById('productsSection').scrollIntoView({ behavior: 'smooth' });
     }
     searchBtn.addEventListener('click', performSearch);
@@ -2258,6 +2331,16 @@
       if (cart.length === 0) { showToast('السلة فارغة', 'error'); return; }
       closeCart();
       openCheckout();
+    });
+
+    // زر القلب في الهيدر
+    document.getElementById('wishlistToggle').addEventListener('click', (e) => {
+      e.preventDefault();
+      if (wishlist.length === 0) {
+        showToast('لا توجد منتجات في المفضلة بعد', 'info');
+      } else {
+        showToast(`لديك ${wishlist.length} منتج في المفضلة ❤️`, 'info');
+      }
     });
 
     // ================================================================
@@ -2485,8 +2568,11 @@
       applyAdminSettings();
       updateDeliveryCost();
 
-      // 4) تحميل السلة والعرض
+      // 4) تحميل المفضلة والسلة
+      loadWishlist();
       loadCart();
+
+      // 5) عرض المنتجات (يجب أن يكون بعد تحميل wishlist ليعكس القلب الصحيح)
       renderProducts(activeCategory);
       initSlider();
       renderCart();
