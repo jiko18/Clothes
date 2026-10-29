@@ -47,7 +47,6 @@ async function initDB() {
 
   // ---------- إنشاء الجداول ----------
   const tables = [
-    // 1. المستخدمون
     `CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       username TEXT NOT NULL UNIQUE,
@@ -60,7 +59,6 @@ async function initDB() {
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     )`,
-    // 2. جلسات
     `CREATE TABLE IF NOT EXISTS sessions (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,
@@ -71,7 +69,6 @@ async function initDB() {
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )`,
-    // 3. الزبائن
     `CREATE TABLE IF NOT EXISTS customers (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       first_name TEXT NOT NULL,
@@ -90,7 +87,6 @@ async function initDB() {
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     )`,
-    // 4. المنتجات
     `CREATE TABLE IF NOT EXISTS products (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
@@ -110,7 +106,6 @@ async function initDB() {
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     )`,
-    // 5. الألوان
     `CREATE TABLE IF NOT EXISTS product_colors (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       product_id INTEGER NOT NULL,
@@ -120,7 +115,6 @@ async function initDB() {
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
     )`,
-    // 6. الصور/الفيديوهات
     `CREATE TABLE IF NOT EXISTS product_color_images (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       color_id INTEGER NOT NULL,
@@ -131,7 +125,6 @@ async function initDB() {
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       FOREIGN KEY (color_id) REFERENCES product_colors(id) ON DELETE CASCADE
     )`,
-    // 7. الأعمار
     `CREATE TABLE IF NOT EXISTS product_ages (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       product_id INTEGER NOT NULL,
@@ -140,7 +133,6 @@ async function initDB() {
       sort_order INTEGER NOT NULL DEFAULT 0,
       FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
     )`,
-    // 8. التفاصيل
     `CREATE TABLE IF NOT EXISTS product_details (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       product_id INTEGER NOT NULL,
@@ -148,7 +140,6 @@ async function initDB() {
       sort_order INTEGER NOT NULL DEFAULT 0,
       FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
     )`,
-    // 9. الطلبات
     `CREATE TABLE IF NOT EXISTS orders (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       order_number TEXT NOT NULL UNIQUE,
@@ -173,7 +164,6 @@ async function initDB() {
       updated_at TEXT NOT NULL DEFAULT (datetime('now')),
       FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL
     )`,
-    // 10. عناصر الطلب
     `CREATE TABLE IF NOT EXISTS order_items (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       order_id INTEGER NOT NULL,
@@ -189,7 +179,6 @@ async function initDB() {
       FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
       FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL
     )`,
-    // 11. سجل الحالات
     `CREATE TABLE IF NOT EXISTS order_status_history (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       order_id INTEGER NOT NULL,
@@ -200,20 +189,17 @@ async function initDB() {
       FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
       FOREIGN KEY (changed_by_user_id) REFERENCES users(id) ON DELETE SET NULL
     )`,
-    // 12. الإعدادات
     `CREATE TABLE IF NOT EXISTS settings (
       key TEXT PRIMARY KEY,
       value TEXT NOT NULL,
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     )`,
-    // 13. الثيم
     `CREATE TABLE IF NOT EXISTS theme_colors (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL UNIQUE,
       color_value TEXT NOT NULL,
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     )`,
-    // 14. التوصيل
     `CREATE TABLE IF NOT EXISTS delivery_prices (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       delivery_type TEXT NOT NULL CHECK(delivery_type IN ('home','agency')),
@@ -223,13 +209,11 @@ async function initDB() {
       updated_at TEXT NOT NULL DEFAULT (datetime('now')),
       UNIQUE(delivery_type, wilaya)
     )`,
-    // 15. الولايات
     `CREATE TABLE IF NOT EXISTS wilayas (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       code INTEGER UNIQUE,
       name TEXT NOT NULL UNIQUE
     )`,
-    // 16. البلديات
     `CREATE TABLE IF NOT EXISTS municipalities (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       wilaya_id INTEGER NOT NULL,
@@ -237,7 +221,6 @@ async function initDB() {
       FOREIGN KEY (wilaya_id) REFERENCES wilayas(id) ON DELETE CASCADE,
       UNIQUE(wilaya_id, name)
     )`,
-    // 17. المفضلة
     `CREATE TABLE IF NOT EXISTS wishlist (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       customer_id INTEGER,
@@ -247,7 +230,6 @@ async function initDB() {
       FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE,
       FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
     )`,
-    // 18. التقييمات
     `CREATE TABLE IF NOT EXISTS reviews (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       product_id INTEGER NOT NULL,
@@ -260,7 +242,6 @@ async function initDB() {
       FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
       FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL
     )`,
-    // 19. الكوبونات
     `CREATE TABLE IF NOT EXISTS coupons (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       code TEXT NOT NULL UNIQUE,
@@ -273,7 +254,6 @@ async function initDB() {
       expires_at TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     )`,
-    // 20. السلة (سجل)
     `CREATE TABLE IF NOT EXISTS carts (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       customer_id INTEGER,
@@ -288,7 +268,6 @@ async function initDB() {
       FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
       FOREIGN KEY (color_id) REFERENCES product_colors(id) ON DELETE SET NULL
     )`,
-    // 21. الإشعارات
     `CREATE TABLE IF NOT EXISTS notifications (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER,
@@ -339,7 +318,6 @@ async function initDB() {
   }
 
   // ---------- البيانات الأولية ----------
-  // الولايات الـ 58
   const wilayasList = [
     [1,'أدرار'],[2,'الشلف'],[3,'الأغواط'],[4,'أم البواقي'],[5,'باتنة'],
     [6,'بجاية'],[7,'بسكرة'],[8,'بشار'],[9,'البليدة'],[10,'البويرة'],
@@ -391,7 +369,7 @@ async function initDB() {
     });
   } catch (_) {}
 
-  // الإعدادات
+  // الإعدادات (بما فيها إعدادات تيليجرام الفارغة)
   const settingsSeeds = [
     ['storeName', 'بيبي شوب'],
     ['phone', '0550 00 00 00'],
@@ -401,6 +379,9 @@ async function initDB() {
     ['topBarText', 'توصيل لجميع الولايات | الدفع عند الاستلام | خصم 10% على أول طلب'],
     ['searchPlaceholder', 'ابحث عن ملابس، أحذية، إكسسوارات...'],
     ['footerCopyright', '© 2025 بيبي شوب - جميع الحقوق محفوظة'],
+    // ✅ مفاتيح تيليجرام (فارغة افتراضياً - تُملأ من لوحة التحكم)
+    ['telegramBotToken', ''],
+    ['telegramChatId', ''],
   ];
   for (const [k, v] of settingsSeeds) {
     try {
@@ -454,7 +435,7 @@ async function authMiddleware(req, res, next) {
 
 async function uploadBase64ToCloudinary(dataUri, folder = 'babyshop/products') {
   if (!dataUri || typeof dataUri !== 'string') return dataUri;
-  if (!dataUri.startsWith('data:')) return dataUri; // Already a URL
+  if (!dataUri.startsWith('data:')) return dataUri;
   try {
     const result = await cloudinary.uploader.upload(dataUri, {
       folder,
@@ -463,13 +444,62 @@ async function uploadBase64ToCloudinary(dataUri, folder = 'babyshop/products') {
     return result.secure_url;
   } catch (err) {
     console.error('❌ Cloudinary upload failed:', err.message);
-    return dataUri; // Fallback: keep base64
+    return dataUri;
   }
 }
 
 function isVideoUrl(url) {
   if (!url || typeof url !== 'string') return false;
   return url.startsWith('data:video/') || /\.(mp4|webm|ogg|mov|avi|mkv|m4v)(\?|$)/i.test(url);
+}
+
+// ✅ NEW: escape HTML for Telegram (parse_mode = HTML)
+function escapeTelegram(str) {
+  return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ✅ NEW: send a Telegram message using DB-stored credentials
+async function sendTelegramMessage(text) {
+  try {
+    const tokenRes = await db.execute({
+      sql: "SELECT value FROM settings WHERE key = 'telegramBotToken'",
+      args: []
+    });
+    const chatRes = await db.execute({
+      sql: "SELECT value FROM settings WHERE key = 'telegramChatId'",
+      args: []
+    });
+    const token = tokenRes.rows[0]?.value;
+    const chatId = chatRes.rows[0]?.value;
+
+    if (!token || !chatId) {
+      console.log('⚠️ Telegram not configured — notification skipped');
+      return false;
+    }
+
+    const url = `https://api.telegram.org/bot${token}/sendMessage`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        parse_mode: 'HTML',
+        disable_web_page_preview: true
+      })
+    });
+
+    const result = await res.json();
+    if (!result.ok) {
+      console.error('❌ Telegram API error:', result.description);
+      return false;
+    }
+    console.log('✅ Telegram notification sent');
+    return true;
+  } catch (e) {
+    console.error('❌ Telegram error:', e.message);
+    return false;
+  }
 }
 
 // ============================================================
@@ -487,7 +517,6 @@ app.get('/api/health', async (req, res) => {
 // ============================================================
 // 5) AUTH
 // ============================================================
-// إعداد أولي - ينشئ أول حساب أدمن (يعمل فقط إذا لم يوجد مستخدمون)
 app.post('/api/auth/setup', async (req, res) => {
   try {
     const count = await db.execute('SELECT COUNT(*) as c FROM users');
@@ -571,6 +600,47 @@ app.post('/api/auth/logout', authMiddleware, async (req, res) => {
 
 app.get('/api/auth/me', authMiddleware, (req, res) => {
   res.json({ user: req.user });
+});
+
+// ============================================================
+// ✅ NEW: 5.b) TELEGRAM TEST ENDPOINT
+// ============================================================
+app.post('/api/telegram/test', authMiddleware, async (req, res) => {
+  try {
+    const tokenRes = await db.execute({
+      sql: "SELECT value FROM settings WHERE key = 'telegramBotToken'",
+      args: []
+    });
+    const chatRes = await db.execute({
+      sql: "SELECT value FROM settings WHERE key = 'telegramChatId'",
+      args: []
+    });
+    const token = tokenRes.rows[0]?.value;
+    const chatId = chatRes.rows[0]?.value;
+
+    if (!token || !chatId) {
+      return res.status(400).json({ error: 'لم يتم تكوين بيانات تيليجرام بعد — احفظ التوكن والـ Chat ID أولاً' });
+    }
+
+    const url = `https://api.telegram.org/bot${token}/sendMessage`;
+    const telegramRes = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: '🧪 <b>رسالة تجريبية</b>\n\nإذا وصلتك هذه الرسالة، فإن إعدادات البوت تعمل بنجاح ✓\n\nستصلك إشعارات الطلبات الجديدة تلقائياً.',
+        parse_mode: 'HTML'
+      })
+    });
+
+    const result = await telegramRes.json();
+    if (!telegramRes.ok || !result.ok) {
+      return res.status(400).json({ error: result.description || 'رفض تيليجرام الطلب — تأكد من صحة التوكن والـ Chat ID' });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ============================================================
@@ -671,7 +741,6 @@ app.get('/api/products/:id', async (req, res) => {
   try {
     const product = await getProductWithRelations(parseInt(req.params.id));
     if (!product) return res.status(404).json({ error: 'Product not found' });
-    // زيادة عدد المشاهدات
     await db.execute({
       sql: 'UPDATE products SET views_count = views_count + 1 WHERE id = ?',
       args: [product.id]
@@ -683,12 +752,10 @@ app.get('/api/products/:id', async (req, res) => {
 });
 
 async function saveProductRelations(productId, colors, ages, details) {
-  // حذف العلاقات القديمة
   await db.execute({ sql: 'DELETE FROM product_colors WHERE product_id = ?', args: [productId] });
   await db.execute({ sql: 'DELETE FROM product_ages WHERE product_id = ?', args: [productId] });
   await db.execute({ sql: 'DELETE FROM product_details WHERE product_id = ?', args: [productId] });
 
-  // الألوان + الصور
   if (Array.isArray(colors)) {
     for (let ci = 0; ci < colors.length; ci++) {
       const c = colors[ci];
@@ -705,7 +772,6 @@ async function saveProductRelations(productId, colors, ages, details) {
       else if (c.image) imgs = [c.image];
 
       for (let ii = 0; ii < imgs.length; ii++) {
-        // رفع إلى Cloudinary إن كان base64
         const finalUrl = await uploadBase64ToCloudinary(imgs[ii], `babyshop/products/${productId}`);
         await db.execute({
           sql: `INSERT INTO product_color_images (color_id, media_url, media_type, is_main, sort_order)
@@ -716,7 +782,6 @@ async function saveProductRelations(productId, colors, ages, details) {
     }
   }
 
-  // الأعمار
   if (Array.isArray(ages)) {
     for (let i = 0; i < ages.length; i++) {
       const label = typeof ages[i] === 'string' ? ages[i] : (ages[i]?.label || '');
@@ -728,7 +793,6 @@ async function saveProductRelations(productId, colors, ages, details) {
     }
   }
 
-  // التفاصيل
   if (Array.isArray(details)) {
     for (let i = 0; i < details.length; i++) {
       if (!details[i]) continue;
@@ -843,7 +907,6 @@ app.post('/api/orders', async (req, res) => {
       return res.status(400).json({ error: 'Cart is empty' });
     }
 
-    // إنشاء/تحديث الزبون
     let customerId = null;
     const existingCust = await db.execute({
       sql: 'SELECT id FROM customers WHERE phone = ?',
@@ -865,7 +928,6 @@ app.post('/api/orders', async (req, res) => {
       customerId = Number(custRes.lastInsertRowid);
     }
 
-    // حساب الإجماليات
     let subtotal = 0;
     const preparedItems = [];
     for (const it of items) {
@@ -885,7 +947,6 @@ app.post('/api/orders', async (req, res) => {
         });
         if (pRes.rows.length > 0) productName = pRes.rows[0].name;
 
-        // جلب اللون + صورته الرئيسية
         if (it.colorIndex !== undefined) {
           const colorsRes = await db.execute({
             sql: 'SELECT * FROM product_colors WHERE product_id = ? ORDER BY sort_order, id',
@@ -963,6 +1024,34 @@ app.post('/api/orders', async (req, res) => {
           args: [pi.quantity, pi.product_id]
         });
       }
+    }
+
+    // ✅ NEW: إرسال إشعار تيليجرام (fire and forget — لا يُعطّل الاستجابة)
+    try {
+      const itemsText = preparedItems.map((pi, i) =>
+        `<b>${i + 1}.</b> ${escapeTelegram(pi.product_name)}\n` +
+        `   🎨 ${escapeTelegram(pi.color_name || '—')} | 👶 ${escapeTelegram(pi.age_label || '—')}\n` +
+        `   📦 ${pi.quantity} × ${pi.unit_price.toLocaleString()} = <b>${pi.total_price.toLocaleString()} د.ج</b>`
+      ).join('\n\n');
+
+      const telegramMessage =
+        `🛒 <b>طلب جديد وصل!</b>\n\n` +
+        `🔢 <b>رقم الطلب:</b> ${escapeTelegram(orderNumber)}\n` +
+        `🕐 <b>الوقت:</b> ${new Date().toLocaleString('ar-DZ')}\n\n` +
+        `👤 <b>الاسم:</b> ${escapeTelegram(firstName)} ${escapeTelegram(lastName)}\n` +
+        `📞 <b>الهاتف 1:</b> ${escapeTelegram(phone1)}\n` +
+        (phone2 ? `📞 <b>الهاتف 2:</b> ${escapeTelegram(phone2)}\n` : '') +
+        `📍 <b>الولاية:</b> ${escapeTelegram(wilaya)}\n` +
+        `🏘️ <b>البلدية:</b> ${escapeTelegram(municipality)}\n` +
+        `🏠 <b>العنوان:</b> ${escapeTelegram(address)}\n\n` +
+        `📦 <b>المنتجات:</b>\n${itemsText}\n\n` +
+        `🚚 <b>التوصيل:</b> ${deliveryMethod === 'home' ? 'المنزل' : 'الوكالة'} — ${finalDeliveryCost.toLocaleString()} د.ج\n` +
+        `💰 <b>الإجمالي المطلوب:</b> <b>${total.toLocaleString()} د.ج</b>`;
+
+      sendTelegramMessage(telegramMessage).catch(e => console.error('Telegram async error:', e));
+    } catch (tgErr) {
+      console.error('❌ Telegram notify preparation failed:', tgErr.message);
+      // لا نُفشل الطلب بسبب فشل الإشعار
     }
 
     res.json({ success: true, orderId: orderNumber, id: orderId, total });
@@ -1240,21 +1329,24 @@ app.post('/api/upload', authMiddleware, async (req, res) => {
 });
 
 // ============================================================
-// 13) STATS (Dashboard)
+// 13) STATS (Dashboard) — ✅ محدّث ليعكس منطق "delivered only"
 // ============================================================
 app.get('/api/stats', authMiddleware, async (req, res) => {
   try {
     const productsCount = await db.execute('SELECT COUNT(*) as c FROM products');
     const ordersCount = await db.execute('SELECT COUNT(*) as c FROM orders');
     const pendingCount = await db.execute("SELECT COUNT(*) as c FROM orders WHERE status = 'pending'");
+
+    // ✅ الإيرادات تُحسب فقط من الطلبات التي حالتها "delivered"
     const revenue = await db.execute(
-      "SELECT COALESCE(SUM(total), 0) as s FROM orders WHERE status != 'cancelled'"
+      "SELECT COALESCE(SUM(total), 0) as s FROM orders WHERE status = 'delivered'"
     );
 
+    // ✅ المبيعات آخر 7 أيام — فقط من الطلبات "delivered"
     const last7 = await db.execute(`
       SELECT DATE(created_at) as day, COALESCE(SUM(total), 0) as total
       FROM orders
-      WHERE status != 'cancelled' AND created_at >= datetime('now', '-7 days')
+      WHERE status = 'delivered' AND created_at >= datetime('now', '-7 days')
       GROUP BY DATE(created_at)
     `);
 
@@ -1262,10 +1354,13 @@ app.get('/api/stats', authMiddleware, async (req, res) => {
       'SELECT status, COUNT(*) as c FROM orders GROUP BY status'
     );
 
+    // ✅ المنتجات الأكثر مبيعاً — فقط من الطلبات "delivered"
     const topProducts = await db.execute(`
-      SELECT product_name, SUM(quantity) as qty, SUM(total_price) as total
-      FROM order_items
-      GROUP BY product_name
+      SELECT oi.product_name, SUM(oi.quantity) as qty, SUM(oi.total_price) as total
+      FROM order_items oi
+      INNER JOIN orders o ON o.id = oi.order_id
+      WHERE o.status = 'delivered'
+      GROUP BY oi.product_name
       ORDER BY qty DESC
       LIMIT 5
     `);
@@ -1288,12 +1383,9 @@ app.get('/api/stats', authMiddleware, async (req, res) => {
 // 14) SPA Fallback
 // ============================================================
 app.get('*', (req, res) => {
-  // لا نستخدم SPA routing، فقط نرجع 404 للمسارات API غير موجودة
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'API endpoint not found' });
   }
-  // الملفات الثابتة تُخدم من express.static
-  // لو وصلنا هنا يعني الملف غير موجود
   if (req.path.includes('.')) {
     return res.status(404).send('File not found');
   }
