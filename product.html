@@ -2408,7 +2408,6 @@
         o.value = w; o.textContent = w;
         ws.appendChild(o);
       });
-      // ✅ عند تغيير الولاية → عبّئ البلديات واحفظ
       ws.addEventListener('change', () => {
         populateMunicipalities();
         saveCheckoutDraft();
