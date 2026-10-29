@@ -1,8 +1,17 @@
-# بيانات Cloudinary
+# ==========================
+# Cloudinary
+# ==========================
 CLOUDINARY_CLOUD_NAME=nxhljt77
 CLOUDINARY_API_KEY=826491676531723
 CLOUDINARY_API_SECRET=AkqlNYlcCrwKzngFOGjBFidKc3Y
 
-# بيانات Turso (قاعدة البيانات السحابية)
-TURSO_DATABASE_URL=libsql:libsql://babyshop-shopdz.aws-eu-central-1.turso.io
+# ==========================
+# Turso Database
+# ==========================
+TURSO_DATABASE_URL=libsql://babyshop-shopdz.aws-eu-central-1.turso.io
 TURSO_AUTH_TOKEN=eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3OTMyNzE2NTEsImlkIjoiMDFhMTg3NGMtMDkwMS03YTkyLWEwNjktZjk0NDRmN2I1NjU5Iiwia2lkIjoiLWo1cVJ3TWdidjV0aVVIUUpaUnhtM0N5MTl1SDI2aTBXUF8xcUlQY1lnTSIsInJpZCI6IjA3NjQwMmRiLTc0NjQtNGJlOS1hNTBjLTU5OTcyNDgzYTZjOSJ9.xUKtAfcpO0g49m8Zr9c2pabJsbhLLNCgmQ3pd7taWVtSPh_efOUzCeGpMCoMM9nrJYJFQTE6TrOoKXaO2fuJCA
+
+# ==========================
+# Server
+# ==========================
+PORT=3000
