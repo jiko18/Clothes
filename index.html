@@ -2464,6 +2464,9 @@
       document.getElementById('summaryTotal').textContent = (subtotal + currentDeliveryCost).toLocaleString() + ' د.ج';
     }
 
+    // ================================================================
+    // ✅ [معدّل] إرسال الطلب إلى السيرفر (Turso) + fallback محلي
+    // ================================================================
     async function submitOrder() {
       const form = document.getElementById('checkoutForm');
       if (!form.checkValidity()) {
@@ -2488,39 +2491,90 @@
       const selDelivery = document.querySelector('input[name="delivery"]:checked');
       const deliveryMethod = (selDelivery && selDelivery.dataset.type === 'home') ? 'home' : 'agency';
 
-      // ⚠️ الطلبات حالياً تُحفظ في localStorage فقط. لمربطها بالسيرفر لاحقاً،
-      // استبدل هذا الجزء بـ fetch('/api/orders', { method: 'POST', ... })
+      // صيغة البيانات المطلوبة من السيرفر (server.js POST /api/orders)
+      const orderPayload = {
+        firstName,
+        lastName,
+        phone1,
+        phone2: phone2 || null,
+        wilaya,
+        municipality,
+        address,
+        deliveryMethod,
+        deliveryCost: currentDeliveryCost,
+        items: cart.map(it => ({
+          productId: it.productId,
+          colorIndex: it.colorIndex,
+          age: it.age,
+          qty: it.qty,
+          price: it.price
+        }))
+      };
+
+      let orderId = null;
+      let savedToServer = false;
+
       try {
-        const order = {
-          orderId: 'ORD-' + Date.now(),
-          firstName, lastName, wilaya, municipality, phone1, phone2, address,
-          deliveryMethod,
-          deliveryCost: currentDeliveryCost,
-          items: [...cart],
-          subtotal: getCartSubtotal(),
-          total: getCartSubtotal() + currentDeliveryCost,
-          createdAt: new Date().toISOString()
-        };
+        const res = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderPayload)
+        });
 
-        const orders = JSON.parse(localStorage.getItem('babyshop_orders') || '[]');
-        orders.push(order);
-        localStorage.setItem('babyshop_orders', JSON.stringify(orders));
-
-        cart = [];
-        saveCart();
-        renderCart();
-        closeCheckout();
-        form.reset();
-        updateDeliveryCost();
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> تأكيد الطلب';
-
-        showToast(`تم تأكيد طلبك بنجاح! رقم الطلب: ${order.orderId}`, 'success');
-      } catch (e) {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> تأكيد الطلب';
-        showToast('حدث خطأ أثناء حفظ الطلب', 'error');
+        if (res.ok) {
+          const result = await res.json();
+          orderId = result.orderId || ('ORD-' + Date.now());
+          savedToServer = true;
+          console.log('✅ الطلب محفوظ في السيرفر:', orderId);
+        } else {
+          const errData = await res.json().catch(() => ({}));
+          console.warn('⚠️ السيرفر رفض الطلب:', res.status, errData);
+        }
+      } catch (err) {
+        console.warn('⚠️ تعذّر الاتصال بالسيرفر:', err);
       }
+
+      // fallback: احتفظ بالطلب محلياً إذا فشل السيرفر
+      if (!savedToServer) {
+        orderId = 'LOCAL-' + Date.now();
+        try {
+          const localOrders = JSON.parse(localStorage.getItem('babyshop_orders') || '[]');
+          localOrders.push({
+            ...orderPayload,
+            orderId,
+            subtotal: getCartSubtotal(),
+            total: getCartSubtotal() + currentDeliveryCost,
+            createdAt: new Date().toISOString()
+          });
+          localStorage.setItem('babyshop_orders', JSON.stringify(localOrders));
+        } catch (e) { /* ignore */ }
+      }
+
+      // تفريغ السلة وإعادة تعيين النموذج
+      cart = [];
+      saveCart();
+      renderCart();
+      form.reset();
+      populateWilayasAndReset();
+      updateDeliveryCost();
+      closeCheckout();
+
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> تأكيد الطلب';
+
+      const msg = savedToServer
+        ? `تم تأكيد طلبك بنجاح! رقم الطلب: ${orderId}`
+        : `تم استلام طلبك محلياً (${orderId}). سيتم رفعه عند استعادة الاتصال.`;
+      showToast(msg, savedToServer ? 'success' : 'info');
+    }
+
+    // إعادة تعيين قائمة الولايات بعد نجاح الطلب (لإعادة بناء select)
+    function populateWilayasAndReset() {
+      const sel = document.getElementById('checkoutWilaya');
+      if (!sel) return;
+      // حذف الخيارات الحالية مع الإبقاء على الأول
+      while (sel.options.length > 1) sel.remove(1);
+      sel.value = '';
     }
 
     document.addEventListener('keydown', (e) => {

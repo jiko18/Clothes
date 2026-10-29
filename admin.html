@@ -77,6 +77,7 @@
     .stat-icon.orange{background:linear-gradient(135deg,#f39c12,#e67e22)}
     .stat-info h3{font-size:1.6rem;font-weight:800;color:var(--text)}
     .stat-info p{font-size:.85rem;color:var(--text-gray);font-weight:600}
+    .stat-info .stat-hint{font-size:.68rem;color:var(--success);font-weight:700;margin-top:2px}
     .dash-charts{display:grid;grid-template-columns:1.5fr 1fr;gap:20px;margin-bottom:24px}
     .chart-card{background:var(--card-bg);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
     .chart-card h3{font-size:1rem;font-weight:800;color:var(--text);margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -106,11 +107,10 @@
     .top-product-rank.gold{background:linear-gradient(135deg,#feca57,#f39c12);color:#fff}
     .top-product-rank.silver{background:linear-gradient(135deg,#b2bec3,#636e72);color:#fff}
     .top-product-rank.bronze{background:linear-gradient(135deg,#e17055,#d63031);color:#fff}
-    .top-product-img{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--bg);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text-gray);font-size:.75rem}
+    .top-product-img{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--bg);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text-gray);font-size:.75rem;overflow:hidden}
     .top-product-info{flex:1;min-width:0}
     .top-product-info strong{font-size:.88rem;font-weight:700;color:var(--text);display:block}
     .top-product-info span{font-size:.75rem;color:var(--text-gray)}
-    .top-product-total{font-size:.95rem;font-weight:800;color:var(--primary-dark);white-space:nowrap}
     .notification-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;background:var(--bg);margin-bottom:10px;border-right:3px solid var(--warning);transition:transform .2s}
     .notification-item:hover{transform:translateX(-4px)}
     .notification-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(243,156,18,.15);color:var(--warning);font-size:.95rem;flex-shrink:0}
@@ -163,6 +163,8 @@
     .icon-btn-edit:hover{background:var(--secondary);color:#fff}
     .icon-btn-del{background:rgba(231,76,60,.12);color:var(--danger)}
     .icon-btn-del:hover{background:var(--danger);color:#fff}
+    .icon-btn-slip{background:rgba(0,184,148,.12);color:var(--success)}
+    .icon-btn-slip:hover{background:var(--success);color:#fff}
     .empty-state{text-align:center;padding:40px 20px;color:var(--text-gray)}
     .empty-state i{font-size:3rem;opacity:.3;margin-bottom:12px;display:block}
     .order-products-cell{display:flex;gap:4px;align-items:center}
@@ -271,7 +273,7 @@
     .spinner{width:52px;height:52px;border:5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
 
-    /* ============ NEW: Color search input + suggestions ============ */
+    /* ============ Color search input + suggestions ============ */
     .color-search-wrap { position: relative; z-index: 1; }
     .color-search-wrap:focus-within { z-index: 300; }
     .color-search-icon {
@@ -380,7 +382,7 @@
     }
     .color-no-match i { margin-left: 6px; opacity: .6; }
 
-    /* ============ NEW: Theme colors legend ============ */
+    /* ============ Theme colors legend ============ */
     .theme-legend {
       background: linear-gradient(135deg, rgba(108,92,231,.06), rgba(255,107,129,.06));
       border-radius: 14px;
@@ -462,6 +464,68 @@
       color: var(--primary);
       font-weight: 700;
     }
+
+    /* ============ Orders search bar ============ */
+    .orders-filter-bar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      align-items: flex-end;
+    }
+    .orders-search-input-wrap {
+      flex: 1;
+      min-width: 260px;
+      position: relative;
+    }
+    .orders-search-input-wrap i {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-gray);
+      font-size: .9rem;
+      pointer-events: none;
+    }
+    .orders-search-input-wrap input {
+      width: 100%;
+      padding: 11px 42px 11px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: .9rem;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      transition: all .2s;
+      font-family: inherit;
+    }
+    .orders-search-input-wrap input:focus {
+      border-color: var(--primary);
+      background: var(--card-bg);
+      box-shadow: 0 0 0 3px rgba(255,107,129,.12);
+    }
+    .orders-status-filter { min-width: 200px; }
+    .orders-status-filter select {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: .9rem;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .orders-status-filter select:focus { border-color: var(--primary); background: var(--card-bg); box-shadow: 0 0 0 3px rgba(255,107,129,.12); }
+    .orders-results-count {
+      font-size: .82rem;
+      color: var(--text-gray);
+      font-weight: 600;
+      margin-bottom: 12px;
+      padding-right: 4px;
+    }
+    .orders-results-count strong { color: var(--primary); }
 
     @media (max-width:992px){.dash-charts,.dash-bottom{grid-template-columns:1fr}}
     @media (max-width:900px){
@@ -554,7 +618,7 @@
           <div class="stats-grid">
             <div class="stat-card"><div class="stat-icon pink"><i class="fa-solid fa-box"></i></div><div class="stat-info"><h3 id="statProducts">0</h3><p>إجمالي المنتجات</p></div></div>
             <div class="stat-card"><div class="stat-icon purple"><i class="fa-solid fa-shopping-bag"></i></div><div class="stat-info"><h3 id="statOrders">0</h3><p>إجمالي الطلبات</p></div></div>
-            <div class="stat-card"><div class="stat-icon green"><i class="fa-solid fa-coins"></i></div><div class="stat-info"><h3 id="statRevenue">0</h3><p>الإيرادات (د.ج)</p></div></div>
+            <div class="stat-card"><div class="stat-icon green"><i class="fa-solid fa-coins"></i></div><div class="stat-info"><h3 id="statRevenue">0</h3><p>الإيرادات (د.ج)</p><div class="stat-hint">✓ من الطلبات المُسلَّمة فقط</div></div></div>
             <div class="stat-card"><div class="stat-icon orange"><i class="fa-solid fa-clock"></i></div><div class="stat-info"><h3 id="statPending">0</h3><p>قيد الانتظار</p></div></div>
           </div>
           <div class="dash-charts">
@@ -562,7 +626,7 @@
             <div class="chart-card"><h3><i class="fa-solid fa-list-check"></i> حالة الطلبات</h3><div class="status-bars-list" id="statusChart"></div></div>
           </div>
           <div class="dash-bottom">
-            <div class="dash-card"><h3><span><i class="fa-solid fa-trophy"></i> المنتجات الأكثر مبيعاً</span></h3><div id="topProductsList"></div></div>
+            <div class="dash-card"><h3><span><i class="fa-solid fa-trophy"></i> المنتجات الأكثر مبيعاً</span><span style="font-size:.7rem;font-weight:600;color:var(--success);">✓ طلبات مُسلَّمة فقط</span></h3><div id="topProductsList"></div></div>
             <div class="dash-card"><h3><span><i class="fa-solid fa-bell"></i> تنبيه الطلبات المعلقة</span><span class="badge-count" id="pendingBadge">0</span></h3><div id="notificationsList"></div></div>
           </div>
           <div class="panel">
@@ -585,16 +649,23 @@
           <div class="panel">
             <div class="panel-header"><h3><i class="fa-solid fa-shopping-bag"></i> الطلبات الواردة</h3><button class="btn btn-primary" onclick="exportOrdersReport()"><i class="fa-solid fa-file-export"></i> تصدير تقرير شامل</button></div>
             <div class="panel-body">
-              <div class="fg" style="max-width: 300px; margin-bottom: 16px;">
-                <select id="orderStatusFilter" onchange="renderOrdersView()">
-                  <option value="all">جميع الحالات</option>
-                  <option value="pending">قيد الانتظار</option>
-                  <option value="confirmed">مؤكد</option>
-                  <option value="out_for_delivery">قيد التوصيل</option>
-                  <option value="delivered">تم التوصيل</option>
-                  <option value="cancelled">ملغى</option>
-                </select>
+              <div class="orders-filter-bar">
+                <div class="orders-search-input-wrap">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input type="text" id="orderSearchInput" placeholder="ابحث برقم الطلب، الاسم، اللقب، الهاتف، أو الولاية..." oninput="renderOrdersView()">
+                </div>
+                <div class="orders-status-filter">
+                  <select id="orderStatusFilter" onchange="renderOrdersView()">
+                    <option value="all">جميع الحالات</option>
+                    <option value="pending">قيد الانتظار</option>
+                    <option value="confirmed">مؤكد</option>
+                    <option value="out_for_delivery">قيد التوصيل</option>
+                    <option value="delivered">تم التوصيل</option>
+                    <option value="cancelled">ملغى</option>
+                  </select>
+                </div>
               </div>
+              <div class="orders-results-count" id="ordersResultsCount"></div>
               <div class="table-wrap" id="ordersTableWrap"></div>
             </div>
           </div>
@@ -618,7 +689,6 @@
             <div class="panel-header"><h3><i class="fa-solid fa-palette"></i> ألوان الموقع</h3></div>
             <div class="panel-body">
 
-              <!-- NEW: Theme colors legend -->
               <div class="theme-legend">
                 <div class="theme-legend-header">
                   <i class="fa-solid fa-circle-info"></i>
@@ -678,7 +748,6 @@
                   </div>
                 </div>
               </div>
-              <!-- /NEW: Theme colors legend -->
 
               <div class="form-grid">
                 <div class="fg"><label>اللون الأساسي (Primary)</label><div style="display:flex; align-items:center; gap:12px;"><input type="color" id="colorPrimary" oninput="updateThemePreview()" style="width:50px;height:44px;border:2px solid var(--border);border-radius:10px;cursor:pointer;padding:2px;background:var(--bg);"><input type="text" id="colorPrimaryText" oninput="syncColorFromText('primary')" style="flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;background:var(--bg);color:var(--text);direction:ltr;text-align:right;"></div></div>
@@ -835,6 +904,7 @@
       <div class="modal-body" id="orderDetailsBody"></div>
       <div class="modal-footer">
         <button class="btn btn-outline" onclick="closeOrderDetails()">إغلاق</button>
+        <button class="btn btn-success" onclick="printDeliverySlip(currentViewingOrderId)"><i class="fa-solid fa-truck"></i> وصل التوصيل</button>
         <button class="btn btn-info" onclick="printOrderDetails()"><i class="fa-solid fa-print"></i> طباعة</button>
       </div>
     </div>
@@ -1129,19 +1199,28 @@
     // ============================================================
     // Dashboard
     // ============================================================
+    // ✅ [معدّل] الإيرادات تُحسب فقط من الطلبات التي حالتها "تم التوصيل"
+    function getDeliveredRevenue() {
+      return data.orders
+        .filter(o => o.status === 'delivered')
+        .reduce((sum, o) => sum + (Number(o.total) || 0), 0);
+    }
+
     function renderDashboard() {
-      const s = data.stats || {};
-      document.getElementById('statProducts').textContent = s.totalProducts ?? data.products.length;
-      document.getElementById('statOrders').textContent = s.totalOrders ?? data.orders.length;
-      const revenue = s.totalRevenue ?? data.orders.filter(o => o.status !== 'cancelled').reduce((sum, o) => sum + (o.total || 0), 0);
-      document.getElementById('statRevenue').textContent = Number(revenue).toLocaleString();
-      const pending = s.pendingOrders ?? data.orders.filter(o => !o.status || o.status === 'pending').length;
+      // الإحصائيات الأساسية
+      document.getElementById('statProducts').textContent = data.products.length;
+      document.getElementById('statOrders').textContent = data.orders.length;
+      document.getElementById('statRevenue').textContent = getDeliveredRevenue().toLocaleString();
+      const pending = data.orders.filter(o => !o.status || o.status === 'pending').length;
       document.getElementById('statPending').textContent = pending;
+
       const badge = document.getElementById('ordersBadge');
       if (pending > 0) { badge.textContent = pending; badge.style.display = 'inline-block'; }
       else badge.style.display = 'none';
+
       document.getElementById('welcomeTitle').textContent = 'مرحباً بك في لوحة التحكم 👋';
       document.getElementById('welcomeSubtitle').textContent = pending > 0 ? `لديك ${pending} طلب قيد الانتظار` : 'لا توجد طلبات معلقة حالياً';
+
       renderSalesChart();
       renderStatusChart();
       renderTopProducts();
@@ -1149,9 +1228,10 @@
       renderRecentOrders();
     }
 
+    // ✅ [معدّل] مخطط المبيعات يعرض فقط المبيعات المُسلَّمة (delivered)
     function renderSalesChart() {
       const chartEl = document.getElementById('salesChart');
-      const orders = data.orders.filter(o => o.status !== 'cancelled');
+      const deliveredOrders = data.orders.filter(o => o.status === 'delivered');
       const days = {};
       const today = new Date(); today.setHours(0,0,0,0);
       let maxTotal = 0;
@@ -1159,15 +1239,15 @@
         const d = new Date(today); d.setDate(d.getDate() - i);
         days[d.toISOString().slice(0,10)] = { total: 0, label: d.toLocaleDateString('ar-DZ', { weekday: 'short' }) };
       }
-      orders.forEach(o => {
+      deliveredOrders.forEach(o => {
         const key = new Date(o.createdAt).toISOString().slice(0,10);
-        if (days[key]) days[key].total += (o.total || 0);
+        if (days[key]) days[key].total += (Number(o.total) || 0);
       });
       Object.values(days).forEach(d => { if (d.total > maxTotal) maxTotal = d.total; });
       const grandTotal = Object.values(days).reduce((s, d) => s + d.total, 0);
       document.getElementById('salesTotal').textContent = `الإجمالي: ${grandTotal.toLocaleString()} د.ج`;
       if (maxTotal === 0) {
-        chartEl.innerHTML = '<p style="text-align:center;color:var(--text-gray);padding:60px 20px;width:100%;">لا توجد مبيعات في آخر 7 أيام</p>';
+        chartEl.innerHTML = '<p style="text-align:center;color:var(--text-gray);padding:40px 20px;width:100%;font-size:.85rem;"><i class="fa-solid fa-chart-simple" style="font-size:2rem;opacity:.3;display:block;margin-bottom:8px;"></i> لا توجد مبيعات مُسلَّمة في آخر 7 أيام<br><small style="font-size:.72rem;">(تُحتسب فقط الطلبات التي تم توصيلها)</small></p>';
         return;
       }
       chartEl.innerHTML = Object.values(days).map(d => {
@@ -1191,19 +1271,76 @@
       el.innerHTML = counts.map(c => `<div class="status-bar-item"><div class="status-bar-label"><span class="dot" style="background:${c.color};"></span>${c.label}</div><div class="status-bar-track"><div class="status-bar-fill" style="width:${(c.count / max) * 100}%; background:${c.color};"></div></div><span class="status-bar-count">${c.count}</span></div>`).join('');
     }
 
+    // ✅ [معدّل] المنتجات الأكثر مبيعاً تُحسب من الطلبات "تم التوصيل" فقط + تعرض صورة المنتج
     function renderTopProducts() {
       const el = document.getElementById('topProductsList');
-      const top = (data.stats && data.stats.topProducts) || [];
+
+      // 1) اجمع المنتجات من الطلبات المُسلَّمة فقط
+      const deliveredOrders = data.orders.filter(o => o.status === 'delivered');
+      const productMap = new Map();
+
+      deliveredOrders.forEach(order => {
+        (order.items || []).forEach(it => {
+          const productId = it.productId;
+          const productName = (it.productName || '').trim();
+          const key = productId ? `id_${productId}` : `name_${productName}`;
+
+          if (!productMap.has(key)) {
+            productMap.set(key, {
+              productId,
+              productName: productName || 'منتج',
+              qty: 0,
+              total: 0,
+              image: it.image || ''
+            });
+          }
+          const entry = productMap.get(key);
+          entry.qty += Number(it.qty) || 0;
+          entry.total += (Number(it.qty) || 0) * (Number(it.price) || 0);
+          if (!entry.image && it.image) entry.image = it.image;
+        });
+      });
+
+      // 2) رتّب بحسب الكمية واحتفظ بأعلى 5
+      const top = Array.from(productMap.values())
+        .filter(t => t.qty > 0)
+        .sort((a, b) => b.qty - a.qty)
+        .slice(0, 5);
+
+      // 3) احصل على صورة من كتالوج المنتجات إذا لم تكن موجودة في الطلب
+      top.forEach(t => {
+        if (!t.image && t.productId) {
+          const prod = data.products.find(p => p.id === t.productId);
+          if (prod) {
+            const firstColor = prod.colors && prod.colors[0];
+            if (firstColor) {
+              if (Array.isArray(firstColor.images) && firstColor.images.length && firstColor.images[0]) {
+                t.image = firstColor.images[0];
+              } else if (firstColor.image) {
+                t.image = firstColor.image;
+              }
+            }
+          }
+        }
+      });
+
       if (!top.length) {
-        el.innerHTML = '<p style="text-align:center;color:var(--text-gray);padding:40px 20px;">لا توجد مبيعات بعد</p>';
+        el.innerHTML = '<p style="text-align:center;color:var(--text-gray);padding:30px 20px;font-size:.85rem;"><i class="fa-solid fa-trophy" style="font-size:2rem;opacity:0.3;display:block;margin-bottom:8px;"></i> لا توجد مبيعات مُسلَّمة بعد<br><small style="font-size:.72rem;">(تُحتسب فقط الطلبات التي تم توصيلها)</small></p>';
         return;
       }
+
       el.innerHTML = top.map((item, idx) => {
         const rankClass = idx === 0 ? 'gold' : idx === 1 ? 'silver' : idx === 2 ? 'bronze' : '';
+        const imgHtml = item.image && !isVideoUrl(item.image)
+          ? `<img src="${escapeAttr(item.image)}" alt="${escapeAttr(item.productName)}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">`
+          : `<i class="fa-solid fa-box"></i>`;
         return `<div class="top-product-item">
           <div class="top-product-rank ${rankClass}">${idx + 1}</div>
-          <div class="top-product-img"><i class="fa-solid fa-box"></i></div>
-          <div class="top-product-info"><strong>${escapeHtml(item.product_name)}</strong><span>${item.qty} قطعة مباعة</span></div>
+          <div class="top-product-img">${imgHtml}</div>
+          <div class="top-product-info">
+            <strong>${escapeHtml(item.productName)}</strong>
+            <span>${item.qty} قطعة مباعة</span>
+          </div>
           <div class="top-product-total">${Number(item.total || 0).toLocaleString()} د.ج</div>
         </div>`;
       }).join('');
@@ -1245,6 +1382,10 @@
       if (!iso) return '-';
       try { const d = new Date(iso); return d.toLocaleDateString('ar-DZ') + ' ' + d.toLocaleTimeString('ar-DZ', { hour: '2-digit', minute: '2-digit' }); } catch(e) { return '-'; }
     }
+    function formatDateOnly(iso) {
+      if (!iso) return '-';
+      try { const d = new Date(iso); return d.toLocaleDateString('ar-DZ'); } catch(e) { return '-'; }
+    }
 
     function renderOrdersTable(orders) {
       if (!orders.length) return `<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>لا توجد طلبات</p></div>`;
@@ -1268,6 +1409,7 @@
             <td style="font-size:0.8rem;">${formatDate(o.createdAt)}</td>
             <td><div class="row-actions">
               <button class="icon-btn icon-btn-view" onclick="viewOrder('${o.orderId}')" title="عرض"><i class="fa-solid fa-eye"></i></button>
+              <button class="icon-btn icon-btn-slip" onclick="printDeliverySlip('${o.orderId}')" title="طباعة وصل التوصيل"><i class="fa-solid fa-truck"></i></button>
               <select onchange="updateOrderStatus('${o.orderId}', this.value)" style="padding:6px 10px; border-radius:8px; border:1.5px solid var(--border); background:var(--bg); color:var(--text); font-size:0.78rem; cursor:pointer;">
                 <option value="pending" ${(!o.status || o.status==='pending')?'selected':''}>قيد الانتظار</option>
                 <option value="confirmed" ${o.status==='confirmed'?'selected':''}>مؤكد</option>
@@ -1294,12 +1436,40 @@
       }
     }
 
+    // ✅ [معدّل] البحث + الفلترة
     function renderOrdersView() {
       const wrap = document.getElementById('ordersTableWrap');
+      const countEl = document.getElementById('ordersResultsCount');
       const filter = (document.getElementById('orderStatusFilter')?.value) || 'all';
+      const search = (document.getElementById('orderSearchInput')?.value || '').trim().toLowerCase();
+
       let filtered = data.orders;
-      if (filter !== 'all') filtered = filtered.filter(o => (o.status || 'pending') === filter);
-      if (!filtered.length) { wrap.innerHTML = `<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>لا توجد طلبات</p></div>`; return; }
+
+      if (filter !== 'all') {
+        filtered = filtered.filter(o => (o.status || 'pending') === filter);
+      }
+
+      if (search) {
+        filtered = filtered.filter(o => {
+          const fullName = ((o.firstName || '') + ' ' + (o.lastName || '')).toLowerCase();
+          return (o.orderId || '').toLowerCase().includes(search)
+              || (o.phone1 || '').toLowerCase().includes(search)
+              || (o.phone2 || '').toLowerCase().includes(search)
+              || fullName.includes(search)
+              || (o.wilaya || '').toLowerCase().includes(search)
+              || (o.municipality || '').toLowerCase().includes(search);
+        });
+      }
+
+      if (countEl) {
+        const total = data.orders.length;
+        countEl.innerHTML = `عرض <strong>${filtered.length}</strong> من إجمالي <strong>${total}</strong> طلب${search ? ' — نتائج البحث عن "' + escapeHtml(search) + '"' : ''}`;
+      }
+
+      if (!filtered.length) {
+        wrap.innerHTML = `<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>${search ? 'لا توجد طلبات مطابقة لبحثك' : 'لا توجد طلبات'}</p></div>`;
+        return;
+      }
       wrap.innerHTML = renderOrdersTable(filtered);
     }
 
@@ -1353,16 +1523,141 @@
       win.document.close();
     }
 
+    // ✅ [جديد] طباعة "وصل التوصيل" — ملصق جاهز للصق على الطلب
+    function printDeliverySlip(orderId) {
+      if (!orderId) return;
+      const order = data.orders.find(o => o.orderId === orderId);
+      if (!order) { showToast('الطلب غير موجود', 'error'); return; }
+      const today = new Date().toLocaleDateString('ar-DZ');
+      const itemsRows = (order.items || []).map((it, idx) =>
+        `<tr>
+          <td style="text-align:center;font-weight:700;">${idx + 1}</td>
+          <td>${escapeHtml(it.productName || '-')}</td>
+          <td style="text-align:center;">${escapeHtml(it.colorName || '-')}</td>
+          <td style="text-align:center;">${escapeHtml(it.age || '-')}</td>
+          <td style="text-align:center;font-weight:700;">${it.qty || 0}</td>
+          <td style="text-align:center;">${(it.price || 0).toLocaleString()} د.ج</td>
+        </tr>`
+      ).join('');
+      const sc = '<' + '/script>';
+      win_doc = `<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>وصل التوصيل — ${escapeHtml(order.orderId)}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Cairo', sans-serif; padding: 20px; background: #fff; color: #1a1a1a; }
+  .slip { max-width: 800px; margin: 0 auto; border: 3px solid #222; border-radius: 12px; padding: 20px; }
+  .slip-header { text-align: center; border-bottom: 3px double #222; padding-bottom: 12px; margin-bottom: 16px; }
+  .slip-header h1 { font-size: 1.7rem; margin-bottom: 8px; color: #ff6b81; }
+  .slip-header .order-num { font-size: 1.2rem; font-weight: 800; background: #feca57; color: #1a1a1a; display: inline-block; padding: 6px 22px; border-radius: 24px; margin-top: 6px; letter-spacing: .5px; }
+  .slip-header .store-name { font-size: 0.88rem; color: #666; margin-top: 8px; font-weight: 600; }
+  .section { margin-bottom: 16px; }
+  .section-title { font-size: 0.95rem; font-weight: 800; background: #f5f5f5; padding: 8px 14px; border-right: 5px solid #ff6b81; margin-bottom: 12px; border-radius: 4px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; }
+  .field { font-size: 0.92rem; padding: 8px 0; border-bottom: 1px dashed #ccc; }
+  .field strong { display: inline-block; min-width: 100px; color: #555; font-weight: 700; }
+  .field span { font-weight: 800; color: #1a1a1a; }
+  .full-row { grid-column: 1 / -1; }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.85rem; }
+  th, td { border: 1.5px solid #555; padding: 8px 6px; text-align: right; }
+  th { background: #f0f0f0; font-weight: 800; text-align: center; }
+  .total-box { margin-top: 18px; text-align: center; font-size: 1.25rem; font-weight: 800; padding: 14px; background: #fde8ec; border: 2px solid #ff6b81; border-radius: 10px; }
+  .total-box small { display: block; font-size: 0.78rem; font-weight: 600; margin-top: 6px; color: #666; }
+  .delivery-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 22px; }
+  .delivery-box { border: 2px dashed #888; padding: 14px; border-radius: 10px; min-height: 120px; }
+  .delivery-box-title { font-weight: 800; margin-bottom: 10px; color: #333; font-size: 0.95rem; border-bottom: 1px solid #ddd; padding-bottom: 6px; }
+  .delivery-box .line { border-bottom: 1px dotted #666; height: 28px; margin-top: 10px; }
+  .delivery-box .line-label { font-size: 0.8rem; color: #666; font-weight: 600; margin-top: 8px; }
+  .footer { text-align: center; margin-top: 22px; font-size: 0.82rem; color: #777; padding-top: 14px; border-top: 1px solid #eee; }
+  @media print {
+    body { padding: 0; }
+    .slip { border-width: 2px; padding: 14px; }
+    .no-print { display: none !important; }
+  }
+  .print-btn { display: block; margin: 20px auto 0; padding: 12px 32px; background: linear-gradient(135deg,#00b894,#00a085); color: #fff; border: none; border-radius: 10px; font-family: 'Cairo',sans-serif; font-size: 1rem; font-weight: 800; cursor: pointer; box-shadow: 0 4px 14px rgba(0,184,148,.4); }
+  .print-btn:hover { transform: translateY(-2px); }
+</style>
+</head>
+<body>
+<div class="slip">
+  <div class="slip-header">
+    <h1>${escapeHtml(data.settings.storeName || 'بيبي شوب')}</h1>
+    <div class="order-num">طلب رقم: ${escapeHtml(order.orderId)}</div>
+    <div class="store-name">تاريخ الطباعة: ${today}</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📋 بيانات الزبون</div>
+    <div class="grid-2">
+      <div class="field"><strong>الاسم:</strong> <span>${escapeHtml((order.firstName||'') + ' ' + (order.lastName||''))}</span></div>
+      <div class="field"><strong>الهاتف 1:</strong> <span>${escapeHtml(order.phone1 || '-')}</span></div>
+      <div class="field"><strong>الهاتف 2:</strong> <span>${escapeHtml(order.phone2 || '-')}</span></div>
+      <div class="field"><strong>طريقة الدفع:</strong> <span>الدفع عند الاستلام</span></div>
+      <div class="field"><strong>الولاية:</strong> <span>${escapeHtml(order.wilaya || '-')}</span></div>
+      <div class="field"><strong>البلدية:</strong> <span>${escapeHtml(order.municipality || '-')}</span></div>
+      <div class="field full-row"><strong>العنوان:</strong> <span>${escapeHtml(order.address || '-')}</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📦 تفاصيل الطلب</div>
+    <div class="grid-2" style="margin-bottom:10px;">
+      <div class="field"><strong>تاريخ الطلب:</strong> <span>${formatDate(order.createdAt)}</span></div>
+      <div class="field"><strong>طريقة التوصيل:</strong> <span>${order.deliveryMethod === 'home' ? 'توصيل إلى المنزل' : 'توصيل إلى الوكالة'}</span></div>
+    </div>
+    <table>
+      <thead><tr><th style="width:36px;">#</th><th>المنتج</th><th>اللون</th><th>العمر</th><th>الكمية</th><th>السعر</th></tr></thead>
+      <tbody>${itemsRows || '<tr><td colspan="6" style="text-align:center;padding:14px;">لا توجد منتجات</td></tr>'}</tbody>
+    </table>
+  </div>
+
+  <div class="total-box">
+    الإجمالي المطلوب دفعه عند الاستلام: ${(order.total || 0).toLocaleString()} د.ج
+    <small>المجموع الفرعي: ${(order.subtotal||0).toLocaleString()} د.ج + التوصيل: ${(order.deliveryCost||0).toLocaleString()} د.ج</small>
+  </div>
+
+  <div class="delivery-row">
+    <div class="delivery-box">
+      <div class="delivery-box-title">✅ تأكيد الاستلام</div>
+      <div class="line-label">توقيع الزبون:</div>
+      <div class="line"></div>
+      <div class="line-label">التاريخ: ____ / ____ / 20____</div>
+    </div>
+    <div class="delivery-box">
+      <div class="delivery-box-title">🚚 تأكيد التوصيل</div>
+      <div class="line-label">اسم الموصّل:</div>
+      <div class="line"></div>
+      <div class="line-label">رقم الموصّل: ________________</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    شكراً لثقتكم بنا — ${escapeHtml(data.settings.storeName || '')}<br>
+    ${escapeHtml(data.settings.phone || '')} ${data.settings.email ? ' · ' + escapeHtml(data.settings.email) : ''}
+  </div>
+</div>
+<button class="print-btn no-print" onclick="window.print()">🖨️ طباعة الوصل</button>
+<script>window.onload=()=>setTimeout(()=>window.print(), 400);${sc}
+</body>
+</html>`;
+      const win = window.open('', '_blank');
+      win.document.write(win_doc);
+      win.document.close();
+    }
+
     function exportOrdersReport() {
       if (!data.orders.length) { showToast('لا توجد طلبات لتصديرها', 'error'); return; }
       const win = window.open('', '_blank');
-      const totalRevenue = data.orders.filter(o => o.status !== 'cancelled').reduce((s, o) => s + (o.total || 0), 0);
+      const totalRevenue = data.orders.filter(o => o.status === 'delivered').reduce((s, o) => s + (Number(o.total) || 0), 0);
       const rows = data.orders.map(o => {
         const items = (o.items || []).map(it => `${it.productName || '-'} (${it.colorName || '-'}, ${it.age || '-'}) × ${it.qty}`).join('<br>');
         return `<tr><td>${escapeHtml(o.orderId)}</td><td>${formatDate(o.createdAt)}</td><td>${escapeHtml((o.firstName||'')+' '+(o.lastName||''))}</td><td>${escapeHtml(o.phone1||'')}${o.phone2 ? '<br>' + escapeHtml(o.phone2) : ''}</td><td>${escapeHtml(o.wilaya||'')}</td><td>${escapeHtml(o.municipality||'')}</td><td>${escapeHtml(o.address||'')}</td><td style="font-size:0.8rem;">${items}</td><td>${(o.subtotal||0).toLocaleString()}</td><td>${(o.deliveryCost||0).toLocaleString()}</td><td style="font-weight:bold;">${(o.total||0).toLocaleString()}</td><td>${statusLabel(o.status)}</td></tr>`;
       }).join('');
       const sc = '<' + '/script>';
-      win.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><title>تقرير الطلبات - ${escapeHtml(data.settings.storeName)}</title><style>body{font-family:'Cairo',Arial,sans-serif;padding:20px}h1{color:#ff6b81;text-align:center;margin-bottom:10px}.meta{display:flex;justify-content:space-between;margin-bottom:20px;font-size:.9rem;background:#f5f6fa;padding:12px;border-radius:8px}table{width:100%;border-collapse:collapse;font-size:.8rem}th,td{border:1px solid #ddd;padding:8px;text-align:right;vertical-align:top}th{background:#6c5ce7;color:#fff}tr:nth-child(even){background:#f9f9f9}@media print{body{padding:10px}}</style></head><body><h1>تقرير الطلبات - ${escapeHtml(data.settings.storeName)}</h1><div class="meta"><span><strong>تاريخ التصدير:</strong> ${new Date().toLocaleString('ar-DZ')}</span><span><strong>عدد الطلبات:</strong> ${data.orders.length}</span><span><strong>إجمالي الإيرادات:</strong> ${totalRevenue.toLocaleString()} د.ج</span></div><table><thead><tr><th>رقم الطلب</th><th>التاريخ</th><th>العميل</th><th>الهاتف</th><th>الولاية</th><th>البلدية</th><th>العنوان</th><th>المنتجات</th><th>المجموع الفرعي</th><th>التوصيل</th><th>الإجمالي</th><th>الحالة</th></tr></thead><tbody>${rows}</tbody></table><script>window.onload=()=>window.print();${sc}</body></html>`);
+      win.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><title>تقرير الطلبات - ${escapeHtml(data.settings.storeName)}</title><style>body{font-family:'Cairo',Arial,sans-serif;padding:20px}h1{color:#ff6b81;text-align:center;margin-bottom:10px}.meta{display:flex;justify-content:space-between;margin-bottom:20px;font-size:.9rem;background:#f5f6fa;padding:12px;border-radius:8px}table{width:100%;border-collapse:collapse;font-size:.8rem}th,td{border:1px solid #ddd;padding:8px;text-align:right;vertical-align:top}th{background:#6c5ce7;color:#fff}tr:nth-child(even){background:#f9f9f9}@media print{body{padding:10px}}</style></head><body><h1>تقرير الطلبات - ${escapeHtml(data.settings.storeName)}</h1><div class="meta"><span><strong>تاريخ التصدير:</strong> ${new Date().toLocaleString('ar-DZ')}</span><span><strong>عدد الطلبات:</strong> ${data.orders.length}</span><span><strong>إجمالي الإيرادات المُسلَّمة:</strong> ${totalRevenue.toLocaleString()} د.ج</span></div><table><thead><tr><th>رقم الطلب</th><th>التاريخ</th><th>العميل</th><th>الهاتف</th><th>الولاية</th><th>البلدية</th><th>العنوان</th><th>المنتجات</th><th>المجموع الفرعي</th><th>التوصيل</th><th>الإجمالي</th><th>الحالة</th></tr></thead><tbody>${rows}</tbody></table><script>window.onload=()=>window.print();${sc}</body></html>`);
       win.document.close();
     }
 
@@ -1508,9 +1803,6 @@
     }
     function onCustomNameInput(ci, value) { if (colorRows[ci]) colorRows[ci].name = value; }
 
-    /* ============================================================
-       NEW: Color search functions
-       ============================================================ */
     function filterColorOptions(ci, query) {
       const sugg = document.getElementById(`colorSuggestions-${ci}`);
       if (!sugg) return;
@@ -1575,7 +1867,6 @@
       }
     }
 
-    // Document click → close all open suggestions (except when clicking inside a search wrap)
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.color-search-wrap')) {
         document.querySelectorAll('.color-suggestions.open').forEach(el => {
@@ -1584,9 +1875,6 @@
       }
     });
 
-    /* ============================================================
-       renderColorsRows (updated with search input)
-       ============================================================ */
     function renderColorsRows() {
       const el = document.getElementById('colorsList');
       if (!colorRows.length) { el.innerHTML = ''; return; }
@@ -1842,10 +2130,8 @@
       document.getElementById('colorPrimaryDarkText').value = pd;
       document.getElementById('colorSecondaryText').value = s;
       document.getElementById('colorAccentText').value = a;
-      // NEW: update legend swatches live
       updateThemeLegendFromInputs();
     }
-    // NEW: Update legend swatches from current input values (live preview)
     function updateThemeLegendFromInputs() {
       const p = document.getElementById('colorPrimary').value;
       const pd = document.getElementById('colorPrimaryDark').value;
@@ -2072,7 +2358,6 @@
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        // If a color search suggestions panel is open, close it first
         const openSuggestions = document.querySelectorAll('.color-suggestions.open');
         if (openSuggestions.length) {
           openSuggestions.forEach(el => el.classList.remove('open'));
