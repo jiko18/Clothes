@@ -270,6 +270,199 @@
     .loading-overlay.show{display:flex}
     .spinner{width:52px;height:52px;border:5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ============ NEW: Color search input + suggestions ============ */
+    .color-search-wrap { position: relative; z-index: 1; }
+    .color-search-wrap:focus-within { z-index: 300; }
+    .color-search-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-gray);
+      font-size: .8rem;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .color-search {
+      width: 100%;
+      padding: 8px 34px 8px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: .85rem;
+      background: var(--card-bg);
+      color: var(--text);
+      outline: none;
+      font-family: inherit;
+      height: 38px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .color-search:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255,107,129,.12);
+    }
+    .color-suggestions {
+      position: absolute;
+      top: calc(100% + 4px);
+      right: 0;
+      left: 0;
+      background: var(--card-bg);
+      border: 1.5px solid var(--primary);
+      border-radius: 10px;
+      max-height: 260px;
+      overflow-y: auto;
+      z-index: 200;
+      box-shadow: 0 10px 32px rgba(0,0,0,.18);
+      padding: 6px;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .color-suggestions.open { display: flex; }
+    .color-suggestion-chip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: none;
+      background: var(--bg);
+      color: var(--text);
+      font-family: inherit;
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: right;
+      transition: background .15s, color .15s;
+      width: 100%;
+    }
+    .color-suggestion-chip:hover,
+    .color-suggestion-chip:focus {
+      background: rgba(255,107,129,.12);
+      color: var(--primary);
+      outline: none;
+    }
+    .color-suggestion-chip .chip-swatch {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .7rem;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,.4);
+    }
+    .color-suggestion-chip .chip-hex {
+      margin-right: auto;
+      font-size: .7rem;
+      font-weight: 700;
+      color: var(--text-gray);
+      font-family: 'Courier New', monospace;
+      direction: ltr;
+      letter-spacing: .3px;
+    }
+    .color-suggestion-chip.is-custom .chip-swatch {
+      background: var(--bg);
+      color: var(--primary);
+      border-style: dashed;
+      border-color: var(--primary);
+    }
+    .color-no-match {
+      padding: 14px 12px;
+      text-align: center;
+      color: var(--text-gray);
+      font-size: .82rem;
+      font-weight: 600;
+    }
+    .color-no-match i { margin-left: 6px; opacity: .6; }
+
+    /* ============ NEW: Theme colors legend ============ */
+    .theme-legend {
+      background: linear-gradient(135deg, rgba(108,92,231,.06), rgba(255,107,129,.06));
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 24px;
+      border: 1.5px solid rgba(255,107,129,.18);
+    }
+    .theme-legend-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed var(--border);
+    }
+    .theme-legend-header i {
+      font-size: 1.3rem;
+      color: var(--primary);
+    }
+    .theme-legend-header h4 {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .theme-legend-header h4 small {
+      display: block;
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--text-gray);
+      margin-top: 2px;
+    }
+    .theme-legend-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .theme-legend-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: var(--card-bg);
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      transition: var(--transition);
+    }
+    .theme-legend-item:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 16px rgba(255,107,129,.08);
+      transform: translateY(-2px);
+    }
+    .legend-swatch {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      border: 2px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,.1);
+      transition: var(--transition);
+    }
+    .legend-info { flex: 1; min-width: 0; }
+    .legend-info strong {
+      display: block;
+      font-size: .9rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .legend-info p {
+      font-size: .78rem;
+      color: var(--text-gray);
+      line-height: 1.8;
+      margin: 0;
+    }
+    .legend-info p b { color: var(--text); font-weight: 700; }
+    .legend-info p em {
+      font-style: normal;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
     @media (max-width:992px){.dash-charts,.dash-bottom{grid-template-columns:1fr}}
     @media (max-width:900px){
       .admin-layout{grid-template-columns:1fr}
@@ -283,6 +476,7 @@
       .hex-label{min-width:60px;font-size:.7rem;padding:3px 6px}
       .color-images-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
       .order-info-grid{grid-template-columns:1fr}
+      .theme-legend-grid{grid-template-columns:1fr}
     }
     @media (max-width:640px){
       .color-card-header{grid-template-columns:1fr 42px;grid-template-areas:"name remove" "hex hex";gap:8px}
@@ -423,6 +617,69 @@
           <div class="panel">
             <div class="panel-header"><h3><i class="fa-solid fa-palette"></i> ألوان الموقع</h3></div>
             <div class="panel-body">
+
+              <!-- NEW: Theme colors legend -->
+              <div class="theme-legend">
+                <div class="theme-legend-header">
+                  <i class="fa-solid fa-circle-info"></i>
+                  <h4>
+                    دليل الألوان — أين يظهر كل لون في الموقع؟
+                    <small>اقرأ هذا الدليل قبل تعديل الألوان لتفهم بالضبط ماذا ستغيّر</small>
+                  </h4>
+                </div>
+                <div class="theme-legend-grid">
+                  <div class="theme-legend-item">
+                    <span class="legend-swatch" id="legendPrimary" style="background:#ff6b81;"></span>
+                    <div class="legend-info">
+                      <strong>اللون الأساسي (Primary)</strong>
+                      <p>اللون الرئيسي لهوية المتجر. يظهر في:<br>
+                        • <b>شارة عدد السلة</b> أعلى الصفحة<br>
+                        • <b>أزرار الشراء الرئيسية</b> ("أضف إلى السلة" و"اطلب الآن" على صفحة المنتج)<br>
+                        • <b>خطوط فاصلة</b> تحت عناوين الأقسام<br>
+                        • <b>أيقونات العناوين</b> في لوحة التحكم<br>
+                        • <b>إطار الحقول</b> عند التركيز<br>
+                        • <em>تأثيرات hover</em> على روابط التنقل</p>
+                    </div>
+                  </div>
+                  <div class="theme-legend-item">
+                    <span class="legend-swatch" id="legendPrimaryDark" style="background:#e8556d;"></span>
+                    <div class="legend-info">
+                      <strong>الأساسي الداكن (Primary Dark)</strong>
+                      <p>نسخة أغمق تُستخدم في:<br>
+                        • <b>أسعار المنتجات</b> في البطاقات (الرقم الكبير)<br>
+                        • <b>أسعار المنتجات</b> في صفحة التفاصيل<br>
+                        • <b>نهاية التدرجات اللونية</b> (gradient)<br>
+                        • <em>تأثيرات hover</em> على الأزرار الأساسية</p>
+                    </div>
+                  </div>
+                  <div class="theme-legend-item">
+                    <span class="legend-swatch" id="legendSecondary" style="background:#6c5ce7;"></span>
+                    <div class="legend-info">
+                      <strong>اللون الثانوي (Secondary)</strong>
+                      <p>لون مساعد يظهر في:<br>
+                        • <b>خلفية الشريط العلوي</b> (شريط الإعلانات)<br>
+                        • <b>شارات الفئات</b> (مثل "شتوي"، "صيفي")<br>
+                        • <b>إطار زر "أضف إلى السلة"</b> في صفحة المنتج<br>
+                        • <b>العمر المحدد</b> (age tag)<br>
+                        • <em>الأزرار الثانوية</em> في لوحة التحكم<br>
+                        • <em>أيقونات العناوين</em> في الأقسام</p>
+                    </div>
+                  </div>
+                  <div class="theme-legend-item">
+                    <span class="legend-swatch" id="legendAccent" style="background:#feca57;"></span>
+                    <div class="legend-info">
+                      <strong>اللون المميز (Accent)</strong>
+                      <p>لون الإبراز المميز في:<br>
+                        • <b>شارة "جديد"</b> على بطاقات المنتجات<br>
+                        • <b>نجوم التقييمات</b> (★★★★★)<br>
+                        • <b>اللمسات الذهبية</b> المميزة<br>
+                        • <em>تفاصيل صغيرة</em> للفت الانتباه</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /NEW: Theme colors legend -->
+
               <div class="form-grid">
                 <div class="fg"><label>اللون الأساسي (Primary)</label><div style="display:flex; align-items:center; gap:12px;"><input type="color" id="colorPrimary" oninput="updateThemePreview()" style="width:50px;height:44px;border:2px solid var(--border);border-radius:10px;cursor:pointer;padding:2px;background:var(--bg);"><input type="text" id="colorPrimaryText" oninput="syncColorFromText('primary')" style="flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;background:var(--bg);color:var(--text);direction:ltr;text-align:right;"></div></div>
                 <div class="fg"><label>اللون الأساسي الداكن (Primary Dark)</label><div style="display:flex; align-items:center; gap:12px;"><input type="color" id="colorPrimaryDark" oninput="updateThemePreview()" style="width:50px;height:44px;border:2px solid var(--border);border-radius:10px;cursor:pointer;padding:2px;background:var(--bg);"><input type="text" id="colorPrimaryDarkText" oninput="syncColorFromText('primaryDark')" style="flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;background:var(--bg);color:var(--text);direction:ltr;text-align:right;"></div></div>
@@ -554,10 +811,11 @@
           <label style="font-size:1rem; color:var(--primary); margin-bottom:10px;"><i class="fa-solid fa-palette"></i> الألوان والصور والفيديوهات</label>
           <div style="font-size:0.82rem; color:var(--text); margin-bottom:14px; padding:14px; background:linear-gradient(135deg, rgba(108,92,231,0.08), rgba(255,107,129,0.08)); border-radius:10px; border-right:4px solid var(--primary); line-height:1.9;">
             <b style="color:var(--primary); font-size:0.9rem;"><i class="fa-solid fa-lightbulb"></i> خطوات إضافة المنتج:</b><br>
-            <b>1.</b> اختر اللون من <b style="color:var(--primary);">القائمة المنسدلة</b> (يتغير الكود تلقائياً)<br>
-            <b>2.</b> اضغط على البطاقة الكبيرة <b style="color:var(--primary);">✚ إضافة صورة</b><br>
-            <b>3.</b> أضف عدة صور أو فيديوهات لنفس اللون<br>
-            <b>4.</b> أضف لوناً آخر بالضغط على <b style="color:var(--secondary);">"إضافة لون جديد"</b><br>
+            <b>1.</b> <b style="color:var(--primary);">اكتب اسم اللون</b> في شريط البحث (مثلاً "أحمر") ليظهر لك<br>
+            <b>2.</b> <b style="color:var(--primary);">اختر اللون</b> من الاقتراحات أو من القائمة المنسدلة<br>
+            <b>3.</b> اضغط على البطاقة الكبيرة <b style="color:var(--primary);">✚ إضافة صورة</b><br>
+            <b>4.</b> أضف عدة صور أو فيديوهات لنفس اللون<br>
+            <b>5.</b> أضف لوناً آخر بالضغط على <b style="color:var(--secondary);">"إضافة لون جديد"</b><br>
             <b style="color:var(--success);">✓</b> عند الحفظ، تُرفع الصور تلقائياً إلى <b>Cloudinary</b> وتُخزن روابطها في قاعدة البيانات.
           </div>
           <div id="colorsList"></div>
@@ -741,7 +999,7 @@
         const res = await fetch(API_BASE + '/api/auth/setup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ password: 'x' }) // سيرفض (كلمة مرور قصيرة) لكن يعطينا معلومة
+          body: JSON.stringify({ password: 'x' })
         });
         const json = await res.json().catch(() => ({}));
         return json.error === 'Setup already done' ? false : true;
@@ -1250,6 +1508,85 @@
     }
     function onCustomNameInput(ci, value) { if (colorRows[ci]) colorRows[ci].name = value; }
 
+    /* ============================================================
+       NEW: Color search functions
+       ============================================================ */
+    function filterColorOptions(ci, query) {
+      const sugg = document.getElementById(`colorSuggestions-${ci}`);
+      if (!sugg) return;
+      const q = (query || '').trim();
+      if (!q) {
+        sugg.classList.remove('open');
+        sugg.innerHTML = '';
+        return;
+      }
+      const matches = PREDEFINED_COLORS.filter(pc => pc.name.includes(q));
+      let html = '';
+      if (matches.length === 0) {
+        html += '<div class="color-no-match"><i class="fa-solid fa-magnifying-glass"></i> لا توجد ألوان مطابقة</div>';
+      } else {
+        html += matches.slice(0, 40).map(pc => `
+          <button type="button" class="color-suggestion-chip" onclick="selectColorFromSuggestion(${ci}, '${escapeAttr(pc.name)}')">
+            <span class="chip-swatch" style="background:${pc.hex};"></span>
+            <span>${escapeHtml(pc.name)}</span>
+            <span class="chip-hex">${pc.hex.toUpperCase()}</span>
+          </button>
+        `).join('');
+      }
+      html += `
+        <button type="button" class="color-suggestion-chip is-custom" onclick="selectCustomFromSuggestion(${ci})">
+          <span class="chip-swatch"><i class="fa-solid fa-pen"></i></span>
+          <span>لون مخصص...</span>
+        </button>
+      `;
+      sugg.innerHTML = html;
+      sugg.classList.add('open');
+    }
+
+    function selectColorFromSuggestion(ci, name) {
+      const p = getPredefinedColor(name);
+      if (!p || !colorRows[ci]) return;
+      colorRows[ci].name = p.name;
+      colorRows[ci].hex = p.hex;
+      renderColorsRows();
+    }
+
+    function selectCustomFromSuggestion(ci) {
+      if (!colorRows[ci]) return;
+      colorRows[ci].name = '';
+      renderColorsRows();
+      setTimeout(() => {
+        const card = document.querySelector(`.color-card[data-color-index="${ci}"]`);
+        const input = card?.querySelector('.custom-color-name');
+        if (input) input.focus();
+      }, 60);
+    }
+
+    function handleColorSearchKeydown(event, ci) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        const sugg = document.getElementById(`colorSuggestions-${ci}`);
+        if (!sugg) return;
+        const firstChip = sugg.querySelector('.color-suggestion-chip');
+        if (firstChip) firstChip.click();
+      } else if (event.key === 'Escape') {
+        const sugg = document.getElementById(`colorSuggestions-${ci}`);
+        if (sugg) { sugg.classList.remove('open'); sugg.innerHTML = ''; }
+      }
+    }
+
+    // Document click → close all open suggestions (except when clicking inside a search wrap)
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.color-search-wrap')) {
+        document.querySelectorAll('.color-suggestions.open').forEach(el => {
+          el.classList.remove('open');
+        });
+      }
+    });
+
+    /* ============================================================
+       renderColorsRows (updated with search input)
+       ============================================================ */
     function renderColorsRows() {
       const el = document.getElementById('colorsList');
       if (!colorRows.length) { el.innerHTML = ''; return; }
@@ -1261,6 +1598,13 @@
         return `<div class="color-card" data-color-index="${ci}">
           <div class="color-card-header">
             <div class="color-name-wrap">
+              <div class="color-search-wrap">
+                <i class="fa-solid fa-magnifying-glass color-search-icon"></i>
+                <input type="text" class="color-search" placeholder="ابحث عن لون..." autocomplete="off"
+                       oninput="filterColorOptions(${ci}, this.value)"
+                       onkeydown="handleColorSearchKeydown(event, ${ci})">
+                <div class="color-suggestions" id="colorSuggestions-${ci}" onmousedown="event.preventDefault()"></div>
+              </div>
               <select class="color-select" onchange="onColorSelectChange(${ci}, this.value)">
                 <option value="" ${!c.name?'selected':''} disabled>-- اختر اللون --</option>
                 ${PREDEFINED_COLORS.map(pc => `<option value="${escapeAttr(pc.name)}" ${c.name===pc.name?'selected':''}>${escapeHtml(pc.name)}</option>`).join('')}
@@ -1498,6 +1842,19 @@
       document.getElementById('colorPrimaryDarkText').value = pd;
       document.getElementById('colorSecondaryText').value = s;
       document.getElementById('colorAccentText').value = a;
+      // NEW: update legend swatches live
+      updateThemeLegendFromInputs();
+    }
+    // NEW: Update legend swatches from current input values (live preview)
+    function updateThemeLegendFromInputs() {
+      const p = document.getElementById('colorPrimary').value;
+      const pd = document.getElementById('colorPrimaryDark').value;
+      const s = document.getElementById('colorSecondary').value;
+      const a = document.getElementById('colorAccent').value;
+      const el1 = document.getElementById('legendPrimary'); if (el1) el1.style.background = p;
+      const el2 = document.getElementById('legendPrimaryDark'); if (el2) el2.style.background = pd;
+      const el3 = document.getElementById('legendSecondary'); if (el3) el3.style.background = s;
+      const el4 = document.getElementById('legendAccent'); if (el4) el4.style.background = a;
     }
     function syncColorFromText(key) {
       const input = document.getElementById(`color${capitalize(key)}`);
@@ -1690,7 +2047,6 @@
     async function initAdmin() {
       showLoading(true);
       try {
-        // إذا لم يظهر المستخدم بعد، جلب بياناته
         if (!currentUser) {
           try {
             const me = await apiJSON('/api/auth/me');
@@ -1716,6 +2072,12 @@
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
+        // If a color search suggestions panel is open, close it first
+        const openSuggestions = document.querySelectorAll('.color-suggestions.open');
+        if (openSuggestions.length) {
+          openSuggestions.forEach(el => el.classList.remove('open'));
+          return;
+        }
         document.getElementById('productModal').classList.remove('show');
         document.getElementById('orderDetailsModal').classList.remove('show');
         closeImageViewer();
@@ -1727,7 +2089,6 @@
         hideLoginOverlay();
         await initAdmin();
       } else {
-        // كشف الحاجة للإعداد الأول
         const needsSetup = await checkSetupNeeded();
         if (needsSetup) showSetupForm();
         else showLoginForm();
