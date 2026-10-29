@@ -25,7 +25,6 @@
       --radius: 18px;
       --transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
-
     html[data-theme="dark"] {
       --bg-light: #0f0f1e;
       --bg-white: #1a1a2e;
@@ -34,7 +33,6 @@
       --shadow: 0 8px 24px rgba(0,0,0,0.35);
       --shadow-hover: 0 16px 40px rgba(0,0,0,0.55);
     }
-
     html[data-theme="dark"] body { background-color: #0f0f1e; color: #eaeaea; }
     html[data-theme="dark"] .header { background: rgba(20, 20, 35, 0.92); box-shadow: 0 2px 20px rgba(0,0,0,0.4); }
     html[data-theme="dark"] .header.scrolled { box-shadow: 0 4px 30px rgba(0,0,0,0.5); }
@@ -1475,7 +1473,7 @@
   </div>
 
   <script>
-    // ==================== البيانات الافتراضية ====================
+    // ==================== البيانات الافتراضية (fallback إذا تعطّل السيرفر) ====================
     const DEFAULT_PRODUCTS = [
       {
         id: 1, name: "صدرية أطفال مبطنة", category: "winter", categoryLabel: "شتوي", gender: "both",
@@ -1534,7 +1532,6 @@
       }
     ];
 
-    // ==================== BRIDGE: قراءة إعدادات الأدمن ====================
     const DEFAULT_SETTINGS = {
       storeName: 'بيبي شوب',
       phone: '0550 00 00 00',
@@ -1565,19 +1562,6 @@
     const DEFAULT_THEME_DATA = { primary: '#ff6b81', primaryDark: '#e8556d', secondary: '#6c5ce7', accent: '#feca57' };
     const DEFAULT_DELIVERY_DATA = { home: 600, agency: 400 };
 
-    function loadFromStorage(key, defaults) {
-      try {
-        const stored = localStorage.getItem(key);
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (defaults && typeof defaults === 'object' && !Array.isArray(defaults)) {
-            return deepMerge(JSON.parse(JSON.stringify(defaults)), parsed);
-          }
-          return parsed;
-        }
-      } catch(e) {}
-      return defaults === null ? null : JSON.parse(JSON.stringify(defaults));
-    }
     function deepMerge(target, source) {
       if (!source || typeof source !== 'object') return target;
       for (const k in source) {
@@ -1590,38 +1574,96 @@
       return target;
     }
 
-    const adminSettings = loadFromStorage('babyshop_settings', DEFAULT_SETTINGS);
-    const adminTheme = loadFromStorage('babyshop_theme_colors', DEFAULT_THEME_DATA);
-    const adminDelivery = loadFromStorage('babyshop_delivery', DEFAULT_DELIVERY_DATA);
-    const adminProducts = loadFromStorage('babyshop_products', null);
+    // ==================== الحالة العامة (متغيرة - تُحمَّل من السيرفر) ====================
+    let adminSettings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+    let adminTheme = JSON.parse(JSON.stringify(DEFAULT_THEME_DATA));
+    let adminDelivery = JSON.parse(JSON.stringify(DEFAULT_DELIVERY_DATA));
+    let products = [];
 
-    // استخدم منتجات الأدمن إن وجدت، وإلا الافتراضية
-    const products = Array.isArray(adminProducts) ? adminProducts : DEFAULT_PRODUCTS;
-
-    // طبّق الألوان فوراً
+    // طبّق الألوان الافتراضية فوراً (قبل وصول السيرفر) لتجنب وميض
     document.documentElement.style.setProperty('--primary', adminTheme.primary);
     document.documentElement.style.setProperty('--primary-dark', adminTheme.primaryDark);
     document.documentElement.style.setProperty('--secondary', adminTheme.secondary);
     document.documentElement.style.setProperty('--accent', adminTheme.accent);
 
+    // ==================== دوال جلب البيانات من السيرفر ====================
+    async function fetchProductsFromServer() {
+      try {
+        const response = await fetch('/api/products');
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const serverProducts = await response.json();
+        if (Array.isArray(serverProducts) && serverProducts.length > 0) {
+          products = serverProducts;
+          console.log(`✅ تم تحميل ${serverProducts.length} منتج من السيرفر`);
+        } else {
+          products = DEFAULT_PRODUCTS;
+          console.log('⚠️ قاعدة البيانات فارغة، سيتم استخدام المنتجات الافتراضية');
+        }
+      } catch (error) {
+        console.warn('⚠️ تعذر الاتصال بالسيرفر، سيتم استخدام المنتجات الافتراضية:', error);
+        products = DEFAULT_PRODUCTS;
+      }
+    }
+
+    async function fetchSettingsFromServer() {
+      try {
+        const res = await fetch('/api/settings');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const serverSettings = await res.json();
+        ['girlsCard', 'boysCard', 'categoryCards'].forEach(key => {
+          if (typeof serverSettings[key] === 'string') {
+            try { serverSettings[key] = JSON.parse(serverSettings[key]); } catch(e) { delete serverSettings[key]; }
+          }
+        });
+        adminSettings = deepMerge(JSON.parse(JSON.stringify(DEFAULT_SETTINGS)), serverSettings);
+      } catch (e) {
+        console.warn('⚠️ تعذر تحميل إعدادات المتجر من السيرفر:', e);
+      }
+    }
+
+    async function fetchThemeFromServer() {
+      try {
+        const res = await fetch('/api/theme');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const serverTheme = await res.json();
+        if (serverTheme && Object.keys(serverTheme).length > 0) {
+          adminTheme = deepMerge(JSON.parse(JSON.stringify(DEFAULT_THEME_DATA)), serverTheme);
+        }
+      } catch (e) {
+        console.warn('⚠️ تعذر تحميل ألوان الثيم من السيرفر:', e);
+      }
+      // أعد تطبيق الألوان بعد التحميل
+      document.documentElement.style.setProperty('--primary', adminTheme.primary);
+      document.documentElement.style.setProperty('--primary-dark', adminTheme.primaryDark);
+      document.documentElement.style.setProperty('--secondary', adminTheme.secondary);
+      document.documentElement.style.setProperty('--accent', adminTheme.accent);
+    }
+
+    async function fetchDeliveryFromServer() {
+      try {
+        const res = await fetch('/api/delivery');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const serverDelivery = await res.json();
+        adminDelivery = deepMerge(JSON.parse(JSON.stringify(DEFAULT_DELIVERY_DATA)), serverDelivery);
+      } catch (e) {
+        console.warn('⚠️ تعذر تحميل أسعار التوصيل من السيرفر:', e);
+      }
+    }
+
     // دالة تطبيق كل الإعدادات على الواجهة
     function applyAdminSettings() {
-      // الشريط العلوي
       const topBar = document.querySelector('.top-bar');
       if (topBar && adminSettings.topBarText) {
         topBar.innerHTML = `<i class="fa-solid fa-truck-fast"></i> ${adminSettings.topBarText}`;
       }
-      // الشعار
       const logo = document.getElementById('logo');
       if (logo && adminSettings.storeName) {
         logo.innerHTML = `<i class="fa-solid fa-child-reaching"></i> ${adminSettings.storeName}`;
       }
-      // Placeholder البحث
       const searchInput = document.getElementById('searchInput');
       if (searchInput && adminSettings.searchPlaceholder) {
         searchInput.placeholder = adminSettings.searchPlaceholder;
       }
-      // بطاقة البنات
       const girlsCard = document.querySelector('.gender-card.girls');
       if (girlsCard && adminSettings.girlsCard) {
         const img = girlsCard.querySelector('img');
@@ -1631,7 +1673,6 @@
         const sub = girlsCard.querySelector('.gender-overlay span');
         if (sub && adminSettings.girlsCard.subtitle) sub.textContent = adminSettings.girlsCard.subtitle;
       }
-      // بطاقة الأولاد
       const boysCard = document.querySelector('.gender-card.boys');
       if (boysCard && adminSettings.boysCard) {
         const img = boysCard.querySelector('img');
@@ -1641,7 +1682,6 @@
         const sub = boysCard.querySelector('.gender-overlay span');
         if (sub && adminSettings.boysCard.subtitle) sub.textContent = adminSettings.boysCard.subtitle;
       }
-      // بطاقات الفئات
       document.querySelectorAll('.category-card').forEach(card => {
         const cat = card.dataset.category;
         const cardData = adminSettings.categoryCards && adminSettings.categoryCards[cat];
@@ -1653,7 +1693,6 @@
         const sub = card.querySelector('.overlay span');
         if (sub && cardData.subtitle) sub.textContent = cardData.subtitle;
       });
-      // معلومات التواصل في الفوتر
       document.querySelectorAll('.footer-col p').forEach(p => {
         const icon = p.querySelector('i');
         if (!icon) return;
@@ -1666,7 +1705,6 @@
           p.innerHTML = `<i class="fa-solid fa-envelope"></i> ${adminSettings.email}`;
         }
       });
-      // روابط التواصل
       document.querySelectorAll('.social-links a').forEach(a => {
         const label = a.getAttribute('aria-label') || '';
         if (label.includes('فيسبوك') && adminSettings.facebook && adminSettings.facebook !== '#') a.href = adminSettings.facebook;
@@ -1674,12 +1712,10 @@
         else if (label.includes('تيك توك') && adminSettings.tiktok && adminSettings.tiktok !== '#') a.href = adminSettings.tiktok;
         else if (label.includes('واتساب') && adminSettings.whatsapp && adminSettings.whatsapp !== '#') a.href = adminSettings.whatsapp;
       });
-      // حقوق الفوتر
       const footerBottom = document.querySelector('.footer-bottom');
       if (footerBottom && adminSettings.footerCopyright) {
         footerBottom.innerHTML = adminSettings.footerCopyright + ' <i class="fa-solid fa-heart" style="color: var(--primary);"></i>';
       }
-      // أسعار التوصيل في نموذج الطلب
       document.querySelectorAll('input[name="delivery"]').forEach(r => {
         const info = r.nextElementSibling;
         if (!info) return;
@@ -1697,7 +1733,6 @@
         }
       });
     }
-    // ==================== نهاية BRIDGE ====================
 
     // قائمة الولايات الجزائرية
     const wilayas = [
@@ -2346,7 +2381,7 @@
       document.getElementById('summaryTotal').textContent = (subtotal + currentDeliveryCost).toLocaleString() + ' د.ج';
     }
 
-    function submitOrder() {
+    async function submitOrder() {
       const form = document.getElementById('checkoutForm');
       if (!form.checkValidity()) {
         form.reportValidity();
@@ -2367,11 +2402,12 @@
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جارٍ التأكيد...';
 
-      setTimeout(() => {
-        // تحديد طريقة التوصيل بناءً على الاختيار الفعلي
-        const selDelivery = document.querySelector('input[name="delivery"]:checked');
-        const deliveryMethod = (selDelivery && selDelivery.dataset.type === 'home') ? 'home' : 'agency';
+      const selDelivery = document.querySelector('input[name="delivery"]:checked');
+      const deliveryMethod = (selDelivery && selDelivery.dataset.type === 'home') ? 'home' : 'agency';
 
+      // ⚠️ الطلبات حالياً تُحفظ في localStorage فقط. لمربطها بالسيرفر لاحقاً،
+      // استبدل هذا الجزء بـ fetch('/api/orders', { method: 'POST', ... })
+      try {
         const order = {
           orderId: 'ORD-' + Date.now(),
           firstName, lastName, wilaya, municipality, phone1, phone2, address,
@@ -2383,11 +2419,9 @@
           createdAt: new Date().toISOString()
         };
 
-        try {
-          const orders = JSON.parse(localStorage.getItem('babyshop_orders') || '[]');
-          orders.push(order);
-          localStorage.setItem('babyshop_orders', JSON.stringify(orders));
-        } catch (e) {}
+        const orders = JSON.parse(localStorage.getItem('babyshop_orders') || '[]');
+        orders.push(order);
+        localStorage.setItem('babyshop_orders', JSON.stringify(orders));
 
         cart = [];
         saveCart();
@@ -2399,7 +2433,11 @@
         btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> تأكيد الطلب';
 
         showToast(`تم تأكيد طلبك بنجاح! رقم الطلب: ${order.orderId}`, 'success');
-      }, 900);
+      } catch (e) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> تأكيد الطلب';
+        showToast('حدث خطأ أثناء حفظ الطلب', 'error');
+      }
     }
 
     document.addEventListener('keydown', (e) => {
@@ -2422,7 +2460,11 @@
       header.classList.toggle('scrolled', window.scrollY > 50);
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
+    // ============================================================
+    // ✅ التهيئة: تحميل كل شيء من السيرفر
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1) تعبئة قائمة الولايات
       const wilayaSelect = document.getElementById('checkoutWilaya');
       wilayas.forEach(w => {
         const opt = document.createElement('option');
@@ -2431,11 +2473,21 @@
         wilayaSelect.appendChild(opt);
       });
 
+      // 2) جلب كل البيانات من السيرفر بالتوازي
+      await Promise.all([
+        fetchProductsFromServer(),
+        fetchSettingsFromServer(),
+        fetchThemeFromServer(),
+        fetchDeliveryFromServer()
+      ]);
+
+      // 3) تطبيق الإعدادات والألوان وأسعار التوصيل على الواجهة
       applyAdminSettings();
       updateDeliveryCost();
 
+      // 4) تحميل السلة والعرض
       loadCart();
-      renderProducts('all');
+      renderProducts(activeCategory);
       initSlider();
       renderCart();
       updateCartBadge();
