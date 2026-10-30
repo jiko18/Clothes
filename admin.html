@@ -371,6 +371,14 @@
     .combo-images-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:10px}
     .add-part-btn{width:100%;padding:8px;border:2px dashed var(--border);border-radius:8px;background:transparent;color:var(--text-gray);font-family:inherit;font-weight:700;font-size:.82rem;cursor:pointer;margin-top:8px}
     .add-part-btn:hover{border-color:var(--secondary);color:var(--secondary)}
+/* ✅ أنماط جديدة لتحسين واجهة الطقم */
+.part-card-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed var(--border);}
+.part-index{font-size:.78rem;font-weight:800;color:var(--secondary);background:rgba(108,92,231,.12);padding:3px 10px;border-radius:50px;}
+.part-label-select{flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text);font-family:inherit;font-weight:700;font-size:.85rem;outline:none;cursor:pointer;}
+.part-label-select:focus{border-color:var(--secondary);box-shadow:0 0 0 3px rgba(108,92,231,.15);}
+.part-color-search-block{margin-bottom:10px;}
+.part-color-label{display:block;font-size:.8rem;font-weight:700;color:var(--text-gray);margin-bottom:6px;}
+.part-color-label i{color:var(--secondary);margin-left:4px;}
     /* ============ Clickable order images ============ */
     .order-prod-thumb{cursor:zoom-in;transition:transform .2s}
     .order-prod-thumb:hover{transform:scale(1.15);border-color:var(--primary)}
@@ -1266,10 +1274,11 @@ let wilayasCache = [];
         ${orders.map(o => {
           const items = o.items || [];
           const count = items.reduce((s, i) => s + (i.qty||0), 0);
-          const thumbs = items.slice(0, 3).map(it => {
-            const img = it.image;
-            if (img && !isVideoUrl(img)) return `<img class="order-prod-thumb" src="${escapeAttr(img)}" alt="" onclick="event.stopPropagation(); viewMedia('${escapeAttr(img)}')">`;            return `<div class="order-prod-thumb" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);font-size:0.7rem;"><i class="fa-solid fa-box"></i></div>`;
-          }).join('');
+         const thumbs = items.slice(0, 3).map(it => {
+  const img = it.image;
+  if (img && !isVideoUrl(img)) return `<img class="order-prod-thumb" src="${escapeAttr(img)}" alt="" data-media-url="${escapeAttr(img)}">`;
+  return `<div class="order-prod-thumb" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);font-size:0.7rem;"><i class="fa-solid fa-box"></i></div>`;
+}).join('');
           const more = items.length > 3 ? `<span class="order-more-badge">+${items.length - 3}</span>` : '';
           return `<tr>
             <td style="font-size:0.8rem; font-weight:700;">${escapeHtml(o.orderId || '-')}</td>
@@ -1347,10 +1356,9 @@ let wilayasCache = [];
       const items = order.items || [];
       const itemsHtml = items.map(it => {
         const img = it.image;
-                const imgHtml = img && !isVideoUrl(img)
-          ? `<img class="order-item-img" src="${escapeAttr(img)}" alt="" onclick="viewMedia('${escapeAttr(img)}')">`
-          : `<div class="order-item-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);"><i class="fa-solid fa-box"></i></div>`;
-        return `<div class="order-item-row">${imgHtml}<div class="order-item-info"><strong>${escapeHtml(it.productName || 'منتج')}</strong><span>اللون: ${escapeHtml(it.colorName || '-')} · العمر: ${escapeHtml(it.age || '-')} · الكمية: ${it.qty}</span></div><div class="order-item-total">${((it.qty||0) * (it.price||0)).toLocaleString()} د.ج</div></div>`;
+const imgHtml = img && !isVideoUrl(img)
+  ? `<img class="order-item-img" src="${escapeAttr(img)}" alt="" data-media-url="${escapeAttr(img)}">`
+  : `<div class="order-item-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);"><i class="fa-solid fa-box"></i></div>`;
       }).join('');
       document.getElementById('orderDetailsBody').innerHTML = `
         <div class="order-details-grid">
@@ -1438,11 +1446,11 @@ let wilayasCache = [];
         ${products.map(p => {
           const thumb = getProductThumb(p);
           const totalImages = p.colors.reduce((sum, c) => sum + ((c.images && c.images.length) || 1), 0);
-          let thumbHtml;
-          if (thumb) {
-            if (isVideoUrl(thumb)) thumbHtml = `<div class="table-img" style="display:flex;align-items:center;justify-content:center;color:var(--primary);" onclick="viewMedia('${escapeAttr(thumb)}')"><i class="fa-solid fa-video"></i></div>`;
-            else thumbHtml = `<img class="table-img" src="${escapeAttr(thumb)}" onclick="viewMedia('${escapeAttr(thumb)}')" onerror="this.style.opacity=0.3">`;
-          } else thumbHtml = `<div class="table-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);">-</div>`;
+      let thumbHtml;
+if (thumb) {
+  if (isVideoUrl(thumb)) thumbHtml = `<div class="table-img" style="display:flex;align-items:center;justify-content:center;color:var(--primary);" data-media-url="${escapeAttr(thumb)}" title="عرض"><i class="fa-solid fa-video"></i></div>`;
+  else thumbHtml = `<img class="table-img" src="${escapeAttr(thumb)}" data-media-url="${escapeAttr(thumb)}" alt="" onerror="this.style.opacity=0.3">`;
+} else thumbHtml = `<div class="table-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);">-</div>`;
           return `<tr>
             <td>${thumbHtml}</td>
             <td style="font-weight:700;">${escapeHtml(p.name)}</td>
@@ -1467,6 +1475,16 @@ let wilayasCache = [];
     }
     function closeImageViewer() { document.getElementById('imageViewer').classList.remove('show'); document.getElementById('imageViewerContent').innerHTML = ''; }
     document.getElementById('imageViewer').addEventListener('click', (e) => { if (e.target.id === 'imageViewer') closeImageViewer(); });
+
+// ✅ Event delegation لفتح الصور بأمان (بديل onclick المكسور)
+document.addEventListener('click', (e) => {
+  const mediaEl = e.target.closest('[data-media-url]');
+  if (mediaEl && mediaEl.dataset.mediaUrl && mediaEl.dataset.mediaUrl.trim()) {
+    e.preventDefault();
+    e.stopPropagation();
+    viewMedia(mediaEl.dataset.mediaUrl);
+  }
+});
 
     async function deleteProduct(id) {
       if (!confirm('هل تريد حذف هذا المنتج نهائياً؟')) return;
@@ -1685,7 +1703,7 @@ let wilayasCache = [];
               }
               return `<div class="color-image-item">
                 <span class="image-index-badge">${ii + 1}</span>
-                <div class="color-image-preview" style="position:relative;" onclick="viewMedia('${escapeAttr(img)}')">${prev}</div>
+                <div class="color-image-preview" style="position:relative;" data-media-url="${escapeAttr(img)}">${prev}</div>
                 <div class="color-image-actions">
                   <input type="url" value="${escapeAttr(img)}" placeholder="URL أو ارفع" oninput="updateColorImageValue(${ci}, ${ii}, this.value)">
                   <button class="mini-btn mini-btn-upload" title="رفع" onclick="triggerImageUpload((d) => { colorRows[${ci}].images[${ii}] = d; renderColorsRows(); })"><i class="fa-solid fa-upload"></i></button>
@@ -1765,12 +1783,34 @@ let wilayasCache = [];
       if (!name) return showToast('اسم المنتج مطلوب', 'error');
       if (price <= 0) return showToast('السعر يجب أن يكون أكبر من 0', 'error');
       if (!ageRows.filter(a => a.trim()).length) return showToast('أضف عمراً واحداً على الأقل', 'error');
-      for (let i = 0; i < colorRows.length; i++) {
-        const c = colorRows[i];
-        if (!c.name?.trim()) return showToast(`اللون رقم ${i+1}: الاسم مطلوب`, 'error');
-        if (!(c.images || []).filter(img => img && img.trim()).length) return showToast(`اللون "${c.name}": يحتاج صورة واحدة على الأقل`, 'error');
-      }
+
+      // ✅ نقرأ isSet أولاً قبل التحقق
       const isSet = document.getElementById('pIsSet').checked;
+
+      if (isSet) {
+        // ✅ تحقق مستقل لوضع الطقم
+        if (!comboRows.length) return showToast('أضف طقماً واحداً على الأقل', 'error');
+        for (let ci = 0; ci < comboRows.length; ci++) {
+          const combo = comboRows[ci];
+          if (!combo.parts || !combo.parts.length)
+            return showToast(`الطقم "${combo.name || ci+1}": يجب أن يحتوي على قطعة واحدة على الأقل`, 'error');
+          for (let pi = 0; pi < combo.parts.length; pi++) {
+            const part = combo.parts[pi];
+            if (!part.name?.trim())
+              return showToast(`الطقم "${combo.name || ci+1}": القطعة رقم ${pi+1} تحتاج لوناً`, 'error');
+            const hasImg = (part.images || []).some(img => img && img.trim());
+            if (!hasImg)
+              return showToast(`الطقم "${combo.name || ci+1}": القطعة "${part.label}" (${part.name}) تحتاج صورة واحدة على الأقل`, 'error');
+          }
+        }
+      } else {
+        // ✅ تحقق مستقل للمنتج العادي فقط
+        for (let i = 0; i < colorRows.length; i++) {
+          const c = colorRows[i];
+          if (!c.name?.trim()) return showToast(`اللون رقم ${i+1}: الاسم مطلوب`, 'error');
+          if (!(c.images || []).filter(img => img && img.trim()).length) return showToast(`اللون "${c.name}": يحتاج صورة واحدة على الأقل`, 'error');
+        }
+      }
       let colorsForSave = [];
       if (isSet) {
         comboRows.forEach(combo => {
@@ -2411,25 +2451,52 @@ function removePartImage(ci, pi, ii) {
 function updatePartImage(ci, pi, ii, val) { comboRows[ci].parts[pi].images[ii] = val; }
 function renderCombosRows() {
   const el = document.getElementById('combosList');
-  el.innerHTML = comboRows.map((combo, ci) => `
+  if (!comboRows.length) { el.innerHTML = ''; return; }
+  el.innerHTML = `
+    <div style="font-size:.82rem; color:var(--text); margin-bottom:12px; padding:12px; background:linear-gradient(135deg, rgba(108,92,231,0.08), rgba(255,107,129,0.08)); border-radius:10px; border-right:4px solid var(--secondary); line-height:1.8;">
+      <b style="color:var(--secondary);"><i class="fa-solid fa-lightbulb"></i> كيف أضيف طقماً؟</b><br>
+      <b>1.</b> اكتب اسم الطقم (مثلاً: طقم شتوي)<br>
+      <b>2.</b> لكل قطعة: اختر نوعها (قميص، سروال...) ثم <b style="color:var(--primary);">ابحث عن لونها</b> بالكتابة أو الضغط على الاقتراحات<br>
+      <b>3.</b> اضغط <b>رفع صورة</b> لإضافة صور القطعة<br>
+      <b style="color:var(--success);">✓</b> يمكنك إضافة أكثر من طقم وأكثر من قطعة داخل كل طقم.
+    </div>
+    ${comboRows.map((combo, ci) => `
     <div class="combo-card">
       <div class="combo-header">
-        <input type="text" value="${escapeAttr(combo.name)}" placeholder="اسم الطقم" oninput="updateComboName(${ci}, this.value)">
-        <button class="remove-btn" onclick="removeCombo(${ci})"><i class="fa-solid fa-trash"></i></button>
+        <input type="text" value="${escapeAttr(combo.name)}" placeholder="اسم الطقم (مثال: طقم شتوي)" oninput="updateComboName(${ci}, this.value)">
+        <button class="remove-btn" onclick="removeCombo(${ci})" title="حذف الطقم"><i class="fa-solid fa-trash"></i></button>
       </div>
       ${combo.parts.map((part, pi) => `
         <div class="part-card">
-          <div class="part-header">
-            <select onchange="updatePartLabel(${ci}, ${pi}, this.value)">
+          <div class="part-card-header">
+            <span class="part-index">القطعة ${pi + 1}</span>
+            <select class="part-label-select" onchange="updatePartLabel(${ci}, ${pi}, this.value)" title="نوع القطعة">
               ${PART_LABELS.map(l => `<option value="${l}" ${part.label===l?'selected':''}>${l}</option>`).join('')}
             </select>
-            <input type="text" value="${escapeAttr(part.name)}" placeholder="اللون" oninput="updatePartColorName(${ci}, ${pi}, this.value)">
-            <button class="icon-btn icon-btn-del" onclick="removePartFromCombo(${ci}, ${pi})"><i class="fa-solid fa-xmark"></i></button>
+            <button class="icon-btn icon-btn-del" onclick="removePartFromCombo(${ci}, ${pi})" title="حذف القطعة"><i class="fa-solid fa-xmark"></i></button>
           </div>
+
+          <div class="part-color-search-block">
+            <label class="part-color-label"><i class="fa-solid fa-palette"></i> لون هذه القطعة</label>
+            <div class="color-search-wrap">
+              <i class="fa-solid fa-magnifying-glass color-search-icon"></i>
+              <input type="text" class="color-search" placeholder="ابحث باسم اللون..." autocomplete="off"
+                     value="${escapeAttr(part.name)}"
+                     oninput="onPartColorSearchInput(${ci}, ${pi}, this.value)"
+                     onkeydown="handlePartColorSearchKeydown(event, ${ci}, ${pi})">
+              <div class="color-suggestions" id="partColorSugg-${ci}-${pi}" onmousedown="event.preventDefault()"></div>
+            </div>
+          </div>
+
           <div class="part-color-row">
-            <input type="color" value="${part.hex}" oninput="updatePartHex(${ci}, ${pi}, this.value)">
+            <input type="color" value="${part.hex}" oninput="updatePartHex(${ci}, ${pi}, this.value)" title="تعديل كود اللون">
             <span class="hex-label">${part.hex.toUpperCase()}</span>
-            <button class="mini-btn mini-btn-upload" onclick="triggerImageUpload((d) => { addPartImage(${ci}, ${pi}); comboRows[${ci}].parts[${pi}].images[comboRows[${ci}].parts[${pi}].images.length-1] = d; renderCombosRows(); })"><i class="fa-solid fa-upload"></i></button>
+            <span style="font-size:.78rem; color:var(--text-gray); font-weight:600;">اللون المختار</span>
+          </div>
+
+          <div class="color-images-header" style="margin-top:12px;">
+            <span class="header-label"><i class="fa-solid fa-images"></i> صور هذه القطعة</span>
+            <span class="image-count-badge">${part.images.length === 1 ? 'عنصر واحد' : part.images.length === 2 ? 'عنصران' : `${part.images.length} عناصر`}</span>
           </div>
           <div class="combo-images-grid">
             ${part.images.map((img, ii) => {
@@ -2440,23 +2507,89 @@ function renderCombosRows() {
               }
               return `<div class="color-image-item">
                 <span class="image-index-badge">${ii + 1}</span>
-                <div class="color-image-preview" style="height:90px;cursor:zoom-in;" onclick="viewMedia('${escapeAttr(img)}')">${prev}</div>
+                <div class="color-image-preview" style="height:90px;" data-media-url="${escapeAttr(img)}">${prev}</div>
                 <div class="color-image-actions">
-                  <input type="url" value="${escapeAttr(img)}" placeholder="URL" oninput="updatePartImage(${ci}, ${pi}, ${ii}, this.value)">
-                  <button class="mini-btn mini-btn-upload" onclick="triggerImageUpload((d) => { comboRows[${ci}].parts[${pi}].images[${ii}] = d; renderCombosRows(); })"><i class="fa-solid fa-upload"></i></button>
-                  <button class="mini-btn mini-btn-remove" onclick="removePartImage(${ci}, ${pi}, ${ii})"><i class="fa-solid fa-xmark"></i></button>
+                  <input type="url" value="${escapeAttr(img)}" placeholder="URL أو ارفع" oninput="updatePartImage(${ci}, ${pi}, ${ii}, this.value)">
+                  <button class="mini-btn mini-btn-upload" title="رفع" onclick="triggerImageUpload((d) => { comboRows[${ci}].parts[${pi}].images[${ii}] = d; renderCombosRows(); })"><i class="fa-solid fa-upload"></i></button>
+                  ${ii > 0 ? `<button class="mini-btn mini-btn-main" title="تعيين كرئيسية" onclick="(() => { const arr = comboRows[${ci}].parts[${pi}].images; const [x] = arr.splice(${ii}, 1); arr.unshift(x); renderCombosRows(); })()"><i class="fa-solid fa-star"></i></button>` : ''}
+                  <button class="mini-btn mini-btn-remove" title="حذف" onclick="removePartImage(${ci}, ${pi}, ${ii})"><i class="fa-solid fa-xmark"></i></button>
                 </div>
               </div>`;
             }).join('')}
             <button type="button" class="add-image-card" onclick="addPartImage(${ci}, ${pi})" style="min-height:120px;">
-              <i class="fa-solid fa-plus-circle"></i><span>صورة/فيديو</span>
+              <i class="fa-solid fa-plus-circle"></i><span>إضافة صورة</span><small>فيديو أو صورة</small>
             </button>
           </div>
         </div>
       `).join('')}
-      <button type="button" class="add-part-btn" onclick="addPartToCombo(${ci})"><i class="fa-solid fa-plus"></i> إضافة قطعة للطقم</button>
+      <button type="button" class="add-part-btn" onclick="addPartToCombo(${ci})"><i class="fa-solid fa-plus"></i> إضافة قطعة أخرى لهذا الطقم</button>
     </div>
-  `).join('');
+  `).join('')}`;
+}
+// ✅ [جديد] دوال اختيار لون القطعة في وضع الطقم
+function filterPartColorOptions(ci, pi, query) {
+  const sugg = document.getElementById(`partColorSugg-${ci}-${pi}`);
+  if (!sugg) return;
+  const q = (query || '').trim();
+  if (!q) { sugg.classList.remove('open'); sugg.innerHTML = ''; return; }
+  const matches = PREDEFINED_COLORS.filter(pc => pc.name.includes(q));
+  let html = '';
+  if (matches.length === 0) {
+    html += '<div class="color-no-match"><i class="fa-solid fa-magnifying-glass"></i> لا توجد ألوان مطابقة</div>';
+  } else {
+    html += matches.slice(0, 40).map(pc => `
+      <button type="button" class="color-suggestion-chip" onclick="selectPartColorFromSuggestion(${ci}, ${pi}, '${escapeAttr(pc.name)}')">
+        <span class="chip-swatch" style="background:${pc.hex};"></span>
+        <span>${escapeHtml(pc.name)}</span>
+        <span class="chip-hex">${pc.hex.toUpperCase()}</span>
+      </button>
+    `).join('');
+  }
+  html += `<button type="button" class="color-suggestion-chip is-custom" onclick="selectCustomPartColor(${ci}, ${pi})"><span class="chip-swatch"><i class="fa-solid fa-pen"></i></span><span>لون مخصص...</span></button>`;
+  sugg.innerHTML = html;
+  sugg.classList.add('open');
+}
+
+function selectPartColorFromSuggestion(ci, pi, name) {
+  if (!comboRows[ci]?.parts?.[pi]) return;
+  const p = getPredefinedColor(name);
+  if (!p) return;
+  comboRows[ci].parts[pi].name = p.name;
+  comboRows[ci].parts[pi].hex = p.hex;
+  renderCombosRows();
+}
+
+function selectCustomPartColor(ci, pi) {
+  if (!comboRows[ci]?.parts?.[pi]) return;
+  comboRows[ci].parts[pi].name = '';
+  renderCombosRows();
+  setTimeout(() => {
+    const card = document.querySelectorAll('.combo-card')[ci];
+    if (!card) return;
+    const partCard = card.querySelectorAll('.part-card')[pi];
+    if (!partCard) return;
+    const input = partCard.querySelector('.color-search');
+    if (input) input.focus();
+  }, 60);
+}
+
+function handlePartColorSearchKeydown(event, ci, pi) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    const sugg = document.getElementById(`partColorSugg-${ci}-${pi}`);
+    if (!sugg) return;
+    const firstChip = sugg.querySelector('.color-suggestion-chip');
+    if (firstChip) firstChip.click();
+  } else if (event.key === 'Escape') {
+    const sugg = document.getElementById(`partColorSugg-${ci}-${pi}`);
+    if (sugg) { sugg.classList.remove('open'); sugg.innerHTML = ''; }
+  }
+}
+
+function onPartColorSearchInput(ci, pi, val) {
+  if (!comboRows[ci]?.parts?.[pi]) return;
+  comboRows[ci].parts[pi].name = val;
+  filterPartColorOptions(ci, pi, val);
 }
     async function initAdmin() {
       showLoading(true);
