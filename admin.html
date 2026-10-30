@@ -2643,14 +2643,24 @@ function renderCombosRows() {
         </div>`;
       }).join('');
     }
-
-    async function initAdmin() {
+async function initAdmin() {
       showLoading(true);
       try {
         if (!currentUser) {
-          try { const me = await apiJSON('/api/auth/me'); currentUser = me.user; } catch(e) { throw e; }
+          try { 
+            const me = await apiJSON('/api/auth/me'); 
+            currentUser = me.user; 
+          } catch(e) { 
+            // ✅ إذا فشل التحقق من الحساب، يتم مسح التوكن المعطوب وإظهار صفحة الدخول تلقائياً
+            clearAuth(); 
+            showLoginOverlay(); 
+            const needsSetup = await checkSetupNeeded();
+            if (needsSetup) showSetupForm();
+            else showLoginForm();
+            return; 
+          }
         }
-                await loadAllData();
+        await loadAllData();
         applyPermissions();
         renderDashboard();
         renderProductsTable();
@@ -2664,17 +2674,6 @@ function renderCombosRows() {
         if (authToken) showToast(err.message || 'فشل تحميل البيانات', 'error');
       } finally { showLoading(false); }
     }
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        const openSuggestions = document.querySelectorAll('.color-suggestions.open');
-        if (openSuggestions.length) { openSuggestions.forEach(el => el.classList.remove('open')); return; }
-        document.getElementById('productModal').classList.remove('show');
-        document.getElementById('orderDetailsModal').classList.remove('show');
-        closeImageViewer();
-      }
-    });
-
     (async function startup() {
       if (isAuthed()) { hideLoginOverlay(); await initAdmin(); }
       else {
