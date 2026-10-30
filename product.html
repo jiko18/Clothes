@@ -416,10 +416,11 @@
           <div class="form-group"><label>العنوان الكامل <span class="required">*</span></label><textarea id="checkoutAddress" required placeholder="الشارع، رقم المنزل..."></textarea></div>
           <div class="form-group">
             <label><i class="fa-solid fa-truck-fast"></i> طريقة التوصيل</label>
-            <div class="delivery-options">
-              <label class="delivery-option"><input type="radio" name="delivery" data-type="home" value="600" checked onchange="updateDeliveryCost()"><div class="delivery-info"><i class="fa-solid fa-house"></i><div><strong>توصيل إلى المنزل</strong><span>600 د.ج</span></div></div></label>
-              <label class="delivery-option"><input type="radio" name="delivery" data-type="agency" value="400" onchange="updateDeliveryCost()"><div class="delivery-info"><i class="fa-solid fa-store"></i><div><strong>توصيل إلى الوكالة</strong><span>400 د.ج</span></div></div></label>
-            </div>
+          <div class="delivery-options">
+  <label class="delivery-option"><input type="radio" name="delivery" data-type="home" value="600" checked onchange="updateDeliveryCost()"><div class="delivery-info"><i class="fa-solid fa-house"></i><div><strong>توصيل إلى المنزل</strong><span id="deliveryHomeLabel">600 د.ج</span></div></div></label>
+  <label class="delivery-option"><input type="radio" name="delivery" data-type="agency" value="400" onchange="updateDeliveryCost()"><div class="delivery-info"><i class="fa-solid fa-store"></i><div><strong>توصيل إلى الوكالة</strong><span id="deliveryAgencyLabel">400 د.ج</span></div></div></label>
+  <label class="delivery-option" style="grid-column:1/-1;"><input type="radio" name="delivery" data-type="express" value="900" onchange="updateDeliveryCost()"><div class="delivery-info"><i class="fa-solid fa-bolt"></i><div><strong>⚡ توصيل سريع (24-48 ساعة)</strong><span id="deliveryExpressLabel">900 د.ج</span></div></div></label>
+</div>
           </div>
           <div class="order-summary">
             <h4><i class="fa-solid fa-receipt"></i> ملخص الطلب</h4>
@@ -532,7 +533,7 @@
       footerCopyright: '© 2025 بيبي شوب - جميع الحقوق محفوظة | صُنع بحب لأطفال الجزائر'
     };
     const DEFAULT_THEME_DATA = { primary: '#ff6b81', primaryDark: '#e8556d', secondary: '#6c5ce7', accent: '#feca57' };
-    const DEFAULT_DELIVERY_DATA = { home: 600, agency: 400 };
+    const DEFAULT_DELIVERY_DATA = { home: 600, agency: 400, express: 900, byWilaya: {} };
 
     function deepMerge(target, source) {
       if (!source || typeof source !== 'object') return target;
@@ -655,8 +656,25 @@
     }
 
     // ==================== الولايات والبلديات ====================
-    const wilayas = ['أدرار','الشلف','الأغواط','أم البواقي','باتنة','بجاية','بسكرة','بشار','البليدة','البويرة','تمنراست','تبسة','تلمسان','تيارت','تيزي وزو','الجزائر','الجلفة','جيجل','سطيف','سعيدة','سكيكدة','سيدي بلعباس','عنابة','قالمة','قسنطينة','المدية','مستغانم','المسيلة','معسكر','ورقلة','وهران','البيض','إليزي','برج بوعريريج','بومرداس','الطارف','تندوف','تيسمسيلت','الوادي','خنشلة','سوق أهراس','تيبازة','ميلة','عين الدفلى','النعامة','عين تموشنت','غرداية','غليزان','تيميمون','برج باجي مختار','أولاد جلال','بني عباس','عين صالح','عين قزام','تقرت','جانت','المغير','المنيعة'];
-
+const WILAYAS = [
+  {code:'01',name:'أدرار'},{code:'02',name:'الشلف'},{code:'03',name:'الأغواط'},{code:'04',name:'أم البواقي'},
+  {code:'05',name:'باتنة'},{code:'06',name:'بجاية'},{code:'07',name:'بسكرة'},{code:'08',name:'بشار'},
+  {code:'09',name:'البليدة'},{code:'10',name:'البويرة'},{code:'11',name:'تمنراست'},{code:'12',name:'تبسة'},
+  {code:'13',name:'تلمسان'},{code:'14',name:'تيارت'},{code:'15',name:'تيزي وزو'},{code:'16',name:'الجزائر'},
+  {code:'17',name:'الجلفة'},{code:'18',name:'جيجل'},{code:'19',name:'سطيف'},{code:'20',name:'سعيدة'},
+  {code:'21',name:'سكيكدة'},{code:'22',name:'سيدي بلعباس'},{code:'23',name:'عنابة'},{code:'24',name:'قالمة'},
+  {code:'25',name:'قسنطينة'},{code:'26',name:'المدية'},{code:'27',name:'مستغانم'},{code:'28',name:'المسيلة'},
+  {code:'29',name:'معسكر'},{code:'30',name:'ورقلة'},{code:'31',name:'وهران'},{code:'32',name:'البيض'},
+  {code:'33',name:'إليزي'},{code:'34',name:'برج بوعريريج'},{code:'35',name:'بومرداس'},{code:'36',name:'الطارف'},
+  {code:'37',name:'تندوف'},{code:'38',name:'تيسمسيلت'},{code:'39',name:'الوادي'},{code:'40',name:'خنشلة'},
+  {code:'41',name:'سوق أهراس'},{code:'42',name:'تيبازة'},{code:'43',name:'ميلة'},{code:'44',name:'عين الدفلى'},
+  {code:'45',name:'النعامة'},{code:'46',name:'عين تموشنت'},{code:'47',name:'غرداية'},{code:'48',name:'غليزان'},
+  {code:'49',name:'تيميمون'},{code:'50',name:'برج باجي مختار'},{code:'51',name:'أولاد جلال'},{code:'52',name:'بني عباس'},
+  {code:'53',name:'عين صالح'},{code:'54',name:'عين قزام'},{code:'55',name:'تقرت'},{code:'56',name:'جانت'},
+  {code:'57',name:'المغير'},{code:'58',name:'المنيعة'}
+];
+const wilayas = WILAYAS.map(w => w.name);
+function getWilayaCodeByName(name) { const w = WILAYAS.find(x => x.name === name); return w ? w.code : ''; }
     const wilayaMunicipalities = {
       'أدرار': ['أدرار','أولف','تسابيت','زاوية كنتة','فنوغيل','رقان','إن زغمير','تامست','تيت','أقبلي','بودة','شروين','المطارفة','أنتيسار','أولاد أحمد تيمي','تيمقتن','تيمياوين','تامنطيط'],
       'الشلف': ['الشلف','تنس','وادي الفضة','بوقادير','الشطية','الكريمية','الأبيض مجاجة','وادي سلي','عين مران','تاوقريت','الزبوجة','بني حواء','أولاد فارس','الهرانفة','سنجاس','بريرة','الظهرة','بني بوعتاب'],
@@ -744,15 +762,24 @@
       setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 2600);
     }
 
-    function getColorImages(color) {
-      if (!color) return [];
-      if (Array.isArray(color.images) && color.images.length > 0) {
-        const valid = color.images.filter(u => u && typeof u === 'string' && u.trim());
-        if (valid.length > 0) return valid;
-      }
-      if (color.image && color.image.trim()) return [color.image];
-      return [];
-    }
+  function getColorImages(color) {
+  if (!color) return [];
+  if (Array.isArray(color.parts) && color.parts.length > 0) {
+    const imgs = [];
+    color.parts.forEach(pt => {
+      if (pt.images && pt.images.length) { const v = pt.images.filter(u => u && u.trim()); if (v.length) imgs.push(v[0]); }
+      else if (pt.image && pt.image.trim()) imgs.push(pt.image);
+    });
+    if (imgs.length > 0) return imgs;
+  }
+  if (Array.isArray(color.images) && color.images.length > 0) {
+    const valid = color.images.filter(u => u && typeof u === 'string' && u.trim());
+    if (valid.length > 0) return valid;
+  }
+  if (color.image && color.image.trim()) return [color.image];
+  return [];
+}
+function isProductSet(p) { return p && p.setType === 'set'; }
     function getProductImage(color) { const imgs = getColorImages(color); return imgs[0] || ''; }
 
     // ==================== الوضع الليلي ====================
@@ -887,7 +914,8 @@
             ${discountPercent > 0 ? `<span class="discount">-${discountPercent}%</span>` : ''}
           </div>
           <p class="detail-description">${p.description || ''}</p>
-          ${hasMultipleColors ? `<div class="detail-section"><div class="detail-section-label"><span><i class="fa-solid fa-palette"></i> اللون</span><span class="selected-value">${color.name}</span></div><div class="detail-swatches">${p.colors.map((c, i) => `<div class="detail-swatch ${i === selectedColorIndex ? 'active' : ''}" style="background:${c.hex};" title="${c.name}" onclick="selectColor(${i})"></div>`).join('')}</div></div>` : ''}
+          ${hasMultipleColors ? `<div class="detail-section"><div class="detail-section-label"><span><i class="fa-solid fa-palette"></i> ${isProductSet(p) ? 'المتغير' : 'اللون'}</span><span class="selected-value">${color.name}</span></div><div class="detail-swatches">${isProductSet(p) ? p.colors.map((c, i) => `<button class="detail-age ${i === selectedColorIndex ? 'active' : ''}" style="font-size:0.82rem;" onclick="selectColor(${i})">${c.name}</button>`).join('') : p.colors.map((c, i) => `<div class="detail-swatch ${i === selectedColorIndex ? 'active' : ''}" style="background:${c.hex};" title="${c.name}" onclick="selectColor(${i})"></div>`).join('')}</div></div>` : ''}
+${isProductSet(p) && color.parts ? `<div class="detail-section"><div class="detail-section-label"><span><i class="fa-solid fa-puzzle-piece"></i> محتويات المتغير</span><span class="selected-value">${color.parts.length} قطعة</span></div><div style="display:flex;flex-direction:column;gap:8px;">${color.parts.map((pt, pi) => `<div class="cart-item" style="padding:8px 12px;cursor:pointer;${pi === selectedImageIndex ? 'border-color:var(--primary);' : ''}" onclick="selectImage(${pi})"><span style="width:26px;height:26px;border-radius:50%;background:${pt.hex||'#ccc'};flex-shrink:0;"></span><div style="flex:1;"><strong style="font-size:0.88rem;">${pt.name||'قطعة'}</strong> <span style="font-size:0.72rem;color:var(--text-gray);">${pt.colorName||''}</span></div></div>`).join('')}</div></div>` : ''}
           <div class="detail-section">
             <div class="detail-section-label"><span><i class="fa-solid fa-child"></i> العمر</span><span class="selected-value">${selectedAge}</span></div>
             <div class="detail-ages">${p.ages.map(a => `<button class="detail-age ${a === selectedAge ? 'active' : ''}" onclick="selectAge('${a}', this)">${a}</button>`).join('')}</div>
@@ -935,32 +963,17 @@
       document.querySelectorAll('.thumbnail').forEach((t, i) => t.classList.toggle('active', i === index));
     }
 
-    function selectColor(index) {
-      if (!currentProduct) return;
-      if (index === selectedColorIndex) return;
-      selectedColorIndex = index; selectedImageIndex = 0;
-      const color = currentProduct.colors[index];
-      const imgs = getColorImages(color);
-      const mainImg = imgs[0] || '';
-      const imgEl = document.getElementById('mainImage');
-      if (imgEl) { imgEl.style.opacity = '0'; setTimeout(() => { imgEl.src = mainImg; imgEl.style.opacity = '1'; }, 200); }
-      document.querySelectorAll('.detail-swatch').forEach((s, i) => s.classList.toggle('active', i === index));
-      const label = document.querySelector('.detail-section-label .selected-value');
-      if (label) label.textContent = color.name;
-      const thumbsContainer = document.getElementById('thumbnailsContainer');
-      if (thumbsContainer) {
-        if (imgs.length > 1) {
-          thumbsContainer.style.display = 'grid';
-          thumbsContainer.innerHTML = imgs.map((url, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="selectImage(${i})"><img src="${url}" alt=""><span class="thumb-index">${i + 1}</span></div>`).join('');
-        } else { thumbsContainer.style.display = 'none'; thumbsContainer.innerHTML = ''; }
-      }
-      // تحديث السعر الإجمالي عند تغيير اللون (في حال كان لكل لون سعر مختلف مستقبلاً)
-      updateTotalPrice();
-    }
+function selectColor(index) {
+  if (!currentProduct) return;
+  if (index === selectedColorIndex) return;
+  selectedColorIndex = index; selectedImageIndex = 0;
+  renderProductDetail();
+  updateTotalPrice();
+}
 
     function selectAge(age, el) {
       selectedAge = age;
-      document.querySelectorAll('.detail-age').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.detail-ages .detail-age').forEach(b => b.classList.remove('active'));
       el.classList.add('active');
       const ageLabel = document.querySelectorAll('.detail-section-label .selected-value');
       if (ageLabel.length > 0) ageLabel[ageLabel.length - 1].textContent = age;
@@ -1022,25 +1035,36 @@
         if (Math.abs(diff) > 50) { if (diff > 0) lightboxNav(1); else lightboxNav(-1); }
       }, { passive: true });
     })();
-
-    // ==================== إضافة للسلة ====================
-    function addCurrentToCart() {
-      if (!currentProduct) return;
-      const existing = cart.find(item => item.productId === currentProduct.id && item.colorIndex === selectedColorIndex && item.age === selectedAge);
-      if (existing) existing.qty += selectedQuantity;
-      else cart.push({ itemId: generateId(), productId: currentProduct.id, colorIndex: selectedColorIndex, age: selectedAge, qty: selectedQuantity, price: currentProduct.price });
-      saveCart(); renderCart();
-      showToast(`تمت إضافة ${selectedQuantity} ${selectedQuantity === 1 ? 'قطعة' : 'قطع'} إلى السلة ✓`);
-    }
-    function orderNow() { addCurrentToCartSilent(); openCheckout(); }
-    function addCurrentToCartSilent() {
-      if (!currentProduct) return;
-      const existing = cart.find(item => item.productId === currentProduct.id && item.colorIndex === selectedColorIndex && item.age === selectedAge);
-      if (existing) { existing.qty = selectedQuantity; existing.price = currentProduct.price; }
-      else cart.push({ itemId: generateId(), productId: currentProduct.id, colorIndex: selectedColorIndex, age: selectedAge, qty: selectedQuantity, price: currentProduct.price });
-      saveCart(); renderCart();
-    }
-
+function buildCartItemPayload() {
+  if (!currentProduct) return null;
+  const c = currentProduct.colors[selectedColorIndex];
+  const payload = { itemId: generateId(), productId: currentProduct.id, colorIndex: selectedColorIndex, age: selectedAge, qty: selectedQuantity, price: currentProduct.price };
+  if (isProductSet(currentProduct)) {
+    payload.partIndex = selectedImageIndex;
+    payload.partName = c.parts && c.parts[selectedImageIndex] ? c.parts[selectedImageIndex].name : '';
+  }
+  return payload;
+}
+function addCurrentToCart() {
+  if (!currentProduct) return;
+  const isSet = isProductSet(currentProduct);
+  const match = it => it.productId === currentProduct.id && it.colorIndex === selectedColorIndex && it.age === selectedAge && (isSet ? it.partIndex === selectedImageIndex : true);
+  const existing = cart.find(match);
+  if (existing) existing.qty += selectedQuantity;
+  else { const np = buildCartItemPayload(); if (np) cart.push(np); }
+  saveCart(); renderCart();
+  showToast(`تمت إضافة ${selectedQuantity} ${selectedQuantity === 1 ? 'قطعة' : 'قطع'} إلى السلة ✓`);
+}
+function orderNow() { addCurrentToCartSilent(); openCheckout(); }
+function addCurrentToCartSilent() {
+  if (!currentProduct) return;
+  const isSet = isProductSet(currentProduct);
+  const match = it => it.productId === currentProduct.id && it.colorIndex === selectedColorIndex && it.age === selectedAge && (isSet ? it.partIndex === selectedImageIndex : true);
+  const existing = cart.find(match);
+  if (existing) { existing.qty = selectedQuantity; existing.price = currentProduct.price; }
+  else { const np = buildCartItemPayload(); if (np) cart.push(np); }
+  saveCart(); renderCart();
+}
     // ==================== سلة التسوق ====================
     const cartBody = document.getElementById('cartBody');
     const cartFooter = document.getElementById('cartFooter');
@@ -1079,13 +1103,15 @@
       cartBody.innerHTML = cart.map(item => {
         const p = products.find(pr => pr.id === item.productId);
         if (!p) return '';
-        const c = p.colors[item.colorIndex];
-        const img = getProductImage(c);
-        return `<div class="cart-item" onclick="openEditModal('${item.itemId}')">
-          <img src="${img}" alt="${p.name}">
-          <div class="cart-item-info">
-            <h4>${p.name}</h4>
-            <div class="cart-item-variants"><span class="variant-tag">🎨 ${c.name}</span><span class="variant-tag">👶 ${item.age}</span></div>
+   const c = p.colors[item.colorIndex];
+const imgs = getColorImages(c);
+const img = (isProductSet(p) && c.parts && typeof item.partIndex === 'number' && c.parts[item.partIndex] && c.parts[item.partIndex].images && c.parts[item.partIndex].images[0]) ? c.parts[item.partIndex].images[0] : (imgs[0] || '');
+const partLabel = (isProductSet(p) && c.parts && typeof item.partIndex === 'number' && c.parts[item.partIndex]) ? c.parts[item.partIndex].name : '';
+return `<div class="cart-item" onclick="openEditModal('${item.itemId}')">
+  <img src="${img}" alt="${p.name}">
+  <div class="cart-item-info">
+    <h4>${p.name}</h4>
+    <div class="cart-item-variants"><span class="variant-tag">🎨 ${c.name}</span>${partLabel ? `<span class="variant-tag">📦 ${partLabel}</span>` : ''}<span class="variant-tag">👶 ${item.age}</span></div>
             <div class="cart-item-price">${(item.price * item.qty).toLocaleString()} د.ج</div>
             <div class="cart-item-actions">
               <div class="qty-control" onclick="event.stopPropagation();"><button onclick="event.stopPropagation(); updateQty('${item.itemId}', -1)">−</button><span>${item.qty}</span><button onclick="event.stopPropagation(); updateQty('${item.itemId}', 1)">+</button></div>
@@ -1145,7 +1171,9 @@
     }
     function saveEdit() {
       const item = cart.find(i => i.itemId === editingItemId); if (!item) return;
-      const dup = cart.find(i => i.itemId !== editingItemId && i.productId === item.productId && i.colorIndex === editColorIndex && i.age === editAge);
+      const prod = products.find(pr => pr.id === item.productId); if (!prod) return;
+      const _isSet = isProductSet(prod);
+      const dup = cart.find(i => i.itemId !== editingItemId && i.productId === item.productId && i.colorIndex === editColorIndex && i.age === editAge && (_isSet ? i.partIndex === item.partIndex : true));
       if (dup) { dup.qty += item.qty; cart = cart.filter(i => i.itemId !== editingItemId); }
       else { item.colorIndex = editColorIndex; item.age = editAge; }
       saveCart(); renderCart(); closeEditModal();
@@ -1174,8 +1202,7 @@
         phone1: document.getElementById('checkoutPhone1').value,
         phone2: document.getElementById('checkoutPhone2').value,
         address: document.getElementById('checkoutAddress').value,
-        delivery: (document.querySelector('input[name="delivery"]:checked') || {}).value || String(adminDelivery.home)
-      };
+delivery: (document.querySelector('input[name="delivery"]:checked') || {}).dataset?.type || 'home'      };
       const hasData = data.firstName || data.lastName || data.municipality || data.phone1 || data.phone2 || data.address || data.wilaya;
       if (hasData) localStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify(data));
       else localStorage.removeItem(CHECKOUT_DRAFT_KEY);
@@ -1192,10 +1219,12 @@
         document.getElementById('checkoutPhone1').value = data.phone1 || '';
         document.getElementById('checkoutPhone2').value = data.phone2 || '';
         document.getElementById('checkoutAddress').value = data.address || '';
+        if (data.wilaya) refreshDeliveryOptions(data.wilaya);
         if (data.delivery) {
-          const radio = document.querySelector(`input[name="delivery"][value="${data.delivery}"]`);
+          const radio = document.querySelector(`input[name="delivery"][data-type="${data.delivery}"]`);
           if (radio) radio.checked = true;
         }
+        updateDeliveryCost();
         banner.classList.add('show');
         return true;
       } catch (e) { return false; }
@@ -1229,11 +1258,29 @@
       document.getElementById('checkoutModal').classList.remove('show');
       document.body.style.overflow = '';
     }
-    function updateDeliveryCost() {
-      const sel = document.querySelector('input[name="delivery"]:checked');
-      currentDeliveryCost = sel ? parseInt(sel.value) : adminDelivery.home;
-      updateCheckoutSummary();
-    }
+   function refreshDeliveryOptions(wilayaName) {
+  const code = getWilayaCodeByName(wilayaName);
+  const byW = (adminDelivery.byWilaya && adminDelivery.byWilaya[code]) || {};
+  const home = byW.home != null ? byW.home : adminDelivery.home;
+  const agency = byW.agency != null ? byW.agency : adminDelivery.agency;
+  const express = byW.express != null ? byW.express : (adminDelivery.express || 900);
+  const setOpt = (type, val) => {
+    const r = document.querySelector(`input[name="delivery"][data-type="${type}"]`);
+    if (!r) return;
+    r.value = val;
+    const lbl = document.getElementById('delivery' + type.charAt(0).toUpperCase() + type.slice(1) + 'Label');
+    if (lbl) lbl.textContent = val + ' د.ج';
+  };
+  setOpt('home', home); setOpt('agency', agency); setOpt('express', express);
+  const sel = document.querySelector('input[name="delivery"]:checked');
+  currentDeliveryCost = sel ? parseInt(sel.value) : home;
+  updateCheckoutSummary();
+}
+function updateDeliveryCost() {
+  const sel = document.querySelector('input[name="delivery"]:checked');
+  currentDeliveryCost = sel ? parseInt(sel.value) : adminDelivery.home;
+  updateCheckoutSummary();
+}
     function updateCheckoutSummary() {
       const sub = getCartSubtotal();
       const count = cart.reduce((s, i) => s + i.qty, 0);
@@ -1242,7 +1289,6 @@
       document.getElementById('summaryDelivery').textContent = currentDeliveryCost.toLocaleString() + ' د.ج';
       document.getElementById('summaryTotal').textContent = (sub + currentDeliveryCost).toLocaleString() + ' د.ج';
     }
-
     // ✅ إرسال الطلب إلى Turso عبر /api/orders
     async function submitOrder() {
       const form = document.getElementById('checkoutForm');
@@ -1253,7 +1299,7 @@
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جارٍ التأكيد...';
 
       const selDelivery = document.querySelector('input[name="delivery"]:checked');
-      const deliveryMethod = (selDelivery && selDelivery.dataset.type === 'home') ? 'home' : 'agency';
+      const deliveryMethod = (selDelivery && selDelivery.dataset.type) || 'home';
 
       const orderPayload = {
         firstName: document.getElementById('checkoutFirstName').value.trim(),
@@ -1265,13 +1311,34 @@
         address: document.getElementById('checkoutAddress').value.trim(),
         deliveryMethod,
         deliveryCost: currentDeliveryCost,
-        items: cart.map(it => ({
-          productId: it.productId,
-          colorIndex: it.colorIndex,
-          age: it.age,
-          qty: it.qty,
-          price: it.price
-        }))
+        items: cart.map(it => {
+          const prod = products.find(x => x.id === it.productId);
+          const c = prod ? prod.colors[it.colorIndex] : null;
+          let img = '';
+          if (c) {
+            if (isProductSet(prod) && c.parts && typeof it.partIndex === 'number' && c.parts[it.partIndex] && c.parts[it.partIndex].images && c.parts[it.partIndex].images[0]) {
+              img = c.parts[it.partIndex].images[0];
+            } else {
+              const imgs = getColorImages(c);
+              img = imgs[0] || '';
+            }
+          }
+          let colorLabel = c ? c.name : '';
+          if (isProductSet(prod) && c && c.parts && typeof it.partIndex === 'number' && c.parts[it.partIndex]) {
+            colorLabel += ' - ' + (c.parts[it.partIndex].name || '') + (c.parts[it.partIndex].colorName ? ' (' + c.parts[it.partIndex].colorName + ')' : '');
+          }
+          return {
+            productId: it.productId,
+            colorIndex: it.colorIndex,
+            partIndex: it.partIndex,
+            age: it.age,
+            qty: it.qty,
+            price: it.price,
+            productName: prod ? prod.name : '',
+            colorName: colorLabel,
+            image: img
+          };
+        })
       };
 
       let orderId = null;
@@ -1396,11 +1463,10 @@
     // ✅ التهيئة: تحميل كل شيء من السيرفر
     // ============================================================
     document.addEventListener('DOMContentLoaded', async () => {
-      // 1) تعبئة الولايات
-      const ws = document.getElementById('checkoutWilaya');
-      wilayas.forEach(w => { const o = document.createElement('option'); o.value = w; o.textContent = w; ws.appendChild(o); });
-      ws.addEventListener('change', () => { populateMunicipalities(); saveCheckoutDraft(); });
-
+    const ws = document.getElementById('checkoutWilaya');
+wilayas.forEach(w => { const o = document.createElement('option'); o.value = w; o.textContent = w; ws.appendChild(o); });
+ws.addEventListener('change', () => { populateMunicipalities(); saveCheckoutDraft(); refreshDeliveryOptions(ws.value); });
+refreshDeliveryOptions('');
       // 2) جلب كل البيانات من السيرفر بالتوازي
       await Promise.all([
         fetchProductsFromServer(),
@@ -1410,9 +1476,9 @@
       ]);
 
       // 3) تطبيق الإعدادات بعد التحميل
-      applyAdminSettings();
-      updateDeliveryCost();
-
+     applyAdminSettings();
+refreshDeliveryOptions(document.getElementById('checkoutWilaya').value);
+updateDeliveryCost();
       // 4) تحميل السلة (تحتاج products مملوءة)
       loadCart();
 

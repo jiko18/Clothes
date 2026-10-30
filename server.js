@@ -29,12 +29,12 @@ const db = createClient({
 });
 
 // ============================================================
-// 2) Database Init (Tables + Indexes + Seeds)
+// 2) Database Init (Tables + Migrations + Seeds)
 // ============================================================
 async function initDB() {
   console.log('🔄 Initializing database...');
 
-  // ---------- حذف الجدول القديم إن كان موجوداً بمخطط خاطئ ----------
+  // ---------- حذف جدول قديم بمخطط خاطئ ----------
   try {
     const oldCheck = await db.execute(
       "SELECT sql FROM sqlite_master WHERE type='table' AND name='products'"
@@ -45,7 +45,95 @@ async function initDB() {
     }
   } catch (_) {}
 
-  // ---------- إنشاء الجداول ----------
+  // ---------- Migration 1: delivery_prices → إضافة express ----------
+  try {
+    const check = await db.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='delivery_prices'");
+    if (check.rows.length > 0 && !check.rows[0].sql.includes("'express'")) {
+      console.log('🔄 Migrating delivery_prices for express support...');
+      await db.execute('ALTER TABLE delivery_prices RENAME TO delivery_prices_old');
+      await db.execute(`CREATE TABLE delivery_prices (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        delivery_type TEXT NOT NULL CHECK(delivery_type IN ('home','agency','express')),
+        wilaya TEXT,
+        price REAL NOT NULL DEFAULT 0,
+        is_default INTEGER NOT NULL DEFAULT 0,
+        updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+        UNIQUE(delivery_type, wilaya)
+      )`);
+      await db.execute(`INSERT INTO delivery_prices (id, delivery_type, wilaya, price, is_default, updated_at)
+        SELECT id, delivery_type, wilaya, price, is_default, updated_at FROM delivery_prices_old`);
+      await db.execute('DROP TABLE delivery_prices_old');
+      console.log('✅ delivery_prices migrated');
+    }
+  } catch (e) { console.error('delivery_prices migration error:', e.message); }
+
+  // ---------- Migration 2: orders → إضافة express ----------
+  try {
+    const check = await db.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='orders'");
+    if (check.rows.length > 0 && !check.rows[0].sql.includes("'express'")) {
+      console.log('🔄 Migrating orders for express support...');
+      await db.execute('ALTER TABLE orders RENAME TO orders_old');
+      await db.execute(`CREATE TABLE orders (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        order_number TEXT NOT NULL UNIQUE,
+        customer_id INTEGER,
+        first_name TEXT NOT NULL,
+        last_name TEXT NOT NULL,
+        phone1 TEXT NOT NULL,
+        phone2 TEXT,
+        wilaya TEXT NOT NULL,
+        municipality TEXT NOT NULL,
+        address TEXT NOT NULL,
+        delivery_method TEXT NOT NULL DEFAULT 'home' CHECK(delivery_method IN ('home','agency','express')),
+        delivery_cost REAL NOT NULL DEFAULT 0,
+        subtotal REAL NOT NULL DEFAULT 0,
+        discount REAL NOT NULL DEFAULT 0,
+        coupon_code TEXT,
+        total REAL NOT NULL DEFAULT 0,
+        status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','confirmed','out_for_delivery','delivered','cancelled')),
+        notes TEXT,
+        admin_notes TEXT,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+        FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL
+      )`);
+      await db.execute(`INSERT INTO orders
+        (id, order_number, customer_id, first_name, last_name, phone1, phone2, wilaya, municipality, address,
+         delivery_method, delivery_cost, subtotal, discount, coupon_code, total, status, notes, admin_notes,
+         created_at, updated_at)
+        SELECT id, order_number, customer_id, first_name, last_name, phone1, phone2, wilaya, municipality, address,
+         delivery_method, delivery_cost, subtotal, discount, coupon_code, total, status, notes, admin_notes,
+         created_at, updated_at FROM orders_old`);
+      await db.execute('DROP TABLE orders_old');
+      console.log('✅ orders migrated');
+    }
+  } catch (e) { console.error('orders migration error:', e.message); }
+
+  // ---------- Migration 3: products → is_set ----------
+  try {
+    const cols = await db.execute("PRAGMA table_info(products)");
+    if (cols.rows.length > 0 && !cols.rows.some(r => r.name === 'is_set')) {
+      await db.execute("ALTER TABLE products ADD COLUMN is_set INTEGER NOT NULL DEFAULT 0");
+      console.log('✅ Added is_set to products');
+    }
+  } catch (e) { console.error('products migration error:', e.message); }
+
+  // ---------- Migration 4: product_colors → combo_name, part_label ----------
+  try {
+    const cols = await db.execute("PRAGMA table_info(product_colors)");
+    if (cols.rows.length > 0) {
+      if (!cols.rows.some(r => r.name === 'combo_name')) {
+        await db.execute("ALTER TABLE product_colors ADD COLUMN combo_name TEXT");
+        console.log('✅ Added combo_name to product_colors');
+      }
+      if (!cols.rows.some(r => r.name === 'part_label')) {
+        await db.execute("ALTER TABLE product_colors ADD COLUMN part_label TEXT");
+        console.log('✅ Added part_label to product_colors');
+      }
+    }
+  } catch (e) { console.error('product_colors migration error:', e.message); }
+
+  // ---------- إنشاء الجداول (المحدثة) ----------
   const tables = [
     `CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -101,6 +189,7 @@ async function initDB() {
       description TEXT,
       stock_quantity INTEGER NOT NULL DEFAULT 0,
       is_active INTEGER NOT NULL DEFAULT 1,
+      is_set INTEGER NOT NULL DEFAULT 0,
       views_count INTEGER NOT NULL DEFAULT 0,
       sales_count INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
@@ -111,6 +200,8 @@ async function initDB() {
       product_id INTEGER NOT NULL,
       name TEXT NOT NULL,
       hex TEXT NOT NULL DEFAULT '#cccccc',
+      combo_name TEXT,
+      part_label TEXT,
       sort_order INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
@@ -151,7 +242,7 @@ async function initDB() {
       wilaya TEXT NOT NULL,
       municipality TEXT NOT NULL,
       address TEXT NOT NULL,
-      delivery_method TEXT NOT NULL DEFAULT 'home' CHECK(delivery_method IN ('home','agency')),
+      delivery_method TEXT NOT NULL DEFAULT 'home' CHECK(delivery_method IN ('home','agency','express')),
       delivery_cost REAL NOT NULL DEFAULT 0,
       subtotal REAL NOT NULL DEFAULT 0,
       discount REAL NOT NULL DEFAULT 0,
@@ -202,7 +293,7 @@ async function initDB() {
     )`,
     `CREATE TABLE IF NOT EXISTS delivery_prices (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      delivery_type TEXT NOT NULL CHECK(delivery_type IN ('home','agency')),
+      delivery_type TEXT NOT NULL CHECK(delivery_type IN ('home','agency','express')),
       wilaya TEXT,
       price REAL NOT NULL DEFAULT 0,
       is_default INTEGER NOT NULL DEFAULT 0,
@@ -283,11 +374,8 @@ async function initDB() {
   ];
 
   for (const sql of tables) {
-    try {
-      await db.execute(sql);
-    } catch (err) {
-      console.error('❌ Table creation error:', err.message);
-    }
+    try { await db.execute(sql); }
+    catch (err) { console.error('❌ Table creation error:', err.message); }
   }
 
   // ---------- الفهارس ----------
@@ -312,6 +400,7 @@ async function initDB() {
     `CREATE INDEX IF NOT EXISTS idx_wishlist_customer      ON wishlist(customer_id)`,
     `CREATE INDEX IF NOT EXISTS idx_reviews_product        ON reviews(product_id)`,
     `CREATE INDEX IF NOT EXISTS idx_notifications_user     ON notifications(user_id)`,
+    `CREATE INDEX IF NOT EXISTS idx_delivery_type_wilaya   ON delivery_prices(delivery_type, wilaya)`,
   ];
   for (const sql of indexes) {
     try { await db.execute(sql); } catch (err) { console.error('Index err:', err.message); }
@@ -342,13 +431,12 @@ async function initDB() {
   }
 
   // ألوان الثيم
-  const themeSeeds = [
+  for (const [name, value] of [
     ['primary', '#ff6b81'],
     ['primaryDark', '#e8556d'],
     ['secondary', '#6c5ce7'],
     ['accent', '#feca57'],
-  ];
-  for (const [name, value] of themeSeeds) {
+  ]) {
     try {
       await db.execute({
         sql: 'INSERT OR IGNORE INTO theme_colors (name, color_value) VALUES (?, ?)',
@@ -357,19 +445,17 @@ async function initDB() {
     } catch (_) {}
   }
 
-  // أسعار التوصيل
-  try {
-    await db.execute({
-      sql: 'INSERT OR IGNORE INTO delivery_prices (delivery_type, wilaya, price, is_default) VALUES (?, NULL, ?, 1)',
-      args: ['home', 600]
-    });
-    await db.execute({
-      sql: 'INSERT OR IGNORE INTO delivery_prices (delivery_type, wilaya, price, is_default) VALUES (?, NULL, ?, 1)',
-      args: ['agency', 400]
-    });
-  } catch (_) {}
+  // ✅ أسعار التوصيل الافتراضية الثلاثة (منزل / وكالة / سريع)
+  for (const [type, price] of [['home', 600], ['agency', 400], ['express', 900]]) {
+    try {
+      await db.execute({
+        sql: 'INSERT OR IGNORE INTO delivery_prices (delivery_type, wilaya, price, is_default) VALUES (?, NULL, ?, 1)',
+        args: [type, price]
+      });
+    } catch (_) {}
+  }
 
-  // الإعدادات (بما فيها إعدادات تيليجرام الفارغة)
+  // الإعدادات
   const settingsSeeds = [
     ['storeName', 'بيبي شوب'],
     ['phone', '0550 00 00 00'],
@@ -379,7 +465,6 @@ async function initDB() {
     ['topBarText', 'توصيل لجميع الولايات | الدفع عند الاستلام | خصم 10% على أول طلب'],
     ['searchPlaceholder', 'ابحث عن ملابس، أحذية، إكسسوارات...'],
     ['footerCopyright', '© 2025 بيبي شوب - جميع الحقوق محفوظة'],
-    // ✅ مفاتيح تيليجرام (فارغة افتراضياً - تُملأ من لوحة التحكم)
     ['telegramBotToken', ''],
     ['telegramChatId', ''],
   ];
@@ -415,9 +500,7 @@ async function authMiddleware(req, res, next) {
       args: [token]
     });
 
-    if (result.rows.length === 0) {
-      return res.status(401).json({ error: 'Invalid token' });
-    }
+    if (result.rows.length === 0) return res.status(401).json({ error: 'Invalid token' });
 
     const session = result.rows[0];
     if (new Date(session.expires_at) < new Date()) {
@@ -431,6 +514,14 @@ async function authMiddleware(req, res, next) {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+}
+
+// ✅ NEW: middleware للأدمن فقط
+function adminMiddleware(req, res, next) {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ error: 'هذه العملية تتطلب صلاحيات الأدمن' });
+  }
+  next();
 }
 
 async function uploadBase64ToCloudinary(dataUri, folder = 'babyshop/products') {
@@ -453,65 +544,44 @@ function isVideoUrl(url) {
   return url.startsWith('data:video/') || /\.(mp4|webm|ogg|mov|avi|mkv|m4v)(\?|$)/i.test(url);
 }
 
-// ✅ NEW: escape HTML for Telegram (parse_mode = HTML)
 function escapeTelegram(str) {
   return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-// ✅ NEW: send a Telegram message using DB-stored credentials
 async function sendTelegramMessage(text) {
   try {
     const tokenRes = await db.execute({
-      sql: "SELECT value FROM settings WHERE key = 'telegramBotToken'",
-      args: []
+      sql: "SELECT value FROM settings WHERE key = 'telegramBotToken'", args: []
     });
     const chatRes = await db.execute({
-      sql: "SELECT value FROM settings WHERE key = 'telegramChatId'",
-      args: []
+      sql: "SELECT value FROM settings WHERE key = 'telegramChatId'", args: []
     });
     const token = tokenRes.rows[0]?.value;
     const chatId = chatRes.rows[0]?.value;
 
     if (!token || !chatId) {
-      console.log('⚠️ Telegram not configured — notification skipped');
+      console.log('⚠️ Telegram not configured — skipped');
       return false;
     }
 
-    const url = `https://api.telegram.org/bot${token}/sendMessage`;
-    const res = await fetch(url, {
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text,
-        parse_mode: 'HTML',
-        disable_web_page_preview: true
-      })
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML', disable_web_page_preview: true })
     });
-
     const result = await res.json();
-    if (!result.ok) {
-      console.error('❌ Telegram API error:', result.description);
-      return false;
-    }
+    if (!result.ok) { console.error('❌ Telegram API error:', result.description); return false; }
     console.log('✅ Telegram notification sent');
     return true;
-  } catch (e) {
-    console.error('❌ Telegram error:', e.message);
-    return false;
-  }
+  } catch (e) { console.error('❌ Telegram error:', e.message); return false; }
 }
 
 // ============================================================
-// 4) Health Check
+// 4) Health
 // ============================================================
 app.get('/api/health', async (req, res) => {
-  try {
-    await db.execute('SELECT 1');
-    res.json({ status: 'ok', time: new Date().toISOString() });
-  } catch (err) {
-    res.status(500).json({ status: 'error', message: err.message });
-  }
+  try { await db.execute('SELECT 1'); res.json({ status: 'ok', time: new Date().toISOString() }); }
+  catch (err) { res.status(500).json({ status: 'error', message: err.message }); }
 });
 
 // ============================================================
@@ -520,110 +590,125 @@ app.get('/api/health', async (req, res) => {
 app.post('/api/auth/setup', async (req, res) => {
   try {
     const count = await db.execute('SELECT COUNT(*) as c FROM users');
-    if (Number(count.rows[0].c) > 0) {
-      return res.status(400).json({ error: 'Setup already done' });
-    }
+    if (Number(count.rows[0].c) > 0) return res.status(400).json({ error: 'Setup already done' });
     const { username = 'admin', password, email, full_name } = req.body;
-    if (!password || password.length < 4) {
-      return res.status(400).json({ error: 'Password must be at least 4 characters' });
-    }
+    if (!password || password.length < 4) return res.status(400).json({ error: 'Password must be at least 4 characters' });
     const hash = await bcrypt.hash(password, 10);
     await db.execute({
-      sql: `INSERT INTO users (username, email, password_hash, full_name, role)
-            VALUES (?, ?, ?, ?, 'admin')`,
+      sql: `INSERT INTO users (username, email, password_hash, full_name, role) VALUES (?, ?, ?, ?, 'admin')`,
       args: [username, email || null, hash, full_name || 'مدير المتجر']
     });
     res.json({ success: true, message: 'Admin account created' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-    if (!username || !password) {
-      return res.status(400).json({ error: 'Missing credentials' });
-    }
-
-    const result = await db.execute({
-      sql: 'SELECT * FROM users WHERE username = ? AND is_active = 1',
-      args: [username]
-    });
-    if (result.rows.length === 0) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-
+    if (!username || !password) return res.status(400).json({ error: 'Missing credentials' });
+    const result = await db.execute({ sql: 'SELECT * FROM users WHERE username = ? AND is_active = 1', args: [username] });
+    if (result.rows.length === 0) return res.status(401).json({ error: 'Invalid credentials' });
     const user = result.rows[0];
     const ok = await bcrypt.compare(password, user.password_hash);
     if (!ok) return res.status(401).json({ error: 'Invalid credentials' });
-
     const token = generateToken();
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-
     await db.execute({
-      sql: `INSERT INTO sessions (user_id, token, ip_address, user_agent, expires_at)
-            VALUES (?, ?, ?, ?, ?)`,
+      sql: `INSERT INTO sessions (user_id, token, ip_address, user_agent, expires_at) VALUES (?, ?, ?, ?, ?)`,
       args: [user.id, token, req.ip || '', req.headers['user-agent'] || '', expiresAt]
     });
-
-    await db.execute({
-      sql: `UPDATE users SET last_login_at = datetime('now') WHERE id = ?`,
-      args: [user.id]
-    });
-
+    await db.execute({ sql: `UPDATE users SET last_login_at = datetime('now') WHERE id = ?`, args: [user.id] });
     res.json({
-      success: true,
-      token,
-      expiresAt,
-      user: {
-        id: user.id,
-        username: user.username,
-        role: user.role,
-        full_name: user.full_name,
-        email: user.email
-      }
+      success: true, token, expiresAt,
+      user: { id: user.id, username: user.username, role: user.role, full_name: user.full_name, email: user.email }
     });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.post('/api/auth/logout', authMiddleware, async (req, res) => {
+  try { await db.execute({ sql: 'DELETE FROM sessions WHERE token = ?', args: [req.token] }); res.json({ success: true }); }
+  catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.get('/api/auth/me', authMiddleware, (req, res) => res.json({ user: req.user }));
+
+// ============================================================
+// ✅ NEW: 5.b) USERS MANAGEMENT (admin only)
+// ============================================================
+app.get('/api/users', authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    await db.execute({ sql: 'DELETE FROM sessions WHERE token = ?', args: [req.token] });
+    const result = await db.execute({
+      sql: 'SELECT id, username, email, full_name, role, is_active, last_login_at, created_at FROM users ORDER BY created_at ASC',
+      args: []
+    });
+    res.json(result.rows);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/users', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { username, password, role, full_name, email } = req.body;
+    if (!username || !password) return res.status(400).json({ error: 'اسم المستخدم وكلمة المرور مطلوبان' });
+    if (password.length < 4) return res.status(400).json({ error: 'كلمة المرور قصيرة (4 أحرف على الأقل)' });
+    if (!['admin', 'manager', 'staff'].includes(role)) return res.status(400).json({ error: 'دور غير صالح' });
+    const existing = await db.execute({ sql: 'SELECT id FROM users WHERE username = ?', args: [username] });
+    if (existing.rows.length > 0) return res.status(400).json({ error: 'اسم المستخدم موجود مسبقاً' });
+    const hash = await bcrypt.hash(password, 10);
+    const result = await db.execute({
+      sql: `INSERT INTO users (username, email, password_hash, full_name, role) VALUES (?, ?, ?, ?, ?)`,
+      args: [username, email || null, hash, full_name || null, role]
+    });
+    res.json({ success: true, id: Number(result.lastInsertRowid) });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/users/:id', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (id === req.user.user_id) {
+      const { role } = req.body;
+      if (role && role !== 'admin') return res.status(400).json({ error: 'لا يمكنك تخفيض صلاحياتك الخاصة' });
+    }
+    const { role, full_name, email, is_active, password } = req.body;
+    const updates = []; const args = [];
+    if (role && ['admin','manager','staff'].includes(role)) { updates.push('role = ?'); args.push(role); }
+    if (full_name !== undefined) { updates.push('full_name = ?'); args.push(full_name || null); }
+    if (email !== undefined) { updates.push('email = ?'); args.push(email || null); }
+    if (is_active !== undefined) { updates.push('is_active = ?'); args.push(is_active ? 1 : 0); }
+    if (password) {
+      if (password.length < 4) return res.status(400).json({ error: 'كلمة المرور قصيرة' });
+      const hash = await bcrypt.hash(password, 10);
+      updates.push('password_hash = ?'); args.push(hash);
+    }
+    if (updates.length === 0) return res.status(400).json({ error: 'لا توجد تغييرات' });
+    updates.push("updated_at = datetime('now')");
+    args.push(id);
+    await db.execute({ sql: `UPDATE users SET ${updates.join(', ')} WHERE id = ?`, args });
     res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.get('/api/auth/me', authMiddleware, (req, res) => {
-  res.json({ user: req.user });
-});
-
-// ============================================================
-// ✅ NEW: 5.b) TELEGRAM TEST ENDPOINT
-// ============================================================
-app.post('/api/telegram/test', authMiddleware, async (req, res) => {
+app.delete('/api/users/:id', authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    const tokenRes = await db.execute({
-      sql: "SELECT value FROM settings WHERE key = 'telegramBotToken'",
-      args: []
-    });
-    const chatRes = await db.execute({
-      sql: "SELECT value FROM settings WHERE key = 'telegramChatId'",
-      args: []
-    });
+    const id = parseInt(req.params.id);
+    if (id === req.user.user_id) return res.status(400).json({ error: 'لا يمكنك حذف حسابك الخاص' });
+    await db.execute({ sql: 'DELETE FROM users WHERE id = ?', args: [id] });
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// ============================================================
+// Telegram test (admin only)
+// ============================================================
+app.post('/api/telegram/test', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const tokenRes = await db.execute({ sql: "SELECT value FROM settings WHERE key = 'telegramBotToken'", args: [] });
+    const chatRes = await db.execute({ sql: "SELECT value FROM settings WHERE key = 'telegramChatId'", args: [] });
     const token = tokenRes.rows[0]?.value;
     const chatId = chatRes.rows[0]?.value;
+    if (!token || !chatId) return res.status(400).json({ error: 'لم يتم تكوين بيانات تيليجرام بعد' });
 
-    if (!token || !chatId) {
-      return res.status(400).json({ error: 'لم يتم تكوين بيانات تيليجرام بعد — احفظ التوكن والـ Chat ID أولاً' });
-    }
-
-    const url = `https://api.telegram.org/bot${token}/sendMessage`;
-    const telegramRes = await fetch(url, {
+    const telegramRes = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -632,15 +717,12 @@ app.post('/api/telegram/test', authMiddleware, async (req, res) => {
         parse_mode: 'HTML'
       })
     });
-
     const result = await telegramRes.json();
     if (!telegramRes.ok || !result.ok) {
-      return res.status(400).json({ error: result.description || 'رفض تيليجرام الطلب — تأكد من صحة التوكن والـ Chat ID' });
+      return res.status(400).json({ error: result.description || 'رفض تيليجرام الطلب' });
     }
     res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ============================================================
@@ -664,7 +746,7 @@ async function getProductWithRelations(id) {
     args: [id]
   });
 
-  const colors = [];
+  const flatColors = [];
   for (const c of colorsRes.rows) {
     const imgs = await db.execute({
       sql: 'SELECT * FROM product_color_images WHERE color_id = ? ORDER BY is_main DESC, sort_order, id',
@@ -672,13 +754,31 @@ async function getProductWithRelations(id) {
     });
     const images = imgs.rows.map(r => r.media_url);
     const mainRow = imgs.rows.find(r => Number(r.is_main) === 1) || imgs.rows[0];
-    colors.push({
+    flatColors.push({
       id: c.id,
       name: c.name,
       hex: c.hex,
+      comboName: c.combo_name || null,
+      partLabel: c.part_label || null,
       image: mainRow ? mainRow.media_url : '',
       images: images.length ? images : (mainRow ? [mainRow.media_url] : [''])
     });
+  }
+
+  // ✅ بناء combos للطقم
+  const isSet = !!Number(product.is_set);
+  let combos = null;
+  if (isSet) {
+    const comboMap = new Map();
+    flatColors.forEach(c => {
+      const key = c.comboName || c.name || 'المجموعة';
+      if (!comboMap.has(key)) comboMap.set(key, { name: key, parts: [] });
+      comboMap.get(key).parts.push({
+        partLabel: c.partLabel || 'قطعة',
+        name: c.name, hex: c.hex, image: c.image, images: c.images
+      });
+    });
+    combos = Array.from(comboMap.values());
   }
 
   return {
@@ -695,9 +795,11 @@ async function getProductWithRelations(id) {
     description: product.description,
     stockQuantity: product.stock_quantity,
     isActive: !!Number(product.is_active),
+    isSet,
+    combos,
     viewsCount: product.views_count,
     salesCount: product.sales_count,
-    colors,
+    colors: flatColors,
     ages: agesRes.rows.map(a => a.age_label),
     details: detailsRes.rows.map(d => d.detail_text),
     createdAt: product.created_at,
@@ -710,21 +812,10 @@ app.get('/api/products', async (req, res) => {
     const { category, gender, search } = req.query;
     let sql = 'SELECT id FROM products WHERE is_active = 1';
     const args = [];
-
-    if (category && category !== 'all') {
-      sql += ' AND category = ?';
-      args.push(category);
-    }
-    if (gender && gender !== 'all') {
-      sql += " AND (gender = ? OR gender = 'both')";
-      args.push(gender);
-    }
-    if (search) {
-      sql += ' AND (name LIKE ? OR category_label LIKE ?)';
-      args.push(`%${search}%`, `%${search}%`);
-    }
+    if (category && category !== 'all') { sql += ' AND category = ?'; args.push(category); }
+    if (gender && gender !== 'all') { sql += " AND (gender = ? OR gender = 'both')"; args.push(gender); }
+    if (search) { sql += ' AND (name LIKE ? OR category_label LIKE ?)'; args.push(`%${search}%`, `%${search}%`); }
     sql += ' ORDER BY created_at DESC';
-
     const result = await db.execute({ sql, args });
     const products = [];
     for (const row of result.rows) {
@@ -732,23 +823,16 @@ app.get('/api/products', async (req, res) => {
       if (p) products.push(p);
     }
     res.json(products);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.get('/api/products/:id', async (req, res) => {
   try {
     const product = await getProductWithRelations(parseInt(req.params.id));
     if (!product) return res.status(404).json({ error: 'Product not found' });
-    await db.execute({
-      sql: 'UPDATE products SET views_count = views_count + 1 WHERE id = ?',
-      args: [product.id]
-    });
+    await db.execute({ sql: 'UPDATE products SET views_count = views_count + 1 WHERE id = ?', args: [product.id] });
     res.json(product);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 async function saveProductRelations(productId, colors, ages, details) {
@@ -760,22 +844,19 @@ async function saveProductRelations(productId, colors, ages, details) {
     for (let ci = 0; ci < colors.length; ci++) {
       const c = colors[ci];
       if (!c || !c.name) continue;
-
+      // ✅ حفظ combo_name و part_label
       const colorRes = await db.execute({
-        sql: 'INSERT INTO product_colors (product_id, name, hex, sort_order) VALUES (?, ?, ?, ?)',
-        args: [productId, c.name, c.hex || '#cccccc', ci]
+        sql: 'INSERT INTO product_colors (product_id, name, hex, combo_name, part_label, sort_order) VALUES (?, ?, ?, ?, ?, ?)',
+        args: [productId, c.name, c.hex || '#cccccc', c.comboName || null, c.partLabel || null, ci]
       });
       const colorId = Number(colorRes.lastInsertRowid);
-
       let imgs = [];
       if (Array.isArray(c.images) && c.images.length) imgs = c.images.filter(Boolean);
       else if (c.image) imgs = [c.image];
-
       for (let ii = 0; ii < imgs.length; ii++) {
         const finalUrl = await uploadBase64ToCloudinary(imgs[ii], `babyshop/products/${productId}`);
         await db.execute({
-          sql: `INSERT INTO product_color_images (color_id, media_url, media_type, is_main, sort_order)
-                VALUES (?, ?, ?, ?, ?)`,
+          sql: `INSERT INTO product_color_images (color_id, media_url, media_type, is_main, sort_order) VALUES (?, ?, ?, ?, ?)`,
           args: [colorId, finalUrl, isVideoUrl(finalUrl) ? 'video' : 'image', ii === 0 ? 1 : 0, ii]
         });
       }
@@ -808,21 +889,16 @@ app.post('/api/products', authMiddleware, async (req, res) => {
   try {
     const {
       name, category, categoryLabel, gender, price, oldPrice,
-      badge, badgeType, description, colors, ages, details, stockQuantity
+      badge, badgeType, description, colors, ages, details, stockQuantity, isSet
     } = req.body;
+    if (!name || price === undefined) return res.status(400).json({ error: 'name and price are required' });
 
-    if (!name || price === undefined) {
-      return res.status(400).json({ error: 'name and price are required' });
-    }
-
-    const slug = (name.toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^\w\u0600-\u06FF-]/g, '') || 'product') + '-' + Date.now();
+    const slug = (name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\u0600-\u06FF-]/g, '') || 'product') + '-' + Date.now();
 
     const result = await db.execute({
       sql: `INSERT INTO products
-        (name, slug, category, category_label, gender, price, old_price, badge, badge_type, description, stock_quantity)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (name, slug, category, category_label, gender, price, old_price, badge, badge_type, description, stock_quantity, is_set)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [
         name, slug,
         category || 'winter',
@@ -833,18 +909,15 @@ app.post('/api/products', authMiddleware, async (req, res) => {
         badge || null,
         badgeType || 'new',
         description || '',
-        Number(stockQuantity) || 0
+        Number(stockQuantity) || 0,
+        isSet ? 1 : 0
       ]
     });
     const id = Number(result.lastInsertRowid);
-
     await saveProductRelations(id, colors, ages, details);
     const product = await getProductWithRelations(id);
     res.json({ success: true, id, product });
-  } catch (err) {
-    console.error('POST /products error:', err);
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { console.error('POST /products:', err); res.status(500).json({ error: err.message }); }
 });
 
 app.put('/api/products/:id', authMiddleware, async (req, res) => {
@@ -852,23 +925,21 @@ app.put('/api/products/:id', authMiddleware, async (req, res) => {
     const id = parseInt(req.params.id);
     const {
       name, category, categoryLabel, gender, price, oldPrice,
-      badge, badgeType, description, colors, ages, details, stockQuantity, isActive
+      badge, badgeType, description, colors, ages, details, stockQuantity, isActive, isSet
     } = req.body;
 
     await db.execute({
       sql: `UPDATE products SET
         name=?, category=?, category_label=?, gender=?, price=?, old_price=?,
-        badge=?, badge_type=?, description=?, stock_quantity=?, is_active=?,
-        updated_at=datetime('now')
-        WHERE id=?`,
+        badge=?, badge_type=?, description=?, stock_quantity=?, is_active=?, is_set=?,
+        updated_at=datetime('now') WHERE id=?`,
       args: [
         name, category, categoryLabel, gender, Number(price),
         oldPrice ? Number(oldPrice) : null,
-        badge || null,
-        badgeType || 'new',
-        description || '',
+        badge || null, badgeType || 'new', description || '',
         Number(stockQuantity) || 0,
         isActive === false ? 0 : 1,
+        isSet ? 1 : 0,
         id
       ]
     });
@@ -876,18 +947,12 @@ app.put('/api/products/:id', authMiddleware, async (req, res) => {
     await saveProductRelations(id, colors, ages, details);
     const product = await getProductWithRelations(id);
     res.json({ success: true, product });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.delete('/api/products/:id', authMiddleware, async (req, res) => {
-  try {
-    await db.execute({ sql: 'DELETE FROM products WHERE id = ?', args: [parseInt(req.params.id)] });
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  try { await db.execute({ sql: 'DELETE FROM products WHERE id = ?', args: [parseInt(req.params.id)] }); res.json({ success: true }); }
+  catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ============================================================
@@ -903,26 +968,19 @@ app.post('/api/orders', async (req, res) => {
     if (!firstName || !lastName || !phone1 || !wilaya || !municipality || !address) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
-    if (!Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ error: 'Cart is empty' });
-    }
+    if (!Array.isArray(items) || items.length === 0) return res.status(400).json({ error: 'Cart is empty' });
 
     let customerId = null;
-    const existingCust = await db.execute({
-      sql: 'SELECT id FROM customers WHERE phone = ?',
-      args: [phone1]
-    });
+    const existingCust = await db.execute({ sql: 'SELECT id FROM customers WHERE phone = ?', args: [phone1] });
     if (existingCust.rows.length > 0) {
       customerId = existingCust.rows[0].id;
       await db.execute({
-        sql: `UPDATE customers SET first_name=?, last_name=?, phone2=?, wilaya=?, municipality=?, address=?,
-              updated_at=datetime('now') WHERE id=?`,
+        sql: `UPDATE customers SET first_name=?, last_name=?, phone2=?, wilaya=?, municipality=?, address=?, updated_at=datetime('now') WHERE id=?`,
         args: [firstName, lastName, phone2 || null, wilaya, municipality, address, customerId]
       });
     } else {
       const custRes = await db.execute({
-        sql: `INSERT INTO customers (first_name, last_name, phone, phone2, wilaya, municipality, address)
-              VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        sql: `INSERT INTO customers (first_name, last_name, phone, phone2, wilaya, municipality, address) VALUES (?, ?, ?, ?, ?, ?, ?)`,
         args: [firstName, lastName, phone1, phone2 || null, wilaya, municipality, address]
       });
       customerId = Number(custRes.lastInsertRowid);
@@ -934,47 +992,28 @@ app.post('/api/orders', async (req, res) => {
       const qty = parseInt(it.qty) || 1;
       const price = parseFloat(it.price) || 0;
       subtotal += qty * price;
-
       let productName = 'منتج محذوف';
       let colorName = it.colorName || '';
       let colorHex = it.colorHex || '';
       let productImage = it.image || '';
-
       if (it.productId) {
-        const pRes = await db.execute({
-          sql: 'SELECT name FROM products WHERE id = ?',
-          args: [it.productId]
-        });
+        const pRes = await db.execute({ sql: 'SELECT name FROM products WHERE id = ?', args: [it.productId] });
         if (pRes.rows.length > 0) productName = pRes.rows[0].name;
-
         if (it.colorIndex !== undefined) {
-          const colorsRes = await db.execute({
-            sql: 'SELECT * FROM product_colors WHERE product_id = ? ORDER BY sort_order, id',
-            args: [it.productId]
-          });
+          const colorsRes = await db.execute({ sql: 'SELECT * FROM product_colors WHERE product_id = ? ORDER BY sort_order, id', args: [it.productId] });
           const color = colorsRes.rows[it.colorIndex];
           if (color) {
             colorName = color.name;
             colorHex = color.hex;
-            const imgRes = await db.execute({
-              sql: 'SELECT media_url FROM product_color_images WHERE color_id = ? ORDER BY is_main DESC, sort_order LIMIT 1',
-              args: [color.id]
-            });
+            const imgRes = await db.execute({ sql: 'SELECT media_url FROM product_color_images WHERE color_id = ? ORDER BY is_main DESC, sort_order LIMIT 1', args: [color.id] });
             if (imgRes.rows.length > 0) productImage = imgRes.rows[0].media_url;
           }
         }
       }
-
       preparedItems.push({
-        product_id: it.productId || null,
-        product_name: productName,
-        color_name: colorName,
-        color_hex: colorHex,
-        age_label: it.age || '',
-        quantity: qty,
-        unit_price: price,
-        total_price: qty * price,
-        product_image: productImage
+        product_id: it.productId || null, product_name: productName,
+        color_name: colorName, color_hex: colorHex, age_label: it.age || '',
+        quantity: qty, unit_price: price, total_price: qty * price, product_image: productImage
       });
     }
 
@@ -989,50 +1028,37 @@ app.post('/api/orders', async (req, res) => {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [
         orderNumber, customerId, firstName, lastName, phone1, phone2 || null,
-        wilaya, municipality, address,
-        deliveryMethod || 'home', finalDeliveryCost, subtotal, total, notes || null
+        wilaya, municipality, address, deliveryMethod || 'home', finalDeliveryCost,
+        subtotal, total, notes || null
       ]
     });
     const orderId = Number(orderRes.lastInsertRowid);
 
     for (const pi of preparedItems) {
       await db.execute({
-        sql: `INSERT INTO order_items
-          (order_id, product_id, product_name, color_name, color_hex, age_label, quantity, unit_price, total_price, product_image)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        args: [
-          orderId, pi.product_id, pi.product_name, pi.color_name, pi.color_hex,
-          pi.age_label, pi.quantity, pi.unit_price, pi.total_price, pi.product_image
-        ]
+        sql: `INSERT INTO order_items (order_id, product_id, product_name, color_name, color_hex, age_label, quantity, unit_price, total_price, product_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        args: [orderId, pi.product_id, pi.product_name, pi.color_name, pi.color_hex, pi.age_label, pi.quantity, pi.unit_price, pi.total_price, pi.product_image]
       });
     }
 
-    await db.execute({
-      sql: `INSERT INTO order_status_history (order_id, status, note) VALUES (?, 'pending', 'تم إنشاء الطلب')`,
-      args: [orderId]
-    });
-
-    await db.execute({
-      sql: `UPDATE customers SET total_orders = total_orders + 1, total_spent = total_spent + ? WHERE id = ?`,
-      args: [total, customerId]
-    });
+    await db.execute({ sql: `INSERT INTO order_status_history (order_id, status, note) VALUES (?, 'pending', 'تم إنشاء الطلب')`, args: [orderId] });
+    await db.execute({ sql: `UPDATE customers SET total_orders = total_orders + 1, total_spent = total_spent + ? WHERE id = ?`, args: [total, customerId] });
 
     for (const pi of preparedItems) {
       if (pi.product_id) {
-        await db.execute({
-          sql: 'UPDATE products SET sales_count = sales_count + ? WHERE id = ?',
-          args: [pi.quantity, pi.product_id]
-        });
+        await db.execute({ sql: 'UPDATE products SET sales_count = sales_count + ? WHERE id = ?', args: [pi.quantity, pi.product_id] });
       }
     }
 
-    // ✅ NEW: إرسال إشعار تيليجرام (fire and forget — لا يُعطّل الاستجابة)
+    // ✅ Telegram notification — يدعم express
     try {
       const itemsText = preparedItems.map((pi, i) =>
         `<b>${i + 1}.</b> ${escapeTelegram(pi.product_name)}\n` +
         `   🎨 ${escapeTelegram(pi.color_name || '—')} | 👶 ${escapeTelegram(pi.age_label || '—')}\n` +
         `   📦 ${pi.quantity} × ${pi.unit_price.toLocaleString()} = <b>${pi.total_price.toLocaleString()} د.ج</b>`
       ).join('\n\n');
+
+      const deliveryLabel = { home: 'المنزل', agency: 'الوكالة', express: 'سريع ⚡' }[deliveryMethod] || 'المنزل';
 
       const telegramMessage =
         `🛒 <b>طلب جديد وصل!</b>\n\n` +
@@ -1045,20 +1071,16 @@ app.post('/api/orders', async (req, res) => {
         `🏘️ <b>البلدية:</b> ${escapeTelegram(municipality)}\n` +
         `🏠 <b>العنوان:</b> ${escapeTelegram(address)}\n\n` +
         `📦 <b>المنتجات:</b>\n${itemsText}\n\n` +
-        `🚚 <b>التوصيل:</b> ${deliveryMethod === 'home' ? 'المنزل' : 'الوكالة'} — ${finalDeliveryCost.toLocaleString()} د.ج\n` +
+        `🚚 <b>التوصيل:</b> ${deliveryLabel} — ${finalDeliveryCost.toLocaleString()} د.ج\n` +
         `💰 <b>الإجمالي المطلوب:</b> <b>${total.toLocaleString()} د.ج</b>`;
 
-      sendTelegramMessage(telegramMessage).catch(e => console.error('Telegram async error:', e));
+      sendTelegramMessage(telegramMessage).catch(e => console.error('Telegram async:', e));
     } catch (tgErr) {
-      console.error('❌ Telegram notify preparation failed:', tgErr.message);
-      // لا نُفشل الطلب بسبب فشل الإشعار
+      console.error('❌ Telegram prep failed:', tgErr.message);
     }
 
     res.json({ success: true, orderId: orderNumber, id: orderId, total });
-  } catch (err) {
-    console.error('POST /orders error:', err);
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { console.error('POST /orders:', err); res.status(500).json({ error: err.message }); }
 });
 
 app.get('/api/orders', authMiddleware, async (req, res) => {
@@ -1066,121 +1088,58 @@ app.get('/api/orders', authMiddleware, async (req, res) => {
     const { status } = req.query;
     let sql = 'SELECT * FROM orders';
     const args = [];
-    if (status && status !== 'all') {
-      sql += ' WHERE status = ?';
-      args.push(status);
-    }
+    if (status && status !== 'all') { sql += ' WHERE status = ?'; args.push(status); }
     sql += ' ORDER BY created_at DESC';
-
     const result = await db.execute({ sql, args });
     const orders = [];
     for (const o of result.rows) {
-      const itemsRes = await db.execute({
-        sql: 'SELECT * FROM order_items WHERE order_id = ?',
-        args: [o.id]
-      });
+      const itemsRes = await db.execute({ sql: 'SELECT * FROM order_items WHERE order_id = ?', args: [o.id] });
       orders.push({
-        id: o.id,
-        orderId: o.order_number,
-        firstName: o.first_name,
-        lastName: o.last_name,
-        phone1: o.phone1,
-        phone2: o.phone2,
-        wilaya: o.wilaya,
-        municipality: o.municipality,
-        address: o.address,
-        deliveryMethod: o.delivery_method,
-        deliveryCost: o.delivery_cost,
-        subtotal: o.subtotal,
-        discount: o.discount,
-        total: o.total,
-        status: o.status,
-        notes: o.notes,
-        adminNotes: o.admin_notes,
-        createdAt: o.created_at,
-        updatedAt: o.updated_at,
+        id: o.id, orderId: o.order_number, firstName: o.first_name, lastName: o.last_name,
+        phone1: o.phone1, phone2: o.phone2, wilaya: o.wilaya, municipality: o.municipality, address: o.address,
+        deliveryMethod: o.delivery_method, deliveryCost: o.delivery_cost, subtotal: o.subtotal,
+        discount: o.discount, total: o.total, status: o.status, notes: o.notes, adminNotes: o.admin_notes,
+        createdAt: o.created_at, updatedAt: o.updated_at,
         items: itemsRes.rows.map(r => ({
-          productId: r.product_id,
-          productName: r.product_name,
-          colorName: r.color_name,
-          colorHex: r.color_hex,
-          age: r.age_label,
-          qty: r.quantity,
-          price: r.unit_price,
-          total: r.total_price,
-          image: r.product_image
+          productId: r.product_id, productName: r.product_name, colorName: r.color_name,
+          colorHex: r.color_hex, age: r.age_label, qty: r.quantity, price: r.unit_price,
+          total: r.total_price, image: r.product_image
         }))
       });
     }
     res.json(orders);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.get('/api/orders/:id', authMiddleware, async (req, res) => {
   try {
     const key = req.params.id;
-    const result = await db.execute({
-      sql: 'SELECT * FROM orders WHERE order_number = ? OR id = ?',
-      args: [key, parseInt(key) || 0]
-    });
+    const result = await db.execute({ sql: 'SELECT * FROM orders WHERE order_number = ? OR id = ?', args: [key, parseInt(key) || 0] });
     if (result.rows.length === 0) return res.status(404).json({ error: 'Order not found' });
     const o = result.rows[0];
-    const itemsRes = await db.execute({
-      sql: 'SELECT * FROM order_items WHERE order_id = ?',
-      args: [o.id]
-    });
-    const historyRes = await db.execute({
-      sql: 'SELECT * FROM order_status_history WHERE order_id = ? ORDER BY created_at DESC',
-      args: [o.id]
-    });
-    res.json({
-      ...o,
-      orderId: o.order_number,
-      items: itemsRes.rows,
-      statusHistory: historyRes.rows
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+    const itemsRes = await db.execute({ sql: 'SELECT * FROM order_items WHERE order_id = ?', args: [o.id] });
+    const historyRes = await db.execute({ sql: 'SELECT * FROM order_status_history WHERE order_id = ? ORDER BY created_at DESC', args: [o.id] });
+    res.json({ ...o, orderId: o.order_number, items: itemsRes.rows, statusHistory: historyRes.rows });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.put('/api/orders/:id/status', authMiddleware, async (req, res) => {
   try {
     const { status } = req.body;
     const valid = ['pending', 'confirmed', 'out_for_delivery', 'delivered', 'cancelled'];
-    if (!valid.includes(status)) {
-      return res.status(400).json({ error: 'Invalid status' });
-    }
-
+    if (!valid.includes(status)) return res.status(400).json({ error: 'Invalid status' });
     const key = req.params.id;
-    const orderRes = await db.execute({
-      sql: 'SELECT id FROM orders WHERE order_number = ? OR id = ?',
-      args: [key, parseInt(key) || 0]
-    });
+    const orderRes = await db.execute({ sql: 'SELECT id FROM orders WHERE order_number = ? OR id = ?', args: [key, parseInt(key) || 0] });
     if (orderRes.rows.length === 0) return res.status(404).json({ error: 'Order not found' });
     const orderId = orderRes.rows[0].id;
-
-    await db.execute({
-      sql: `UPDATE orders SET status = ?, updated_at = datetime('now') WHERE id = ?`,
-      args: [status, orderId]
-    });
-
-    await db.execute({
-      sql: `INSERT INTO order_status_history (order_id, status, changed_by_user_id, note)
-            VALUES (?, ?, ?, ?)`,
-      args: [orderId, status, req.user.user_id, 'تم التحديث من لوحة التحكم']
-    });
-
+    await db.execute({ sql: `UPDATE orders SET status = ?, updated_at = datetime('now') WHERE id = ?`, args: [status, orderId] });
+    await db.execute({ sql: `INSERT INTO order_status_history (order_id, status, changed_by_user_id, note) VALUES (?, ?, ?, ?)`, args: [orderId, status, req.user.user_id, 'تم التحديث من لوحة التحكم'] });
     res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ============================================================
-// 8) SETTINGS
+// 8) SETTINGS (admin only)
 // ============================================================
 app.get('/api/settings', async (req, res) => {
   try {
@@ -1188,12 +1147,10 @@ app.get('/api/settings', async (req, res) => {
     const settings = {};
     for (const row of result.rows) settings[row.key] = row.value;
     res.json(settings);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.put('/api/settings', authMiddleware, async (req, res) => {
+app.put('/api/settings', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const settings = req.body || {};
     for (const [key, value] of Object.entries(settings)) {
@@ -1204,13 +1161,11 @@ app.put('/api/settings', authMiddleware, async (req, res) => {
       });
     }
     res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ============================================================
-// 9) THEME
+// 9) THEME (admin only for PUT)
 // ============================================================
 app.get('/api/theme', async (req, res) => {
   try {
@@ -1218,12 +1173,10 @@ app.get('/api/theme', async (req, res) => {
     const theme = {};
     for (const row of result.rows) theme[row.name] = row.color_value;
     res.json(theme);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.put('/api/theme', authMiddleware, async (req, res) => {
+app.put('/api/theme', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const theme = req.body || {};
     for (const [name, value] of Object.entries(theme)) {
@@ -1234,137 +1187,145 @@ app.put('/api/theme', authMiddleware, async (req, res) => {
       });
     }
     res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ============================================================
-// 10) DELIVERY
+// 10) DELIVERY — ✅ محدّث كلياً لدعم express + لكل ولاية
 // ============================================================
+
+// الافتراضية فقط (للتوافق مع الكود القديم في index.html)
 app.get('/api/delivery', async (req, res) => {
   try {
     const result = await db.execute('SELECT * FROM delivery_prices WHERE wilaya IS NULL');
-    const delivery = { home: 0, agency: 0 };
-    for (const row of result.rows) {
-      delivery[row.delivery_type] = row.price;
-    }
+    const delivery = { home: 0, agency: 0, express: 0 };
+    for (const row of result.rows) delivery[row.delivery_type] = row.price;
     res.json(delivery);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.put('/api/delivery', authMiddleware, async (req, res) => {
+// الكل (Defaults + per-wilaya) — يُستخدم في لوحة التحكم
+app.get('/api/delivery/all', async (req, res) => {
   try {
-    const { home, agency } = req.body || {};
-    if (home !== undefined) {
-      await db.execute({
-        sql: `UPDATE delivery_prices SET price = ?, updated_at = datetime('now')
-              WHERE delivery_type = 'home' AND wilaya IS NULL`,
-        args: [Number(home)]
-      });
+    const result = await db.execute('SELECT * FROM delivery_prices');
+    const defaults = { home: 0, agency: 0, express: 0 };
+    const byWilaya = {};
+    for (const row of result.rows) {
+      if (row.wilaya === null) defaults[row.delivery_type] = row.price;
+      else {
+        if (!byWilaya[row.wilaya]) byWilaya[row.wilaya] = { home: null, agency: null, express: null };
+        byWilaya[row.wilaya][row.delivery_type] = row.price;
+      }
     }
-    if (agency !== undefined) {
+    res.json({ defaults, byWilaya });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// سعر ولاية محددة (merge مع الافتراضي) — يُستخدم في index.html
+app.get('/api/delivery/wilaya/:wilaya', async (req, res) => {
+  try {
+    const wilaya = decodeURIComponent(req.params.wilaya);
+    const specRes = await db.execute({ sql: 'SELECT delivery_type, price FROM delivery_prices WHERE wilaya = ?', args: [wilaya] });
+    const defRes = await db.execute({ sql: 'SELECT delivery_type, price FROM delivery_prices WHERE wilaya IS NULL', args: [] });
+    const specific = {}; const defaults = {};
+    for (const r of specRes.rows) specific[r.delivery_type] = r.price;
+    for (const r of defRes.rows) defaults[r.delivery_type] = r.price;
+    const prices = {
+      home: specific.home ?? defaults.home ?? 0,
+      agency: specific.agency ?? defaults.agency ?? 0,
+      express: specific.express ?? defaults.express ?? 0
+    };
+    res.json(prices);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// تحديث الافتراضيات الثلاثة
+app.put('/api/delivery', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { home, agency, express } = req.body || {};
+    const upsertDefault = async (type, price) => {
+      if (price === undefined) return;
       await db.execute({
-        sql: `UPDATE delivery_prices SET price = ?, updated_at = datetime('now')
-              WHERE delivery_type = 'agency' AND wilaya IS NULL`,
-        args: [Number(agency)]
+        sql: `INSERT INTO delivery_prices (delivery_type, wilaya, price, is_default, updated_at)
+              VALUES (?, NULL, ?, 1, datetime('now'))
+              ON CONFLICT(delivery_type, wilaya) DO UPDATE SET price = excluded.price, updated_at = datetime('now')`,
+        args: [type, Number(price)]
       });
-    }
+    };
+    await upsertDefault('home', home);
+    await upsertDefault('agency', agency);
+    await upsertDefault('express', express);
     res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// تحديث أسعار ولاية محددة
+app.put('/api/delivery/wilaya/:wilaya', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const wilaya = decodeURIComponent(req.params.wilaya);
+    const { home, agency, express } = req.body || {};
+    const upsert = async (type, price) => {
+      if (price === undefined) return;
+      await db.execute({
+        sql: `INSERT INTO delivery_prices (delivery_type, wilaya, price, is_default, updated_at)
+              VALUES (?, ?, ?, 0, datetime('now'))
+              ON CONFLICT(delivery_type, wilaya) DO UPDATE SET price = excluded.price, updated_at = datetime('now')`,
+        args: [type, wilaya, Number(price)]
+      });
+    };
+    await upsert('home', home);
+    await upsert('agency', agency);
+    await upsert('express', express);
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ============================================================
 // 11) WILAYAS & MUNICIPALITIES
 // ============================================================
 app.get('/api/wilayas', async (req, res) => {
-  try {
-    const result = await db.execute('SELECT * FROM wilayas ORDER BY code');
-    res.json(result.rows);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  try { const result = await db.execute('SELECT * FROM wilayas ORDER BY code'); res.json(result.rows); }
+  catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.get('/api/wilayas/:id/municipalities', async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const result = await db.execute({
-      sql: 'SELECT * FROM municipalities WHERE wilaya_id = ? ORDER BY name',
-      args: [id]
-    });
+    const result = await db.execute({ sql: 'SELECT * FROM municipalities WHERE wilaya_id = ? ORDER BY name', args: [id] });
     res.json(result.rows);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ============================================================
-// 12) UPLOAD (Cloudinary)
+// 12) UPLOAD
 // ============================================================
 app.post('/api/upload', authMiddleware, async (req, res) => {
   try {
     const { file, folder } = req.body;
     if (!file) return res.status(400).json({ error: 'No file provided' });
-
-    const result = await cloudinary.uploader.upload(file, {
-      folder: folder || 'babyshop/uploads',
-      resource_type: 'auto',
-    });
-
-    res.json({
-      success: true,
-      url: result.secure_url,
-      public_id: result.public_id,
-      type: result.resource_type
-    });
-  } catch (err) {
-    console.error('Upload error:', err);
-    res.status(500).json({ error: err.message });
-  }
+    const result = await cloudinary.uploader.upload(file, { folder: folder || 'babyshop/uploads', resource_type: 'auto' });
+    res.json({ success: true, url: result.secure_url, public_id: result.public_id, type: result.resource_type });
+  } catch (err) { console.error('Upload error:', err); res.status(500).json({ error: err.message }); }
 });
 
 // ============================================================
-// 13) STATS (Dashboard) — ✅ محدّث ليعكس منطق "delivered only"
+// 13) STATS
 // ============================================================
 app.get('/api/stats', authMiddleware, async (req, res) => {
   try {
     const productsCount = await db.execute('SELECT COUNT(*) as c FROM products');
     const ordersCount = await db.execute('SELECT COUNT(*) as c FROM orders');
     const pendingCount = await db.execute("SELECT COUNT(*) as c FROM orders WHERE status = 'pending'");
-
-    // ✅ الإيرادات تُحسب فقط من الطلبات التي حالتها "delivered"
-    const revenue = await db.execute(
-      "SELECT COALESCE(SUM(total), 0) as s FROM orders WHERE status = 'delivered'"
-    );
-
-    // ✅ المبيعات آخر 7 أيام — فقط من الطلبات "delivered"
+    const revenue = await db.execute("SELECT COALESCE(SUM(total), 0) as s FROM orders WHERE status = 'delivered'");
     const last7 = await db.execute(`
-      SELECT DATE(created_at) as day, COALESCE(SUM(total), 0) as total
-      FROM orders
+      SELECT DATE(created_at) as day, COALESCE(SUM(total), 0) as total FROM orders
       WHERE status = 'delivered' AND created_at >= datetime('now', '-7 days')
-      GROUP BY DATE(created_at)
-    `);
-
-    const statusCounts = await db.execute(
-      'SELECT status, COUNT(*) as c FROM orders GROUP BY status'
-    );
-
-    // ✅ المنتجات الأكثر مبيعاً — فقط من الطلبات "delivered"
+      GROUP BY DATE(created_at)`);
+    const statusCounts = await db.execute('SELECT status, COUNT(*) as c FROM orders GROUP BY status');
     const topProducts = await db.execute(`
       SELECT oi.product_name, SUM(oi.quantity) as qty, SUM(oi.total_price) as total
-      FROM order_items oi
-      INNER JOIN orders o ON o.id = oi.order_id
-      WHERE o.status = 'delivered'
-      GROUP BY oi.product_name
-      ORDER BY qty DESC
-      LIMIT 5
-    `);
-
+      FROM order_items oi INNER JOIN orders o ON o.id = oi.order_id
+      WHERE o.status = 'delivered' GROUP BY oi.product_name ORDER BY qty DESC LIMIT 5`);
     res.json({
       totalProducts: Number(productsCount.rows[0].c),
       totalOrders: Number(ordersCount.rows[0].c),
@@ -1374,21 +1335,15 @@ app.get('/api/stats', authMiddleware, async (req, res) => {
       statusCounts: statusCounts.rows,
       topProducts: topProducts.rows
     });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ============================================================
 // 14) SPA Fallback
 // ============================================================
 app.get('*', (req, res) => {
-  if (req.path.startsWith('/api/')) {
-    return res.status(404).json({ error: 'API endpoint not found' });
-  }
-  if (req.path.includes('.')) {
-    return res.status(404).send('File not found');
-  }
+  if (req.path.startsWith('/api/')) return res.status(404).json({ error: 'API endpoint not found' });
+  if (req.path.includes('.')) return res.status(404).send('File not found');
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
@@ -1402,7 +1357,4 @@ initDB()
       console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
     });
   })
-  .catch((err) => {
-    console.error('❌ Failed to initialize database:', err);
-    process.exit(1);
-  });
+  .catch((err) => { console.error('❌ Failed to initialize DB:', err); process.exit(1); });
