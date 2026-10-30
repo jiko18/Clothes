@@ -109,12 +109,22 @@ async function initDB() {
     }
   } catch (e) { console.error('orders migration error:', e.message); }
 
-  // ---------- Migration 3: products → is_set ----------
+  // ---------- Migration 3: products → إضافة is_set, badge_color, badge_color_name ----------
   try {
     const cols = await db.execute("PRAGMA table_info(products)");
-    if (cols.rows.length > 0 && !cols.rows.some(r => r.name === 'is_set')) {
-      await db.execute("ALTER TABLE products ADD COLUMN is_set INTEGER NOT NULL DEFAULT 0");
-      console.log('✅ Added is_set to products');
+    if (cols.rows.length > 0) {
+      if (!cols.rows.some(r => r.name === 'is_set')) {
+        await db.execute("ALTER TABLE products ADD COLUMN is_set INTEGER NOT NULL DEFAULT 0");
+        console.log('✅ Added is_set to products');
+      }
+      if (!cols.rows.some(r => r.name === 'badge_color')) {
+        await db.execute("ALTER TABLE products ADD COLUMN badge_color TEXT DEFAULT '#feca57'");
+        console.log('✅ Added badge_color to products');
+      }
+      if (!cols.rows.some(r => r.name === 'badge_color_name')) {
+        await db.execute("ALTER TABLE products ADD COLUMN badge_color_name TEXT DEFAULT 'أصفر فاتح'");
+        console.log('✅ Added badge_color_name to products');
+      }
     }
   } catch (e) { console.error('products migration error:', e.message); }
 
@@ -186,6 +196,8 @@ async function initDB() {
       old_price REAL,
       badge TEXT,
       badge_type TEXT DEFAULT 'new',
+      badge_color TEXT DEFAULT '#feca57',
+      badge_color_name TEXT DEFAULT 'أصفر فاتح',
       description TEXT,
       stock_quantity INTEGER NOT NULL DEFAULT 0,
       is_active INTEGER NOT NULL DEFAULT 1,
@@ -467,6 +479,7 @@ async function initDB() {
     ['footerCopyright', '© 2025 بيبي شوب - جميع الحقوق محفوظة'],
     ['telegramBotToken', ''],
     ['telegramChatId', ''],
+    ['logo', ''],
   ];
   for (const [k, v] of settingsSeeds) {
     try {
@@ -516,7 +529,6 @@ async function authMiddleware(req, res, next) {
   }
 }
 
-// ✅ NEW: middleware للأدمن فقط
 function adminMiddleware(req, res, next) {
   if (req.user.role !== 'admin') {
     return res.status(403).json({ error: 'هذه العملية تتطلب صلاحيات الأدمن' });
@@ -633,7 +645,7 @@ app.post('/api/auth/logout', authMiddleware, async (req, res) => {
 app.get('/api/auth/me', authMiddleware, (req, res) => res.json({ user: req.user }));
 
 // ============================================================
-// ✅ NEW: 5.b) USERS MANAGEMENT (admin only)
+// 5.b) USERS MANAGEMENT (admin only)
 // ============================================================
 app.get('/api/users', authMiddleware, adminMiddleware, async (req, res) => {
   try {
@@ -765,17 +777,21 @@ async function getProductWithRelations(id) {
     });
   }
 
-  // ✅ بناء combos للطقم
+  // ✅ بناء combos (الأطقم) ديناميكياً من الألوان المحفوظة
   const isSet = !!Number(product.is_set);
   let combos = null;
   if (isSet) {
     const comboMap = new Map();
     flatColors.forEach(c => {
-      const key = c.comboName || c.name || 'المجموعة';
-      if (!comboMap.has(key)) comboMap.set(key, { name: key, parts: [] });
+      const key = c.comboName || 'المجموعة الأساسية';
+      if (!comboMap.has(key)) {
+        // نأخذ صور الطقم من أول قطعة
+        comboMap.set(key, { name: key, images: c.images, parts: [] });
+      }
       comboMap.get(key).parts.push({
-        partLabel: c.partLabel || 'قطعة',
-        name: c.name, hex: c.hex, image: c.image, images: c.images
+        label: c.partLabel || 'قطعة',
+        name: c.name, 
+        hex: c.hex
       });
     });
     combos = Array.from(comboMap.values());
@@ -792,6 +808,8 @@ async function getProductWithRelations(id) {
     oldPrice: product.old_price,
     badge: product.badge,
     badgeType: product.badge_type,
+    badgeColor: product.badge_color || '#feca57',
+    badgeColorName: product.badge_color_name || 'أصفر فاتح',
     description: product.description,
     stockQuantity: product.stock_quantity,
     isActive: !!Number(product.is_active),
@@ -844,7 +862,7 @@ async function saveProductRelations(productId, colors, ages, details) {
     for (let ci = 0; ci < colors.length; ci++) {
       const c = colors[ci];
       if (!c || !c.name) continue;
-      // ✅ حفظ combo_name و part_label
+      // ✅ حفظ بيانات الأطقم (combo_name, part_label)
       const colorRes = await db.execute({
         sql: 'INSERT INTO product_colors (product_id, name, hex, combo_name, part_label, sort_order) VALUES (?, ?, ?, ?, ?, ?)',
         args: [productId, c.name, c.hex || '#cccccc', c.comboName || null, c.partLabel || null, ci]
@@ -889,7 +907,7 @@ app.post('/api/products', authMiddleware, async (req, res) => {
   try {
     const {
       name, category, categoryLabel, gender, price, oldPrice,
-      badge, badgeType, description, colors, ages, details, stockQuantity, isSet
+      badge, badgeType, badgeColor, badgeColorName, description, colors, ages, details, stockQuantity, isSet
     } = req.body;
     if (!name || price === undefined) return res.status(400).json({ error: 'name and price are required' });
 
@@ -897,8 +915,8 @@ app.post('/api/products', authMiddleware, async (req, res) => {
 
     const result = await db.execute({
       sql: `INSERT INTO products
-        (name, slug, category, category_label, gender, price, old_price, badge, badge_type, description, stock_quantity, is_set)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (name, slug, category, category_label, gender, price, old_price, badge, badge_type, badge_color, badge_color_name, description, stock_quantity, is_set)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [
         name, slug,
         category || 'winter',
@@ -908,6 +926,8 @@ app.post('/api/products', authMiddleware, async (req, res) => {
         oldPrice ? Number(oldPrice) : null,
         badge || null,
         badgeType || 'new',
+        badgeColor || '#feca57',
+        badgeColorName || 'أصفر فاتح',
         description || '',
         Number(stockQuantity) || 0,
         isSet ? 1 : 0
@@ -925,18 +945,20 @@ app.put('/api/products/:id', authMiddleware, async (req, res) => {
     const id = parseInt(req.params.id);
     const {
       name, category, categoryLabel, gender, price, oldPrice,
-      badge, badgeType, description, colors, ages, details, stockQuantity, isActive, isSet
+      badge, badgeType, badgeColor, badgeColorName, description, colors, ages, details, stockQuantity, isActive, isSet
     } = req.body;
 
     await db.execute({
       sql: `UPDATE products SET
         name=?, category=?, category_label=?, gender=?, price=?, old_price=?,
-        badge=?, badge_type=?, description=?, stock_quantity=?, is_active=?, is_set=?,
+        badge=?, badge_type=?, badge_color=?, badge_color_name=?, description=?, stock_quantity=?, is_active=?, is_set=?,
         updated_at=datetime('now') WHERE id=?`,
       args: [
         name, category, categoryLabel, gender, Number(price),
         oldPrice ? Number(oldPrice) : null,
-        badge || null, badgeType || 'new', description || '',
+        badge || null, badgeType || 'new',
+        badgeColor || '#feca57', badgeColorName || 'أصفر فاتح',
+        description || '',
         Number(stockQuantity) || 0,
         isActive === false ? 0 : 1,
         isSet ? 1 : 0,
@@ -1050,7 +1072,6 @@ app.post('/api/orders', async (req, res) => {
       }
     }
 
-    // ✅ Telegram notification — يدعم express
     try {
       const itemsText = preparedItems.map((pi, i) =>
         `<b>${i + 1}.</b> ${escapeTelegram(pi.product_name)}\n` +
@@ -1191,10 +1212,8 @@ app.put('/api/theme', authMiddleware, adminMiddleware, async (req, res) => {
 });
 
 // ============================================================
-// 10) DELIVERY — ✅ محدّث كلياً لدعم express + لكل ولاية
+// 10) DELIVERY
 // ============================================================
-
-// الافتراضية فقط (للتوافق مع الكود القديم في index.html)
 app.get('/api/delivery', async (req, res) => {
   try {
     const result = await db.execute('SELECT * FROM delivery_prices WHERE wilaya IS NULL');
@@ -1204,7 +1223,6 @@ app.get('/api/delivery', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// الكل (Defaults + per-wilaya) — يُستخدم في لوحة التحكم
 app.get('/api/delivery/all', async (req, res) => {
   try {
     const result = await db.execute('SELECT * FROM delivery_prices');
@@ -1221,7 +1239,6 @@ app.get('/api/delivery/all', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// سعر ولاية محددة (merge مع الافتراضي) — يُستخدم في index.html
 app.get('/api/delivery/wilaya/:wilaya', async (req, res) => {
   try {
     const wilaya = decodeURIComponent(req.params.wilaya);
@@ -1239,7 +1256,6 @@ app.get('/api/delivery/wilaya/:wilaya', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// تحديث الافتراضيات الثلاثة
 app.put('/api/delivery', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const { home, agency, express } = req.body || {};
@@ -1259,7 +1275,6 @@ app.put('/api/delivery', authMiddleware, adminMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// تحديث أسعار ولاية محددة
 app.put('/api/delivery/wilaya/:wilaya', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const wilaya = decodeURIComponent(req.params.wilaya);
