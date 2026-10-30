@@ -101,15 +101,15 @@
     .detail-section-label{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:0.88rem;font-weight:700;color:var(--text-dark)}
     .detail-section-label .selected-value{color:var(--primary-dark);font-weight:700;font-size:0.85rem}
     .detail-swatches{display:flex;gap:12px;flex-wrap:wrap}
-    .detail-swatch{width:44px;height:44px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:var(--transition);position:relative;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
-    .detail-swatch:hover{transform:scale(1.12)}
-    .detail-swatch.active{border-color:var(--primary);box-shadow:0 0 0 3px rgba(255,107,129,0.25)}
-    .detail-swatch.active::after{content:'\f00c';font-family:'Font Awesome 6 Free';font-weight:900;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.85rem;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.5)}
+    .detail-swatch{width:48px;height:48px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);position:relative;box-shadow:0 4px 12px rgba(0,0,0,0.12);background-clip:padding-box;}
+    .detail-swatch:hover{transform:scale(1.12) translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,0.2);}
+    .detail-swatch.active{border-color:var(--primary);box-shadow:0 0 0 4px rgba(255,107,129,0.25),0 6px 16px rgba(0,0,0,0.15);transform:scale(1.05);}
+    .detail-swatch.active::after{content:'\f00c';font-family:'Font Awesome 6 Free';font-weight:900;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.05rem;color:#fff;text-shadow:0 2px 5px rgba(0,0,0,0.6);}
     .detail-ages{display:flex;gap:8px;flex-wrap:wrap}
     .detail-age{padding:10px 20px;border-radius:12px;border:2px solid rgba(0,0,0,0.08);background:var(--bg-white);color:var(--text-dark);font-family:'Cairo',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;transition:var(--transition)}
     html[data-theme="dark"] .detail-age{background:#252540;border-color:rgba(255,255,255,0.1)}
     .detail-age:hover{border-color:var(--secondary);color:var(--secondary)}
-    .detail-age.active{background:var(--secondary);color:#fff;border-color:var(--secondary);box-shadow:0 4px 14px rgba(108,92,231,0.35)}
+    .detail-age.active{background:var(--secondary) !important;color:#fff !important;border-color:var(--secondary) !important;box-shadow:0 6px 18px rgba(108,92,231,0.45) !important;transform:translateY(-3px);}
     .qty-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
     .qty-label{font-size:0.88rem;font-weight:700;color:var(--text-dark)}
     .qty-big{display:flex;align-items:center;background:var(--bg-white);border-radius:12px;overflow:hidden;border:2px solid rgba(0,0,0,0.08)}
@@ -410,7 +410,11 @@
           <div class="form-row"><div class="form-group"><label>الاسم <span class="required">*</span></label><input type="text" id="checkoutFirstName" required placeholder="الاسم"></div><div class="form-group"><label>اللقب <span class="required">*</span></label><input type="text" id="checkoutLastName" required placeholder="اللقب"></div></div>
           <div class="form-row">
             <div class="form-group"><label>الولاية <span class="required">*</span></label><select id="checkoutWilaya" required><option value="">-- اختر الولاية --</option></select></div>
-            <div class="form-group"><label>البلدية <span class="required">*</span></label><select id="checkoutMunicipality" required><option value="">-- اختر الولاية أولاً --</option></select></div>
+            <div class="form-group">
+  <label>البلدية <span class="required">*</span></label>
+  <select id="checkoutMunicipality" required><option value="">-- اختر الولاية أولاً --</option></select>
+  <input type="text" id="checkoutMunicipalityText" placeholder="اكتب اسم البلدية" style="display:none; margin-top:8px;" required>
+</div>
           </div>
           <div class="form-row"><div class="form-group"><label>الهاتف 1 <span class="required">*</span></label><input type="tel" id="checkoutPhone1" required placeholder="05XXXXXXXX" pattern="0[5-7][0-9]{8}"></div><div class="form-group"><label>الهاتف 2</label><input type="tel" id="checkoutPhone2" placeholder="اختياري"></div></div>
           <div class="form-group"><label>العنوان الكامل <span class="required">*</span></label><textarea id="checkoutAddress" required placeholder="الشارع، رقم المنزل..."></textarea></div>
@@ -485,12 +489,17 @@
         const groups = new Map();
         p.colors.forEach(c => {
           const key = c.comboName || 'طقم';
-          if (!groups.has(key)) groups.set(key, { name: key, parts: [] });
+          if (!groups.has(key)) groups.set(key, { name: key, images: [], parts: [] });
           groups.get(key).parts.push({
             name: c.partLabel || 'قطعة',
             colorName: c.name || '',
-            hex: c.hex || '#cccccc',
-            images: Array.isArray(c.images) ? c.images.filter(u => u && u.trim()) : (c.image ? [c.image] : [])
+            hex: c.hex || '#cccccc'
+          });
+          // تجميع الصور للطقم كاملاً لضمان عدم تكرارها
+          (c.images || []).forEach(img => {
+            if (img && img.trim() && !groups.get(key).images.includes(img)) {
+              groups.get(key).images.push(img);
+            }
           });
         });
         p.colors = Array.from(groups.values());
@@ -500,14 +509,13 @@
 
     // ==================== getSetSwatchGradient ====================
     function getSetSwatchGradient(combo) {
-      if (!combo) return '#cccccc';
-      const parts = combo.parts || [];
-      if (parts.length === 0) return combo.hex || '#cccccc';
+      if (!combo || !combo.parts || combo.parts.length === 0) return combo.hex || '#cccccc';
+      const parts = combo.parts;
       if (parts.length === 1) return parts[0].hex || '#cccccc';
       if (parts.length === 2) {
         const a = parts[0].hex || '#cccccc';
         const b = parts[1].hex || '#cccccc';
-        return `linear-gradient(to bottom, ${a} 0%, ${a} 50%, ${b} 50%, ${b} 100%)`;
+        return `linear-gradient(135deg, ${a} 50%, ${b} 50%)`;
       }
       const step = 360 / parts.length;
       const stops = parts.map((pt, i) => `${pt.hex || '#cccccc'} ${i * step}deg ${(i + 1) * step}deg`).join(', ');
@@ -556,11 +564,16 @@
 
     async function fetchDeliveryFromServer() {
       try {
-        const res = await fetch('/api/delivery');
+        const res = await fetch('/api/delivery/all');
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const serverDelivery = await res.json();
-        adminDelivery = deepMerge(JSON.parse(JSON.stringify(DEFAULT_DELIVERY_DATA)), serverDelivery);
-      } catch (e) {}
+        adminDelivery = {
+          home: serverDelivery.defaults.home || 0,
+          agency: serverDelivery.defaults.agency || 0,
+          express: serverDelivery.defaults.express || 0,
+          byWilaya: serverDelivery.byWilaya || {}
+        };
+      } catch (e) { console.warn('Delivery fetch failed', e); }
     }
 
     function applyAdminSettings() {
@@ -644,20 +657,20 @@
     // ==================== getColorImages — كل صور كل قطع الطقم ====================
     function getColorImages(color) {
       if (!color) return [];
+      // الأولوية لصور الطقم المجمعة (لضمان صورة واحدة لكل طقم)
+      if (Array.isArray(color.images) && color.images.length > 0) {
+        const valid = color.images.filter(u => u && typeof u === 'string' && u.trim());
+        if (valid.length > 0) return valid;
+      }
+      // fallback للهيكل القديم
       if (Array.isArray(color.parts) && color.parts.length > 0) {
         const imgs = [];
         color.parts.forEach(pt => {
           if (Array.isArray(pt.images) && pt.images.length) {
-            pt.images.filter(u => u && typeof u === 'string' && u.trim()).forEach(u => imgs.push(u));
-          } else if (pt.image && typeof pt.image === 'string' && pt.image.trim()) {
-            imgs.push(pt.image);
+            pt.images.filter(u => u && typeof u === 'string' && u.trim()).forEach(u => { if(!imgs.includes(u)) imgs.push(u); });
           }
         });
         if (imgs.length > 0) return imgs;
-      }
-      if (Array.isArray(color.images) && color.images.length > 0) {
-        const valid = color.images.filter(u => u && typeof u === 'string' && u.trim());
-        if (valid.length > 0) return valid;
       }
       if (color.image && typeof color.image === 'string' && color.image.trim()) return [color.image];
       return [];
@@ -961,7 +974,7 @@
       saveCart(); renderCart();
       showToast(`تمت إضافة ${selectedQuantity} ${selectedQuantity === 1 ? 'قطعة' : 'قطع'} إلى السلة ✓`);
     }
-    function orderNow() { addCurrentToCartSilent(); openCheckout(); }
+    function orderNow() { addCurrentToCartSilent(); openCart(); }
     function addCurrentToCartSilent() {
       if (!currentProduct) return;
       const match = it => it.productId === currentProduct.id && it.colorIndex === selectedColorIndex && it.age === selectedAge;
@@ -1106,13 +1119,46 @@
     // ==================== نموذج الطلب ====================
     const CHECKOUT_DRAFT_KEY = 'babyshop_checkout_draft';
 
-    function populateMunicipalities(selectedMunicipality = '') {
-      const wilaya = document.getElementById('checkoutWilaya').value;
+    async function populateMunicipalities(selectedMunicipality = '') {
+      const wilayaName = document.getElementById('checkoutWilaya').value;
       const sel = document.getElementById('checkoutMunicipality');
-      sel.innerHTML = '<option value="">-- اختر البلدية --</option>';
-      if (!wilaya || !wilayaMunicipalities[wilaya]) { sel.innerHTML = '<option value="">-- اختر الولاية أولاً --</option>'; return; }
-      wilayaMunicipalities[wilaya].forEach(m => { const o = document.createElement('option'); o.value = m; o.textContent = m; sel.appendChild(o); });
-      if (selectedMunicipality && wilayaMunicipalities[wilaya].includes(selectedMunicipality)) sel.value = selectedMunicipality;
+      const txt = document.getElementById('checkoutMunicipalityText');
+      
+      sel.innerHTML = '<option value="">جاري التحميل...</option>';
+      sel.style.display = 'block';
+      txt.style.display = 'none';
+      txt.required = false;
+      
+      if (!wilayaName) { 
+        sel.innerHTML = '<option value="">-- اختر الولاية أولاً --</option>'; 
+        return; 
+      }
+      
+      const wilayaObj = WILAYAS.find(w => w.name === wilayaName);
+      if (wilayaObj) {
+        try {
+          const res = await fetch(`/api/wilayas/${parseInt(wilayaObj.code)}/municipalities`);
+          if (res.ok) {
+            const muns = await res.json();
+            if (muns.length > 0) {
+              sel.innerHTML = '<option value="">-- اختر البلدية --</option>' + muns.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
+              if (selectedMunicipality) sel.value = selectedMunicipality;
+              return;
+            }
+          }
+        } catch(e) { console.warn('API municipalities failed', e); }
+      }
+      
+      if (wilayaMunicipalities[wilayaName]) {
+        sel.innerHTML = '<option value="">-- اختر البلدية --</option>' + wilayaMunicipalities[wilayaName].map(m => `<option value="${m}">${m}</option>`).join('');
+        if (selectedMunicipality) sel.value = selectedMunicipality;
+      } else {
+        sel.innerHTML = '<option value="">-- اكتب البلدية يدوياً --</option>';
+        sel.style.display = 'none';
+        txt.style.display = 'block';
+        txt.required = true;
+        if (selectedMunicipality) txt.value = selectedMunicipality;
+      }
     }
 
     function saveCheckoutDraft() {
@@ -1120,7 +1166,9 @@
         firstName: document.getElementById('checkoutFirstName').value,
         lastName: document.getElementById('checkoutLastName').value,
         wilaya: document.getElementById('checkoutWilaya').value,
-        municipality: document.getElementById('checkoutMunicipality').value,
+        municipality: document.getElementById('checkoutMunicipalityText').style.display === 'block' 
+                      ? document.getElementById('checkoutMunicipalityText').value.trim()
+                      : document.getElementById('checkoutMunicipality').value,
         phone1: document.getElementById('checkoutPhone1').value,
         phone2: document.getElementById('checkoutPhone2').value,
         address: document.getElementById('checkoutAddress').value,
@@ -1130,7 +1178,7 @@
       if (hasData) localStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify(data));
       else localStorage.removeItem(CHECKOUT_DRAFT_KEY);
     }
-    function loadCheckoutDraft() {
+       async function loadCheckoutDraft() {
       const banner = document.getElementById('draftBanner');
       try {
         const data = JSON.parse(localStorage.getItem(CHECKOUT_DRAFT_KEY) || 'null');
@@ -1138,7 +1186,10 @@
         document.getElementById('checkoutFirstName').value = data.firstName || '';
         document.getElementById('checkoutLastName').value = data.lastName || '';
         document.getElementById('checkoutWilaya').value = data.wilaya || '';
-        populateMunicipalities(data.municipality || '');
+        
+        // إضافة await لضمان تحميل البلديات قبل المتابعة
+        await populateMunicipalities(data.municipality || '');
+        
         document.getElementById('checkoutPhone1').value = data.phone1 || '';
         document.getElementById('checkoutPhone2').value = data.phone2 || '';
         document.getElementById('checkoutAddress').value = data.address || '';
@@ -1162,6 +1213,7 @@
       if (el) el.addEventListener('input', saveCheckoutDraft);
     });
     document.getElementById('checkoutMunicipality').addEventListener('change', saveCheckoutDraft);
+        document.getElementById('checkoutMunicipalityText').addEventListener('input', saveCheckoutDraft);
     document.querySelectorAll('input[name="delivery"]').forEach(r => r.addEventListener('change', () => { saveCheckoutDraft(); updateDeliveryCost(); }));
 
     let currentDeliveryCost = adminDelivery.home;
@@ -1181,21 +1233,49 @@
       document.body.style.overflow = '';
     }
     function refreshDeliveryOptions(wilayaName) {
-      const code = getWilayaCodeByName(wilayaName);
-      const byW = (adminDelivery.byWilaya && adminDelivery.byWilaya[code]) || {};
+      if (!wilayaName) return;
+      const byW = (adminDelivery.byWilaya && adminDelivery.byWilaya[wilayaName]) || {};
       const home = byW.home != null ? byW.home : adminDelivery.home;
       const agency = byW.agency != null ? byW.agency : adminDelivery.agency;
-      const express = byW.express != null ? byW.express : (adminDelivery.express || 900);
+      const express = byW.express != null ? byW.express : adminDelivery.express;
+
       const setOpt = (type, val) => {
         const r = document.querySelector(`input[name="delivery"][data-type="${type}"]`);
         if (!r) return;
-        r.value = val;
-        const lbl = document.getElementById('delivery' + type.charAt(0).toUpperCase() + type.slice(1) + 'Label');
-        if (lbl) lbl.textContent = val + ' د.ج';
+        const labelWrap = r.closest('.delivery-option');
+        if (!val || val <= 0) {
+          if (labelWrap) labelWrap.style.display = 'none';
+          r.checked = false;
+        } else {
+          if (labelWrap) labelWrap.style.display = ''; // إرجاع العرض الافتراضي من CSS
+          r.value = val;
+          const lbl = document.getElementById('delivery' + type.charAt(0).toUpperCase() + type.slice(1) + 'Label');
+          if (lbl) lbl.textContent = val + ' د.ج';
+        }
       };
-      setOpt('home', home); setOpt('agency', agency); setOpt('express', express);
+      
+      setOpt('home', home); 
+      setOpt('agency', agency); 
+      setOpt('express', express);
+
+      // التحقق من الخيار المحدد حالياً
+      const checked = document.querySelector('input[name="delivery"]:checked');
+      let isCheckedValid = false;
+      if (checked) {
+        const labelWrap = checked.closest('.delivery-option');
+        if (labelWrap && labelWrap.style.display !== 'none') {
+          isCheckedValid = true;
+        }
+      }
+      
+      // إذا لم يكن هناك خيار محدد أو كان الخيار المحدد مخفياً، نختار أول خيار مرئي
+      if (!isCheckedValid) {
+        const visibleInput = Array.from(document.querySelectorAll('input[name="delivery"]')).find(r => r.closest('.delivery-option').style.display !== 'none');
+        if (visibleInput) visibleInput.checked = true;
+      }
+
       const sel = document.querySelector('input[name="delivery"]:checked');
-      currentDeliveryCost = sel ? parseInt(sel.value) : home;
+      currentDeliveryCost = sel ? parseInt(sel.value) : 0;
       updateCheckoutSummary();
     }
     function updateDeliveryCost() {
@@ -1230,7 +1310,9 @@
         phone1: document.getElementById('checkoutPhone1').value.trim(),
         phone2: document.getElementById('checkoutPhone2').value.trim() || null,
         wilaya: document.getElementById('checkoutWilaya').value,
-        municipality: document.getElementById('checkoutMunicipality').value,
+        municipality: document.getElementById('checkoutMunicipalityText').style.display === 'block' 
+                      ? document.getElementById('checkoutMunicipalityText').value.trim()
+                      : document.getElementById('checkoutMunicipality').value,
         address: document.getElementById('checkoutAddress').value.trim(),
         deliveryMethod,
         deliveryCost: currentDeliveryCost,
