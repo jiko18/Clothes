@@ -930,7 +930,13 @@ let wilayasCache = [];
     function isPredefinedColor(name) { return name && PREDEFINED_COLORS.some(pc => pc.name === name); }
     function getPredefinedColor(name) { return PREDEFINED_COLORS.find(pc => pc.name === name); }
     function getProductThumb(product) {
-      if (!product || !product.colors || product.colors.length === 0) return '';
+      if (!product) return '';
+      if (product.isSet && Array.isArray(product.colors) && product.colors.length > 0) {
+        const c = product.colors[0];
+        if (Array.isArray(c.images) && c.images.length > 0) return c.images[0] || '';
+        return c.image || '';
+      }
+      if (!product.colors || product.colors.length === 0) return '';
       const c = product.colors[0];
       if (Array.isArray(c.images) && c.images.length > 0) return c.images[0] || '';
       return c.image || '';
@@ -1786,16 +1792,33 @@ let wilayasCache = [];
       const badge = document.getElementById('pBadge').value.trim();
       const badgeType = document.getElementById('pBadgeType').value;
       const description = document.getElementById('pDescription').value.trim();
+      const isSet = document.getElementById('pIsSet').checked;
 
       if (!name) return showToast('اسم المنتج مطلوب', 'error');
       if (price <= 0) return showToast('السعر يجب أن يكون أكبر من 0', 'error');
       if (!ageRows.filter(a => a.trim()).length) return showToast('أضف عمراً واحداً على الأقل', 'error');
-      for (let i = 0; i < colorRows.length; i++) {
-        const c = colorRows[i];
-        if (!c.name?.trim()) return showToast(`اللون رقم ${i+1}: الاسم مطلوب`, 'error');
-        if (!(c.images || []).filter(img => img && img.trim()).length) return showToast(`اللون "${c.name}": يحتاج صورة واحدة على الأقل`, 'error');
+
+      // ✅ التحقق الصحيح حسب الوضع (طقم أو عادي)
+      if (isSet) {
+        if (!comboRows.length) return showToast('أضف طقماً واحداً على الأقل', 'error');
+        for (let i = 0; i < comboRows.length; i++) {
+          const combo = comboRows[i];
+          if (!combo.name?.trim()) return showToast(`الطقم رقم ${i+1}: اسم الطقم مطلوب`, 'error');
+          if (!combo.parts || !combo.parts.length) return showToast(`الطقم "${combo.name}": يجب أن يحتوي على قطعة واحدة على الأقل`, 'error');
+          for (let j = 0; j < combo.parts.length; j++) {
+            const part = combo.parts[j];
+            if (!part.name?.trim()) return showToast(`الطقم "${combo.name}" - القطعة (${part.label}): اسم اللون مطلوب`, 'error');
+            if (!(part.images || []).filter(img => img && img.trim()).length) return showToast(`الطقم "${combo.name}" - القطعة (${part.label}): تحتاج صورة واحدة على الأقل`, 'error');
+          }
+        }
+      } else {
+        for (let i = 0; i < colorRows.length; i++) {
+          const c = colorRows[i];
+          if (!c.name?.trim()) return showToast(`اللون رقم ${i+1}: الاسم مطلوب`, 'error');
+          if (!(c.images || []).filter(img => img && img.trim()).length) return showToast(`اللون "${c.name}": يحتاج صورة واحدة على الأقل`, 'error');
+        }
       }
-      const isSet = document.getElementById('pIsSet').checked;
+
       let colorsForSave = [];
       if (isSet) {
         comboRows.forEach(combo => {
@@ -1812,14 +1835,39 @@ let wilayasCache = [];
       } else {
         colorsForSave = colorRows.map(c => ({ name: c.name.trim(), hex: c.hex, images: (c.images || []).filter(img => img && img.trim()) }));
       }
+
       const productPayload = {
         name, category, categoryLabel, gender, price, oldPrice,
         badge: badge || null, badgeType, description, isSet,
         details: detailRows.filter(d => d.trim()),
         ages: ageRows.filter(a => a.trim()),
-        colors: colorsForSave
+        colors: colorsForSave,
+        combos: isSet ? comboRows : []
       };
+
       const btn = document.getElementById('saveProductBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جارٍ الحفظ ورفع الصور...';
+      showLoading(true);
+      try {
+        let result;
+        if (idVal) {
+          productPayload.id = parseInt(idVal);
+          result = await apiJSON(`/api/products/${idVal}`, { method: 'PUT', body: JSON.stringify(productPayload) });
+        } else {
+          result = await apiJSON('/api/products', { method: 'POST', body: JSON.stringify(productPayload) });
+        }
+        await refreshProductsAndDashboard();
+        closeProductModal();
+        showToast(idVal ? 'تم تحديث المنتج ✓' : 'تمت إضافة المنتج ✓');
+      } catch (err) {
+        showToast(err.message || 'فشل حفظ المنتج', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> حفظ المنتج';
+        showLoading(false);
+      }
+    } const btn = document.getElementById('saveProductBtn');
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جارٍ الحفظ ورفع الصور...';
       showLoading(true);
@@ -2431,6 +2479,28 @@ function updateComboName(ci, val) { comboRows[ci].name = val; }
 function updatePartLabel(ci, pi, val) { comboRows[ci].parts[pi].label = val; }
 function updatePartColorName(ci, pi, val) { comboRows[ci].parts[pi].name = val; }
 function updatePartHex(ci, pi, val) { comboRows[ci].parts[pi].hex = val; renderCombosRows(); }
+function onPartColorSelectChange(ci, pi, value) {
+      if (!comboRows[ci]?.parts[pi]) return;
+      if (value === '__custom__') {
+        comboRows[ci].parts[pi].name = '';
+        renderCombosRows();
+        return;
+      }
+      if (value) {
+        comboRows[ci].parts[pi].name = value;
+        const pc = getPredefinedColor(value);
+        if (pc) comboRows[ci].parts[pi].hex = pc.hex;
+      } else {
+        comboRows[ci].parts[pi].name = '';
+      }
+      renderCombosRows();
+    }
+
+    function onPartCustomNameInput(ci, pi, value) {
+      if (comboRows[ci]?.parts[pi]) {
+        comboRows[ci].parts[pi].name = value;
+      }
+    }
 function addPartImage(ci, pi) { comboRows[ci].parts[pi].images.push(''); renderCombosRows(); }
 function removePartImage(ci, pi, ii) {
   if (comboRows[ci].parts[pi].images.length <= 1) { showToast('كل قطعة تحتاج صورة واحدة', 'error'); return; }
@@ -2494,80 +2564,85 @@ function handlePartColorSearchKeydown(event, ci, pi) {
     if (sugg) { sugg.classList.remove('open'); sugg.innerHTML = ''; }
   }
 }
-
 function renderCombosRows() {
-  const el = document.getElementById('combosList');
-  if (!el) return;
-  el.innerHTML = comboRows.map((combo, ci) => {
-    const gradient = getComboGradient(combo);
-    const chips = combo.parts.map(p =>
-      `<span class="part-color-chip"><span class="chip-swatch" style="background:${p.hex || '#ccc'};"></span>${escapeHtml(p.label)}: ${escapeHtml(p.name || '-')}</span>`
-    ).join('');
-    const partsHtml = combo.parts.map((part, pi) => {
-      const imgs = (part.images && part.images.length) ? part.images : [''];
-      return `
-        <div class="part-card">
-          <div class="part-header">
-            <select onchange="updatePartLabel(${ci}, ${pi}, this.value)">
-              ${PART_LABELS.map(l => `<option value="${escapeAttr(l)}" ${part.label===l?'selected':''}>${escapeHtml(l)}</option>`).join('')}
-            </select>
-            <div class="part-color-selector">
-              <span class="part-current-color" style="background:${part.hex || '#ccc'};" title="${escapeAttr(part.name || '')}"></span>
-              <div class="color-search-wrap">
-                <i class="fa-solid fa-magnifying-glass color-search-icon"></i>
-                <input type="text" class="color-search" placeholder="ابحث عن لون..." value="${escapeAttr(part.name || '')}"
-                  oninput="filterPartColorOptions(${ci}, ${pi}, this.value)"
-                  onkeydown="handlePartColorSearchKeydown(event, ${ci}, ${pi})">
-                <div class="color-suggestions" id="partColorSuggestions-${ci}-${pi}" onmousedown="event.preventDefault()"></div>
-              </div>
-            </div>
-            <button class="icon-btn icon-btn-del" onclick="removePartFromCombo(${ci}, ${pi})" title="حذف القطعة"><i class="fa-solid fa-xmark"></i></button>
-          </div>
-          <div class="part-color-row">
-            <input type="color" value="${part.hex || '#cccccc'}" oninput="updatePartHex(${ci}, ${pi}, this.value)" title="تعديل كود اللون">
-            <span class="hex-label">${(part.hex || '#cccccc').toUpperCase()}</span>
-            <button class="mini-btn mini-btn-upload" title="رفع صورة/فيديو" onclick="triggerImageUpload((d) => { comboRows[${ci}].parts[${pi}].images.push(d); renderCombosRows(); })"><i class="fa-solid fa-upload"></i></button>
-          </div>
-          <div class="combo-images-grid">
-            ${imgs.map((img, ii) => {
-              let prev = '<span class="placeholder">لا يوجد</span>';
-              if (img && img.trim()) {
-                if (isVideoUrl(img)) prev = `<video src="${escapeAttr(img)}" muted></video>`;
-                else prev = `<img src="${escapeAttr(img)}" onerror="this.parentElement.innerHTML='<span class=&quot;placeholder&quot;>فشل</span>'">`;
-              }
-              return `<div class="color-image-item">
-                <span class="image-index-badge">${ii + 1}</span>
-                <div class="color-image-preview" style="height:90px;cursor:zoom-in;" data-media="${escapeAttr(img)}">${prev}</div>
-                <div class="color-image-actions">
-                  <input type="url" value="${escapeAttr(img)}" placeholder="URL" oninput="updatePartImage(${ci}, ${pi}, ${ii}, this.value)">
-                  <button class="mini-btn mini-btn-upload" onclick="triggerImageUpload((d) => { comboRows[${ci}].parts[${pi}].images[${ii}] = d; renderCombosRows(); })"><i class="fa-solid fa-upload"></i></button>
-                  <button class="mini-btn mini-btn-remove" onclick="removePartImage(${ci}, ${pi}, ${ii})"><i class="fa-solid fa-xmark"></i></button>
+      const el = document.getElementById('combosList');
+      if (!el) return;
+      el.innerHTML = comboRows.map((combo, ci) => {
+        const gradient = getComboGradient(combo);
+        const chips = combo.parts.map(p =>
+          `<span class="part-color-chip"><span class="chip-swatch" style="background:${p.hex || '#ccc'};"></span>${escapeHtml(p.label)}: ${escapeHtml(p.name || '-')}</span>`
+        ).join('');
+        const partsHtml = combo.parts.map((part, pi) => {
+          const imgs = (part.images && part.images.length) ? part.images : [''];
+          const needsCustomPartInput = !isPredefinedColor(part.name);
+          return `
+            <div class="part-card">
+              <div class="part-header" style="grid-template-columns: 120px 1fr 36px;">
+                <select onchange="updatePartLabel(${ci}, ${pi}, this.value)">
+                  ${PART_LABELS.map(l => `<option value="${escapeAttr(l)}" ${part.label===l?'selected':''}>${escapeHtml(l)}</option>`).join('')}
+                </select>
+                <div style="display:flex; flex-direction:column; gap:6px; min-width:0;">
+                  <div class="color-search-wrap">
+                    <i class="fa-solid fa-magnifying-glass color-search-icon"></i>
+                    <input type="text" class="color-search" placeholder="ابحث عن لون..." value="${escapeAttr(part.name || '')}"
+                      oninput="filterPartColorOptions(${ci}, ${pi}, this.value)"
+                      onkeydown="handlePartColorSearchKeydown(event, ${ci}, ${pi})">
+                    <div class="color-suggestions" id="partColorSuggestions-${ci}-${pi}" onmousedown="event.preventDefault()"></div>
+                  </div>
+                  <select class="color-select" style="height:38px; font-size:0.85rem;" onchange="onPartColorSelectChange(${ci}, ${pi}, this.value)">
+                    <option value="" ${!part.name?'selected':''} disabled>-- أو اختر من القائمة المنسدلة --</option>
+                    ${PREDEFINED_COLORS.map(pc => `<option value="${escapeAttr(pc.name)}" ${part.name===pc.name?'selected':''}>${escapeHtml(pc.name)}</option>`).join('')}
+                    <option value="__custom__" ${needsCustomPartInput?'selected':''}>✎ لون مخصص...</option>
+                  </select>
+                  ${needsCustomPartInput ? `<input type="text" class="custom-color-name" value="${escapeAttr(part.name)}" placeholder="اكتب اسم اللون المخصص" oninput="onPartCustomNameInput(${ci}, ${pi}, this.value)">` : ''}
                 </div>
-              </div>`;
-            }).join('')}
-            <button type="button" class="add-image-card" onclick="addPartImage(${ci}, ${pi})" style="min-height:120px;">
-              <i class="fa-solid fa-plus-circle"></i><span>صورة/فيديو</span>
-            </button>
+                <button class="icon-btn icon-btn-del" onclick="removePartFromCombo(${ci}, ${pi})" title="حذف القطعة"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="part-color-row">
+                <input type="color" value="${part.hex || '#cccccc'}" oninput="updatePartHex(${ci}, ${pi}, this.value)" title="تعديل كود اللون">
+                <span class="hex-label">${(part.hex || '#cccccc').toUpperCase()}</span>
+                <button class="mini-btn mini-btn-upload" title="رفع صورة/فيديو" onclick="triggerImageUpload((d) => { comboRows[${ci}].parts[${pi}].images.push(d); renderCombosRows(); })"><i class="fa-solid fa-upload"></i></button>
+              </div>
+              <div class="combo-images-grid">
+                ${imgs.map((img, ii) => {
+                  let prev = '<span class="placeholder">لا يوجد</span>';
+                  if (img && img.trim()) {
+                    if (isVideoUrl(img)) prev = `<video src="${escapeAttr(img)}" muted></video>`;
+                    else prev = `<img src="${escapeAttr(img)}" onerror="this.parentElement.innerHTML='<span class=&quot;placeholder&quot;>فشل</span>'">`;
+                  }
+                  return `<div class="color-image-item">
+                    <span class="image-index-badge">${ii + 1}</span>
+                    <div class="color-image-preview" style="height:90px;cursor:zoom-in;" data-media="${escapeAttr(img)}">${prev}</div>
+                    <div class="color-image-actions">
+                      <input type="url" value="${escapeAttr(img)}" placeholder="URL" oninput="updatePartImage(${ci}, ${pi}, ${ii}, this.value)">
+                      <button class="mini-btn mini-btn-upload" onclick="triggerImageUpload((d) => { comboRows[${ci}].parts[${pi}].images[${ii}] = d; renderCombosRows(); })"><i class="fa-solid fa-upload"></i></button>
+                      <button class="mini-btn mini-btn-remove" onclick="removePartImage(${ci}, ${pi}, ${ii})"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                  </div>`;
+                }).join('')}
+                <button type="button" class="add-image-card" onclick="addPartImage(${ci}, ${pi})" style="min-height:120px;">
+                  <i class="fa-solid fa-plus-circle"></i><span>صورة/فيديو</span>
+                </button>
+              </div>
+            </div>`;
+        }).join('');
+        return `<div class="combo-card">
+          <div class="combo-header">
+            <input type="text" value="${escapeAttr(combo.name)}" placeholder="اسم الطقم" oninput="updateComboName(${ci}, this.value)">
+            <button class="remove-btn" onclick="removeCombo(${ci})" title="حذف الطقم"><i class="fa-solid fa-trash"></i></button>
           </div>
+          <div class="combo-color-preview">
+            <div class="combo-color-circle" style="background:${gradient};" title="معاينة ألوان الطقم"></div>
+            <div class="combo-color-info">
+              <div class="combo-color-info-title"><i class="fa-solid fa-palette"></i> ألوان الطقم (${combo.parts.length} قطعة)</div>
+              <div class="combo-color-info-list">${chips}</div>
+            </div>
+          </div>
+          ${partsHtml}
+          <button type="button" class="add-part-btn" onclick="addPartToCombo(${ci})"><i class="fa-solid fa-plus"></i> إضافة قطعة للطقم</button>
         </div>`;
-    }).join('');
-    return `<div class="combo-card">
-      <div class="combo-header">
-        <input type="text" value="${escapeAttr(combo.name)}" placeholder="اسم الطقم" oninput="updateComboName(${ci}, this.value)">
-        <button class="remove-btn" onclick="removeCombo(${ci})" title="حذف الطقم"><i class="fa-solid fa-trash"></i></button>
-      </div>
-      <div class="combo-color-preview">
-        <div class="combo-color-circle" style="background:${gradient};" title="معاينة ألوان الطقم"></div>
-        <div class="combo-color-info">
-          <div class="combo-color-info-title"><i class="fa-solid fa-palette"></i> ألوان الطقم (${combo.parts.length} قطعة)</div>
-          <div class="combo-color-info-list">${chips}</div>
-        </div>
-      </div>
-      ${partsHtml}
-      <button type="button" class="add-part-btn" onclick="addPartToCombo(${ci})"><i class="fa-solid fa-plus"></i> إضافة قطعة للطقم</button>
-    </div>`;
-  }).join('');
-}
+      }).join('');
+    }
 
     async function initAdmin() {
       showLoading(true);
