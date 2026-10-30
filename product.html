@@ -444,135 +444,88 @@
   </div>
 
   <script>
-    // ==================== البيانات الافتراضية (Fallback) — 6 منتجات مطابقة لـ index.html ====================
+    // ==================== البيانات الافتراضية ====================
     const DEFAULT_PRODUCTS = [
-      {
-        id: 1, name: "صدرية أطفال مبطنة", category: "winter", categoryLabel: "شتوي", gender: "both",
-        price: 3200, oldPrice: 4000, badge: "جديد", badgeType: "new",
-        description: "صدرية أطفال مبطنة بخامة قطنية دافئة ومريحة.",
-        details: ["قماش 100% قطن مبطن", "قابل للغسل في الغسالة", "ألوان ثابتة لا تبهت"],
-        colors: [
-          { name: "أحمر", hex: "#e74c3c", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80",
-            images: ["https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80", "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=900&q=80"] },
-          { name: "أصفر", hex: "#f1c40f", image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80",
-            images: ["https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80"] }
-        ],
-        ages: ["10 سنوات", "8 سنوات", "7 سنوات", "5 سنوات"]
-      },
-      {
-        id: 2, name: "قميص قطني صيفي", category: "summer", categoryLabel: "صيفي", gender: "boys",
-        price: 1800, oldPrice: 2500, badge: "خصم", badgeType: "sale",
-        description: "قميص قطني خفيف ومريح للأيام الصيفية.",
-        details: ["قطن 100%", "أكمام قصيرة", "متوفر بعدة مقاسات"],
-        colors: [
-          { name: "أبيض", hex: "#ecf0f1", image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80",
-            images: ["https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80"] },
-          { name: "أزرق", hex: "#3498db", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80",
-            images: ["https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80"] }
-        ],
-        ages: ["8 سنوات", "7 سنوات", "6 سنوات"]
-      },
-      {
-        id: 3, name: "حذاء رياضي للأطفال", category: "shoes", categoryLabel: "أحذية", gender: "both",
-        price: 4500, oldPrice: null, badge: "الأكثر مبيعاً", badgeType: "new",
-        description: "حذاء رياضي مريح ومتين للأطفال.",
-        details: ["نعل مرن مضاد للانزلاق", "خامة تنفس", "مقاوم للماء"],
-        colors: [
-          { name: "أسود", hex: "#2d3436", image: "https://images.unsplash.com/photo-1514989940723-e8e51635b782?w=900&q=80",
-            images: ["https://images.unsplash.com/photo-1514989940723-e8e51635b782?w=900&q=80"] },
-          { name: "وردي", hex: "#fd79a8", image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80",
-            images: ["https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80"] }
-        ],
-        ages: ["10 سنوات", "8 سنوات", "6 سنوات"]
-      },
-      {
-        id: 4, name: "جاكيت شتوي مبطن", category: "heavy", categoryLabel: "ثقيل", gender: "boys",
-        price: 5800, oldPrice: 7000, badge: "خصم", badgeType: "sale",
-        description: "جاكيت شتوي مبطن يقي من البرد.",
-        details: ["بطانة صوفية", "سحاب عالي الجودة", "جيبان أماميان"],
-        colors: [
-          { name: "أحمر", hex: "#e74c3c", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80",
-            images: ["https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80"] },
-          { name: "أزرق", hex: "#2980b9", image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80",
-            images: ["https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80"] }
-        ],
-        ages: ["10 سنوات", "8 سنوات", "7 سنوات", "5 سنوات"]
-      },
-      {
-        id: 5, name: "طقم بناتي خفيف", category: "light", categoryLabel: "خفيف", gender: "girls",
-        price: 2600, oldPrice: null, badge: "جديد", badgeType: "new",
-        description: "طقم بناتي خفيف وأنيق.",
-        details: ["قطن ناعم", "تصميم عصري", "سهل الغسل"],
-        colors: [
-          { name: "وردي", hex: "#fd79a8", image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80",
-            images: ["https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80"] },
-          { name: "بنفسجي", hex: "#a29bfe", image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80",
-            images: ["https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80"] }
-        ],
-        ages: ["8 سنوات", "7 سنوات", "6 سنوات"]
-      },
-      {
-        id: 6, name: "قبعة شمسية للأطفال", category: "accessories", categoryLabel: "إكسسوارات", gender: "girls",
-        price: 900, oldPrice: 1200, badge: "خصم", badgeType: "sale",
-        description: "قبعة شمسية تحمي طفلك من الشمس.",
-        details: ["حماية UV", "حزام قابل للتعديل", "خفيفة الوزن"],
-        colors: [
-          { name: "بيج", hex: "#f5cd79", image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80",
-            images: ["https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80"] },
-          { name: "أبيض", hex: "#ecf0f1", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80",
-            images: ["https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80"] }
-        ],
-        ages: ["10 سنوات", "8 سنوات", "6 سنوات"]
-      }
+      { id: 1, name: "صدرية أطفال مبطنة", category: "winter", categoryLabel: "شتوي", gender: "both", price: 3200, oldPrice: 4000, badge: "جديد", badgeType: "new", description: "صدرية أطفال مبطنة بخامة قطنية دافئة ومريحة.", details: ["قماش 100% قطن مبطن"], colors: [{ name: "أحمر", hex: "#e74c3c", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80", images: ["https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80"] }, { name: "أصفر", hex: "#f1c40f", image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80", images: ["https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80"] }], ages: ["10 سنوات", "8 سنوات"] },
+      { id: 2, name: "قميص قطني صيفي", category: "summer", categoryLabel: "صيفي", gender: "boys", price: 1800, oldPrice: 2500, badge: "خصم", badgeType: "sale", description: "قميص قطني خفيف.", details: ["قطن 100%"], colors: [{ name: "أبيض", hex: "#ecf0f1", image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80", images: ["https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80"] }, { name: "أزرق", hex: "#3498db", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80", images: ["https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80"] }], ages: ["8 سنوات", "7 سنوات"] },
+      { id: 3, name: "حذاء رياضي للأطفال", category: "shoes", categoryLabel: "أحذية", gender: "both", price: 4500, oldPrice: null, badge: "الأكثر مبيعاً", badgeType: "new", description: "حذاء رياضي مريح.", details: ["نعل مرن"], colors: [{ name: "أسود", hex: "#2d3436", image: "https://images.unsplash.com/photo-1514989940723-e8e51635b782?w=900&q=80", images: ["https://images.unsplash.com/photo-1514989940723-e8e51635b782?w=900&q=80"] }], ages: ["10 سنوات", "8 سنوات"] },
+      { id: 4, name: "جاكيت شتوي مبطن", category: "heavy", categoryLabel: "ثقيل", gender: "boys", price: 5800, oldPrice: 7000, badge: "خصم", badgeType: "sale", description: "جاكيت شتوي مبطن.", details: ["بطانة صوفية"], colors: [{ name: "أحمر", hex: "#e74c3c", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80", images: ["https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80"] }], ages: ["10 سنوات", "8 سنوات"] },
+      { id: 5, name: "طقم بناتي خفيف", category: "light", categoryLabel: "خفيف", gender: "girls", price: 2600, oldPrice: null, badge: "جديد", badgeType: "new", description: "طقم بناتي خفيف.", details: ["قطن ناعم"], colors: [{ name: "وردي", hex: "#fd79a8", image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80", images: ["https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80"] }], ages: ["8 سنوات", "7 سنوات"] },
+      { id: 6, name: "قبعة شمسية للأطفال", category: "accessories", categoryLabel: "إكسسوارات", gender: "girls", price: 900, oldPrice: 1200, badge: "خصم", badgeType: "sale", description: "قبعة شمسية.", details: ["حماية UV"], colors: [{ name: "بيج", hex: "#f5cd79", image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80", images: ["https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80"] }], ages: ["10 سنوات", "8 سنوات"] }
     ];
-    const DEFAULT_SETTINGS = {
-      storeName: 'بيبي شوب', phone: '0550 00 00 00', email: 'contact@babyshop.dz', address: 'الجزائر العاصمة، الجزائر',
-      facebook: '#', instagram: '#', tiktok: '#', whatsapp: '#',
-      topBarText: 'توصيل لجميع الولايات | الدفع عند الاستلام | خصم 10% على أول طلب',
-      searchPlaceholder: 'ابحث عن ملابس، أحذية، إكسسوارات...',
-      footerCopyright: '© 2025 بيبي شوب - جميع الحقوق محفوظة | صُنع بحب لأطفال الجزائر'
-    };
+    const DEFAULT_SETTINGS = { storeName: 'بيبي شوب', phone: '0550 00 00 00', email: 'contact@babyshop.dz', address: 'الجزائر العاصمة، الجزائر', facebook: '#', instagram: '#', tiktok: '#', whatsapp: '#', topBarText: 'توصيل لجميع الولايات | الدفع عند الاستلام | خصم 10% على أول طلب', searchPlaceholder: 'ابحث عن ملابس، أحذية، إكسسوارات...', footerCopyright: '© 2025 بيبي شوب - جميع الحقوق محفوظة' };
     const DEFAULT_THEME_DATA = { primary: '#ff6b81', primaryDark: '#e8556d', secondary: '#6c5ce7', accent: '#feca57' };
     const DEFAULT_DELIVERY_DATA = { home: 600, agency: 400, express: 900, byWilaya: {} };
 
     function deepMerge(target, source) {
       if (!source || typeof source !== 'object') return target;
       for (const k in source) {
-        if (source[k] && typeof source[k] === 'object' && !Array.isArray(source[k])) {
-          target[k] = deepMerge(target[k] || {}, source[k]);
-        } else target[k] = source[k];
+        if (source[k] && typeof source[k] === 'object' && !Array.isArray(source[k])) target[k] = deepMerge(target[k] || {}, source[k]);
+        else target[k] = source[k];
       }
       return target;
     }
 
-    // ==================== الحالة المتغيرة (تُملأ من السيرفر) ====================
     let adminSettings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
     let adminTheme = JSON.parse(JSON.stringify(DEFAULT_THEME_DATA));
     let adminDelivery = JSON.parse(JSON.stringify(DEFAULT_DELIVERY_DATA));
     let products = [];
 
-    // تطبيق الألوان الافتراضية فوراً (لتجنب وميض)
     document.documentElement.style.setProperty('--primary', adminTheme.primary);
     document.documentElement.style.setProperty('--primary-dark', adminTheme.primaryDark);
     document.documentElement.style.setProperty('--secondary', adminTheme.secondary);
     document.documentElement.style.setProperty('--accent', adminTheme.accent);
 
-    // ==================== Fetch Functions ====================
+    // ==================== normalizeProduct ====================
+    function normalizeProduct(p) {
+      if (!p) return p;
+      const isSet = !!p.isSet || p.setType === 'set';
+      if (isSet) p.setType = 'set';
+      if (isSet && Array.isArray(p.colors) && p.colors.length > 0 && p.colors[0] && p.colors[0].comboName) {
+        const groups = new Map();
+        p.colors.forEach(c => {
+          const key = c.comboName || 'طقم';
+          if (!groups.has(key)) groups.set(key, { name: key, parts: [] });
+          groups.get(key).parts.push({
+            name: c.partLabel || 'قطعة',
+            colorName: c.name || '',
+            hex: c.hex || '#cccccc',
+            images: Array.isArray(c.images) ? c.images.filter(u => u && u.trim()) : (c.image ? [c.image] : [])
+          });
+        });
+        p.colors = Array.from(groups.values());
+      }
+      return p;
+    }
+
+    // ==================== getSetSwatchGradient ====================
+    function getSetSwatchGradient(combo) {
+      if (!combo) return '#cccccc';
+      const parts = combo.parts || [];
+      if (parts.length === 0) return combo.hex || '#cccccc';
+      if (parts.length === 1) return parts[0].hex || '#cccccc';
+      if (parts.length === 2) {
+        const a = parts[0].hex || '#cccccc';
+        const b = parts[1].hex || '#cccccc';
+        return `linear-gradient(to bottom, ${a} 0%, ${a} 50%, ${b} 50%, ${b} 100%)`;
+      }
+      const step = 360 / parts.length;
+      const stops = parts.map((pt, i) => `${pt.hex || '#cccccc'} ${i * step}deg ${(i + 1) * step}deg`).join(', ');
+      return `conic-gradient(${stops})`;
+    }
+
     async function fetchProductsFromServer() {
       try {
         const response = await fetch('/api/products');
         if (!response.ok) throw new Error('HTTP ' + response.status);
         const serverProducts = await response.json();
         if (Array.isArray(serverProducts) && serverProducts.length > 0) {
-          products = serverProducts;
-          console.log(`✅ تم تحميل ${serverProducts.length} منتج من السيرفر`);
+          products = serverProducts.map(normalizeProduct);
         } else {
-          products = DEFAULT_PRODUCTS;
-          console.warn('⚠️ قاعدة البيانات فارغة، استخدام المنتجات الافتراضية');
+          products = DEFAULT_PRODUCTS.map(normalizeProduct);
         }
       } catch (error) {
-        console.warn('⚠️ تعذر الاتصال بالسيرفر، استخدام المنتجات الافتراضية:', error);
-        products = DEFAULT_PRODUCTS;
+        products = DEFAULT_PRODUCTS.map(normalizeProduct);
       }
     }
 
@@ -582,14 +535,10 @@
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const serverSettings = await res.json();
         ['girlsCard', 'boysCard', 'categoryCards'].forEach(key => {
-          if (typeof serverSettings[key] === 'string') {
-            try { serverSettings[key] = JSON.parse(serverSettings[key]); } catch(e) { delete serverSettings[key]; }
-          }
+          if (typeof serverSettings[key] === 'string') { try { serverSettings[key] = JSON.parse(serverSettings[key]); } catch(e) { delete serverSettings[key]; } }
         });
         adminSettings = deepMerge(JSON.parse(JSON.stringify(DEFAULT_SETTINGS)), serverSettings);
-      } catch (e) {
-        console.warn('⚠️ تعذر تحميل إعدادات المتجر من السيرفر:', e);
-      }
+      } catch (e) {}
     }
 
     async function fetchThemeFromServer() {
@@ -597,12 +546,8 @@
         const res = await fetch('/api/theme');
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const serverTheme = await res.json();
-        if (serverTheme && Object.keys(serverTheme).length > 0) {
-          adminTheme = deepMerge(JSON.parse(JSON.stringify(DEFAULT_THEME_DATA)), serverTheme);
-        }
-      } catch (e) {
-        console.warn('⚠️ تعذر تحميل ألوان الثيم من السيرفر:', e);
-      }
+        if (serverTheme && Object.keys(serverTheme).length > 0) adminTheme = deepMerge(JSON.parse(JSON.stringify(DEFAULT_THEME_DATA)), serverTheme);
+      } catch (e) {}
       document.documentElement.style.setProperty('--primary', adminTheme.primary);
       document.documentElement.style.setProperty('--primary-dark', adminTheme.primaryDark);
       document.documentElement.style.setProperty('--secondary', adminTheme.secondary);
@@ -615,9 +560,7 @@
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const serverDelivery = await res.json();
         adminDelivery = deepMerge(JSON.parse(JSON.stringify(DEFAULT_DELIVERY_DATA)), serverDelivery);
-      } catch (e) {
-        console.warn('⚠️ تعذر تحميل أسعار التوصيل من السيرفر:', e);
-      }
+      } catch (e) {}
     }
 
     function applyAdminSettings() {
@@ -644,99 +587,35 @@
       });
       const footerBottom = document.querySelector('.footer-bottom');
       if (footerBottom && adminSettings.footerCopyright) footerBottom.innerHTML = adminSettings.footerCopyright + ' <i class="fa-solid fa-heart" style="color: var(--primary);"></i>';
-      document.querySelectorAll('input[name="delivery"]').forEach(r => {
-        const info = r.nextElementSibling;
-        if (!info) return;
-        const strong = info.querySelector('strong');
-        const span = info.querySelector('span');
-        if (!strong) return;
-        if (strong.textContent.includes('المنزل')) { r.value = adminDelivery.home; r.dataset.type = 'home'; if (span) span.textContent = adminDelivery.home + ' د.ج'; }
-        else if (strong.textContent.includes('الوكالة')) { r.value = adminDelivery.agency; r.dataset.type = 'agency'; if (span) span.textContent = adminDelivery.agency + ' د.ج'; }
-      });
     }
 
     // ==================== الولايات والبلديات ====================
-const WILAYAS = [
-  {code:'01',name:'أدرار'},{code:'02',name:'الشلف'},{code:'03',name:'الأغواط'},{code:'04',name:'أم البواقي'},
-  {code:'05',name:'باتنة'},{code:'06',name:'بجاية'},{code:'07',name:'بسكرة'},{code:'08',name:'بشار'},
-  {code:'09',name:'البليدة'},{code:'10',name:'البويرة'},{code:'11',name:'تمنراست'},{code:'12',name:'تبسة'},
-  {code:'13',name:'تلمسان'},{code:'14',name:'تيارت'},{code:'15',name:'تيزي وزو'},{code:'16',name:'الجزائر'},
-  {code:'17',name:'الجلفة'},{code:'18',name:'جيجل'},{code:'19',name:'سطيف'},{code:'20',name:'سعيدة'},
-  {code:'21',name:'سكيكدة'},{code:'22',name:'سيدي بلعباس'},{code:'23',name:'عنابة'},{code:'24',name:'قالمة'},
-  {code:'25',name:'قسنطينة'},{code:'26',name:'المدية'},{code:'27',name:'مستغانم'},{code:'28',name:'المسيلة'},
-  {code:'29',name:'معسكر'},{code:'30',name:'ورقلة'},{code:'31',name:'وهران'},{code:'32',name:'البيض'},
-  {code:'33',name:'إليزي'},{code:'34',name:'برج بوعريريج'},{code:'35',name:'بومرداس'},{code:'36',name:'الطارف'},
-  {code:'37',name:'تندوف'},{code:'38',name:'تيسمسيلت'},{code:'39',name:'الوادي'},{code:'40',name:'خنشلة'},
-  {code:'41',name:'سوق أهراس'},{code:'42',name:'تيبازة'},{code:'43',name:'ميلة'},{code:'44',name:'عين الدفلى'},
-  {code:'45',name:'النعامة'},{code:'46',name:'عين تموشنت'},{code:'47',name:'غرداية'},{code:'48',name:'غليزان'},
-  {code:'49',name:'تيميمون'},{code:'50',name:'برج باجي مختار'},{code:'51',name:'أولاد جلال'},{code:'52',name:'بني عباس'},
-  {code:'53',name:'عين صالح'},{code:'54',name:'عين قزام'},{code:'55',name:'تقرت'},{code:'56',name:'جانت'},
-  {code:'57',name:'المغير'},{code:'58',name:'المنيعة'}
-];
-const wilayas = WILAYAS.map(w => w.name);
-function getWilayaCodeByName(name) { const w = WILAYAS.find(x => x.name === name); return w ? w.code : ''; }
+    const WILAYAS = [
+      {code:'01',name:'أدرار'},{code:'02',name:'الشلف'},{code:'03',name:'الأغواط'},{code:'04',name:'أم البواقي'},
+      {code:'05',name:'باتنة'},{code:'06',name:'بجاية'},{code:'07',name:'بسكرة'},{code:'08',name:'بشار'},
+      {code:'09',name:'البليدة'},{code:'10',name:'البويرة'},{code:'11',name:'تمنراست'},{code:'12',name:'تبسة'},
+      {code:'13',name:'تلمسان'},{code:'14',name:'تيارت'},{code:'15',name:'تيزي وزو'},{code:'16',name:'الجزائر'},
+      {code:'17',name:'الجلفة'},{code:'18',name:'جيجل'},{code:'19',name:'سطيف'},{code:'20',name:'سعيدة'},
+      {code:'21',name:'سكيكدة'},{code:'22',name:'سيدي بلعباس'},{code:'23',name:'عنابة'},{code:'24',name:'قالمة'},
+      {code:'25',name:'قسنطينة'},{code:'26',name:'المدية'},{code:'27',name:'مستغانم'},{code:'28',name:'المسيلة'},
+      {code:'29',name:'معسكر'},{code:'30',name:'ورقلة'},{code:'31',name:'وهران'},{code:'32',name:'البيض'},
+      {code:'33',name:'إليزي'},{code:'34',name:'برج بوعريريج'},{code:'35',name:'بومرداس'},{code:'36',name:'الطارف'},
+      {code:'37',name:'تندوف'},{code:'38',name:'تيسمسيلت'},{code:'39',name:'الوادي'},{code:'40',name:'خنشلة'},
+      {code:'41',name:'سوق أهراس'},{code:'42',name:'تيبازة'},{code:'43',name:'ميلة'},{code:'44',name:'عين الدفلى'},
+      {code:'45',name:'النعامة'},{code:'46',name:'عين تموشنت'},{code:'47',name:'غرداية'},{code:'48',name:'غليزان'},
+      {code:'49',name:'تيميمون'},{code:'50',name:'برج باجي مختار'},{code:'51',name:'أولاد جلال'},{code:'52',name:'بني عباس'},
+      {code:'53',name:'عين صالح'},{code:'54',name:'عين قزام'},{code:'55',name:'تقرت'},{code:'56',name:'جانت'},
+      {code:'57',name:'المغير'},{code:'58',name:'المنيعة'}
+    ];
+    const wilayas = WILAYAS.map(w => w.name);
+    function getWilayaCodeByName(name) { const w = WILAYAS.find(x => x.name === name); return w ? w.code : ''; }
     const wilayaMunicipalities = {
-      'أدرار': ['أدرار','أولف','تسابيت','زاوية كنتة','فنوغيل','رقان','إن زغمير','تامست','تيت','أقبلي','بودة','شروين','المطارفة','أنتيسار','أولاد أحمد تيمي','تيمقتن','تيمياوين','تامنطيط'],
-      'الشلف': ['الشلف','تنس','وادي الفضة','بوقادير','الشطية','الكريمية','الأبيض مجاجة','وادي سلي','عين مران','تاوقريت','الزبوجة','بني حواء','أولاد فارس','الهرانفة','سنجاس','بريرة','الظهرة','بني بوعتاب'],
-      'الأغواط': ['الأغواط','أفلو','عين ماضي','قلتة سيدي سعد','الحويطة','البيضاء','تاجموت','حاسي الرمل','تاجرونة','بريدة','الغيشة','سبقاق','تاويالة','سيدي مخلوف','الخنق','الحاجرة','وادي مرة','حاسي الدلاعة'],
-      'أم البواقي': ['أم البواقي','عين البيضاء','عين مليلة','عين فكرون','مسكيانة','عين كرشة','بحير الشرقي','الجازية','سيقوس','الضلعة','أولاد حملة','الحرملية','سوق نعمان','أولاد قاسم','البلالة','عين الديس','الرحية','عين الزيتون'],
-      'باتنة': ['باتنة','بريكة','عين التوتة','مروانة','تازولت','أريس','بوزينة','سريانة','عين جاسر','تيمقاد','أولاد سي سليمان','تيلاطو','منعة','المعذر','بومقر','رأس العيون','سفيان','قصر بلزمة'],
-      'بجاية': ['بجاية','أقبو','أميزور','صدوق','خراطة','تيشي','سيدي عيش','درقينة','أوقاس','تاوريرت','أمليل','تيمزريت','شلاطة','بني مليكش','سوق الاثنين','القصر','تيبار','بني كسيلة'],
-      'بسكرة': ['بسكرة','طولقة','سيدي عقبة','أوماش','الوطاية','زريبة الوادي','مشونش','بوشقرون','ليشانة','البرانس','فوغالة','القنطرة','أولاد رحمون','لخضرية','جمورة','الحاجب','الميلية','عين زعطوط'],
-      'بشار': ['بشار','القنادسة','العبادلة','تاغيت','بني ونيف','لحمر','بوكايس','مشرع هواري','موغل','العرق الفراديس','مريجة','الواتة'],
-      'البليدة': ['البليدة','بوفاريك','الأربعاء','موزاية','بوقرة','الشريعة','وادي العلايق','بني مراد','صومعة','مفتاح','الشبلي','مزرعة','حمام ملوان','العفرون','بن خليل','أولاد سلامة','بني تامو'],
-      'البويرة': ['البويرة','الأخضرية','سور الغزلان','لخضرية','عين بسام','برج أوخريص','بشلول','مشدالة','حيزر','الأصنام','عين العلوي','الهاشمية','وادي البردي','بئر غبالو','الأربعاء','قادرية'],
-      'تمنراست': ['تمنراست','أبلسة','عين أمقل','إدلس','تاظروك','إن غر','تين زاواتين'],
-      'تبسة': ['تبسة','بئر العاتر','الشريعة','الونزة','مرسط','نقرين','الحمامات','الكويف','العوينات','العقلة','بكارية','الثليجة','الماء الأبيض','الڨريقر'],
-      'تلمسان': ['تلمسان','مغنية','الرمشي','ندروما','صبرة','شتوان','منصورة','باب العسة','مرسى بن مهيدي','الغزوات','سيدي سنان','عمير','بني بوسعيد','عين تالوت','هنين','سبعة شيوخ','بني مستار'],
-      'تيارت': ['تيارت','فرندة','السوقر','قصر الشلالة','عين الذهب','مهدية','الرحوية','تاقدمت','حمادية','دحموني','سيدي علي ملال','مدروسة','رأس الواد','عين كرمس','تيدة','سبعين'],
-      'تيزي وزو': ['تيزي وزو','عزازقة','ذراع بن خدة','بوغني','أزفون','تيقزيرت','عين الحمام','تيزي غنيف','تيجلابين','مقلع','بوزقن','تيرمتين','ذراع الميزان','إليلتن','عين الزاوية','بني دوالة','تيزي نثلاثة'],
       'الجزائر': ['الجزائر الوسطى','باب الوادي','بئر مراد رايس','حسين داي','الحراش','بولوغين','القبة','الدار البيضاء','برج الكيفان','الرويبة','رغاية','بئر خادم','الشراقة','درارية','بئر توتة','زرالدة','بوزريعة','سيدي امحمد','المدنية','القصبة','باب الزوار','عين البنيان','دالي إبراهيم'],
-      'الجلفة': ['الجلفة','عين وسارة','مسعد','حاسي بحبح','الشارف','دار الشيوخ','الإدريسية','سيدي لعجال','حد الصحاري','عين الإبل','بيرين','بن يعقوب','عين فقه','الخميس','زكار','دويس','سد رحال'],
-      'جيجل': ['جيجل','الطاهير','الميلية','الأمير عبد القادر','تاكسنة','سيدي معروف','شقفة','العنصر','الزيامة','القنار','بني ياجيس','سلمى بن زيادة','سيدي عبد العزيز','العوانة','السطارة','أولاد يحيى'],
-      'سطيف': ['سطيف','العلمة','عين ولمان','بوقاعة','عين آزال','بابور','عين الكبيرة','بئر العرش','حمام السخنة','عموشة','تاشودة','بني فودة','أولاد صابر','ماوكلان','صالح باي','عين أرنات','قجال','بني عزيز','بئر حدادة'],
-      'سعيدة': ['سعيدة','عين الحجر','الحساسنة','سيدي بوبكر','يوب','أولاد إبراهيم','دوي ثابت','عين السخونة','سيدي أحمد','تيرسين','هونت'],
-      'سكيكدة': ['سكيكدة','عزابة','القل','تامالوس','الحروش','رمضان جمال','بن عزوز','الشرايع','فلفلة','سيدي مزغيش','أم الطوب','عين شرشار','بني ولبان','زيتونة','الحدائق','السبت'],
-      'سيدي بلعباس': ['سيدي بلعباس','تلاغ','سفيزف','بن باديس','عين البرد','مرحوم','تلموني','رأس الماء','تسالة','مصطفى بن ابراهيم','سيدي علي بوسيدي','بن عشيبة','عين تندمين','بوجبهة البرج','سيدي لحسن'],
-      'عنابة': ['عنابة','الحجار','سيدي عمار','برحال','شطايبي','البوني','سرايدي','عين الباردة','التريعات','وادي العنب'],
-      'قالمة': ['قالمة','وادي الزناتي','حمام النبائل','بوشقوف','عين مخلوف','حمام دباغ','هيليوبوليس','وادي فراغة','بوحمدان','خزارة','حمام المسخوطين','عين العربي','جبالة الخميسي','رأس العقبة'],
-      'قسنطينة': ['قسنطينة','الخروب','عين اسمارة','ديدوش مراد','زيغود يوسف','بني حميدان','ابن زياد','حامة بوزيان','ابن باديس','مسعود بوجريو','أولاد رحمون'],
-      'المدية': ['المدية','بريزينة','تابلاط','قصر البخاري','عين بوسيف','سيدي نعمان','البرواقية','شلالة العذاورة','أولاد عنتر','وزرة','العمارية','تمزقيدة','الربيعة','سيدي دامد','بوعيش','الشهبونية','الكاف الأخضر'],
-      'مستغانم': ['مستغانم','عين تادلس','بوقيرات','سيدي علي','حاسي مماش','ماسرة','خير الدين','حجاج','عشعاشة','سيدي بلعطار','مزغران','الصور','طواهامية','أولاد بوغالم'],
-      'المسيلة': ['المسيلة','بوسعادة','سيدي عيسى','عين الملح','حمام الضلعة','مقرة','شلال العذاورة','جبل مساعد','خبانة','أولاد ماضي','التلاغمة','مسيف','سيدي هجرس','عين خضراء','أولاد دراج','حمام الدلاع'],
-      'معسكر': ['معسكر','سيق','محمدية','غريس','تيغنيف','بوحنيفية','وادي التاغية','عين فارس','تيزي','زهانة','حسين','المامونية','وادي الأبطال','فروحة','عقاز'],
-      'ورقلة': ['ورقلة','حاسي مسعود','انقوسة','البرمة','سيدي خويلد','الرويسات','حاسي بن عبد الله','العالية','نقوسة'],
       'وهران': ['وهران','بئر الجير','السانية','عين الترك','أرزيو','بطيوة','مرسى الحجاج','بوتليليس','وادي تليلات','مسرغين','بوسفر','العنصر','حاسي بونيف','الكرمة','قديل','حاسي مفسوخ','عين الكرمة'],
-      'البيض': ['البيض','الأبيض سيدي الشيخ','بوقطب','بريزينة','رقاصة','شلالة','الخيثر','عين العراك','استيتن','تغزوت','كراكدة','الشقيق','روجاصة'],
-      'إليزي': ['إليزي','جانت','برج عمر إدريس','إن أمناس','دبداب','بونجات'],
-      'برج بوعريريج': ['برج بوعريريج','رأس الوادي','المنصورة','برج الغدير','الحمادية','بئر قاصد علي','الياشير','مجانة','تفرق','بليمور','حرازة','حسناوة','بن داود','خليل','سيدي امبارك','العناصر','أولاد براهم','جعافرة'],
-      'بومرداس': ['بومرداس','برج منايل','بودواو','الثنية','دلس','الناصرية','خميس الخشنة','برج البحري','شعبة العامر','سي مصطفى','تيجلابين','زموري','بغلية','أولاد موسى','الأربعطاش','عيساوة'],
-      'الطارف': ['الطارف','القالة','الذرعان','بن مهيدي','بوثلجة','الشط','البسباس','عين العسل','الزيتونة','الشافية','بريحان','وادي الزيتون'],
-      'تندوف': ['تندوف','أم العسل'],
-      'تيسمسيلت': ['تيسمسيلت','ثنية الحد','برج بونعامة','خميستي','لرجام','بوقايد','الأزهرية','عماري','اليوط','سيدي سليمان','بونشادة','العيون','سيدي بوتشنت'],
-      'الوادي': ['الوادي','الرباح','قمار','الدبيلة','حاسي خليفة','تغزوت','وادي العلندة','الطالب العربي','البياضة','الحمراية','المقرن','سيدي عمران','النخلة','ورماس'],
-      'خنشلة': ['خنشلة','ششار','بابار','قايس','أنسيغة','الحامة','الرميلة','أولاد رشاش','طامزة','بغاي','خيران','يابوس','بوحمامة','المحمل','شلية'],
-      'سوق أهراس': ['سوق أهراس','سدراتة','مداوروش','تاورة','الحنانشة','مشروحة','حدادة','أم العظائم','ولاجة','خميسة','بئر بوحوش','الزعرورية','عين الزانة','سافل الويدان'],
-      'تيبازة': ['تيبازة','القليعة','حجوط','شرشال','دواودة','فوكة','سيدي عمار','بوسماعيل','خميستي','أحمر العين','سيدي غيلاس','الداموس','مناصر','الشعبة'],
-      'ميلة': ['ميلة','فرجيوة','شلغوم العيد','تاجنانت','وادي العثمانية','القرارم قوقة','تسدان حدادة','وادي النجاء','رحبات','عميرة أراس','سيدي مروان','رواشد','ترعي باينان'],
-      'عين الدفلى': ['عين الدفلى','خميس مليانة','مليانة','العطاف','بومدفع','الأربعاء','جليدة','حمام ريغة','الروينة','عين لشياخ','الجمعة وسحالة','الورك','عين التركي','العبادية'],
-      'النعامة': ['النعامة','المشرية','عين الصفراء','صفيصيفة','تيوت','مكمن بن عمار','عسلة','مغرار','جنين بورزق','قصدير','الكاصدير'],
-      'عين تموشنت': ['عين تموشنت','حمام بوحجر','بني صاف','المالح','الأمير عبد القادر','عين الكيحل','شعبة اللحم','العقيد لطفي','حاسي الغلة','الأغبال','تارقة','سيدي بن عدة','أولاد الكيحل','شنتوف'],
-      'غرداية': ['غرداية','متليلي','بريان','القرارة','زلفانة','العطف','بونورة','ضاية بن ضحوة','منصورة','حاسي الفحل','سبع رواضي','بوعطة'],
-      'غليزان': ['غليزان','وادي رهيو','عمي موسى','مازونة','زمورة','حمري','المطمر','سيدي محمد بن علي','سيدي خطاب','منداس','يلل','وادي الجمعة','بن داود','القلعة'],
-      'تيميمون': ['تيميمون','أولاد سعيد','شروين','طالمين','دلدول','المطارفة','القصور','تينركوك','إن غار','أوقروت'],
-      'برج باجي مختار': ['برج باجي مختار','تيمياوين'],
-      'أولاد جلال': ['أولاد جلال','سيدي خالد','الشعيبة','الدوسن','رأس الميعاد','بسباس'],
-      'بني عباس': ['بني عباس','تامترت','كرزاز','القصابي','تبلكوزة','إقلي','الواتة','أولاد خضير','تيمودي','بادوس'],
-      'عين صالح': ['عين صالح','فقارة الزوى','إن غر'],
-      'عين قزام': ['عين قزام','تين زاواتين'],
-      'تقرت': ['تقرت','تماسين','المقارين','الزاوية العابدية','النزلة','بلدة عمر','سيدي سليمان','بن ناصر','العالية'],
-      'جانت': ['جانت','برج الحواس'],
-      'المغير': ['المغير','جامعة','سيدي عمران','أم الطيور','سيدي خليل','تندلة','الاستيش','سيدي قاسم','تلعين','المرارة'],
-      'المنيعة': ['المنيعة','حاسي القارة','حاسي فحل']
+      'قسنطينة': ['قسنطينة','الخروب','عين اسمارة','ديدوش مراد','زيغود يوسف','بني حميدان','ابن زياد','حامة بوزيان','ابن باديس','مسعود بوجريو','أولاد رحمون'],
+      'عنابة': ['عنابة','الحجار','سيدي عمار','برحال','شطايبي','البوني','سرايدي','عين الباردة','التريعات','وادي العنب']
     };
 
-    // ==================== الحالة ====================
     let cart = [];
     let currentProduct = null;
     let selectedColorIndex = 0;
@@ -762,24 +641,28 @@ function getWilayaCodeByName(name) { const w = WILAYAS.find(x => x.name === name
       setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 2600);
     }
 
-  function getColorImages(color) {
-  if (!color) return [];
-  if (Array.isArray(color.parts) && color.parts.length > 0) {
-    const imgs = [];
-    color.parts.forEach(pt => {
-      if (pt.images && pt.images.length) { const v = pt.images.filter(u => u && u.trim()); if (v.length) imgs.push(v[0]); }
-      else if (pt.image && pt.image.trim()) imgs.push(pt.image);
-    });
-    if (imgs.length > 0) return imgs;
-  }
-  if (Array.isArray(color.images) && color.images.length > 0) {
-    const valid = color.images.filter(u => u && typeof u === 'string' && u.trim());
-    if (valid.length > 0) return valid;
-  }
-  if (color.image && color.image.trim()) return [color.image];
-  return [];
-}
-function isProductSet(p) { return p && p.setType === 'set'; }
+    // ==================== getColorImages — كل صور كل قطع الطقم ====================
+    function getColorImages(color) {
+      if (!color) return [];
+      if (Array.isArray(color.parts) && color.parts.length > 0) {
+        const imgs = [];
+        color.parts.forEach(pt => {
+          if (Array.isArray(pt.images) && pt.images.length) {
+            pt.images.filter(u => u && typeof u === 'string' && u.trim()).forEach(u => imgs.push(u));
+          } else if (pt.image && typeof pt.image === 'string' && pt.image.trim()) {
+            imgs.push(pt.image);
+          }
+        });
+        if (imgs.length > 0) return imgs;
+      }
+      if (Array.isArray(color.images) && color.images.length > 0) {
+        const valid = color.images.filter(u => u && typeof u === 'string' && u.trim());
+        if (valid.length > 0) return valid;
+      }
+      if (color.image && typeof color.image === 'string' && color.image.trim()) return [color.image];
+      return [];
+    }
+    function isProductSet(p) { return p && p.setType === 'set'; }
     function getProductImage(color) { const imgs = getColorImages(color); return imgs[0] || ''; }
 
     // ==================== الوضع الليلي ====================
@@ -870,7 +753,6 @@ function isProductSet(p) { return p && p.setType === 'set'; }
       return true;
     }
 
-    // ==================== دالة تحديث السعر الإجمالي ====================
     function updateTotalPrice() {
       if (!currentProduct) return;
       const totalPrice = currentProduct.price * selectedQuantity;
@@ -880,7 +762,7 @@ function isProductSet(p) { return p && p.setType === 'set'; }
       if (formulaEl) formulaEl.textContent = `${selectedQuantity} × ${currentProduct.price.toLocaleString()} د.ج`;
     }
 
-    // ==================== عرض تفاصيل المنتج ====================
+    // ==================== renderProductDetail — مع دوائر مقسّمة ====================
     function renderProductDetail() {
       if (!currentProduct) return;
       const p = currentProduct;
@@ -888,8 +770,10 @@ function isProductSet(p) { return p && p.setType === 'set'; }
       const colorImgs = getColorImages(color);
       const currentImage = colorImgs[selectedImageIndex] || colorImgs[0] || '';
       const discountPercent = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
+      const isSet = isProductSet(p);
       const hasMultipleColors = p.colors.length > 1;
       const hasMultipleImages = colorImgs.length > 1;
+      const showColorSection = hasMultipleColors || isSet;
       document.getElementById('breadcrumbCategory').textContent = p.categoryLabel;
       document.getElementById('breadcrumbProduct').textContent = p.name;
       const grid = document.getElementById('productDetailGrid');
@@ -914,8 +798,28 @@ function isProductSet(p) { return p && p.setType === 'set'; }
             ${discountPercent > 0 ? `<span class="discount">-${discountPercent}%</span>` : ''}
           </div>
           <p class="detail-description">${p.description || ''}</p>
-          ${hasMultipleColors ? `<div class="detail-section"><div class="detail-section-label"><span><i class="fa-solid fa-palette"></i> ${isProductSet(p) ? 'المتغير' : 'اللون'}</span><span class="selected-value">${color.name}</span></div><div class="detail-swatches">${isProductSet(p) ? p.colors.map((c, i) => `<button class="detail-age ${i === selectedColorIndex ? 'active' : ''}" style="font-size:0.82rem;" onclick="selectColor(${i})">${c.name}</button>`).join('') : p.colors.map((c, i) => `<div class="detail-swatch ${i === selectedColorIndex ? 'active' : ''}" style="background:${c.hex};" title="${c.name}" onclick="selectColor(${i})"></div>`).join('')}</div></div>` : ''}
-${isProductSet(p) && color.parts ? `<div class="detail-section"><div class="detail-section-label"><span><i class="fa-solid fa-puzzle-piece"></i> محتويات المتغير</span><span class="selected-value">${color.parts.length} قطعة</span></div><div style="display:flex;flex-direction:column;gap:8px;">${color.parts.map((pt, pi) => `<div class="cart-item" style="padding:8px 12px;cursor:pointer;${pi === selectedImageIndex ? 'border-color:var(--primary);' : ''}" onclick="selectImage(${pi})"><span style="width:26px;height:26px;border-radius:50%;background:${pt.hex||'#ccc'};flex-shrink:0;"></span><div style="flex:1;"><strong style="font-size:0.88rem;">${pt.name||'قطعة'}</strong> <span style="font-size:0.72rem;color:var(--text-gray);">${pt.colorName||''}</span></div></div>`).join('')}</div></div>` : ''}
+          ${showColorSection ? `<div class="detail-section">
+            <div class="detail-section-label">
+              <span><i class="fa-solid fa-palette"></i> ${isSet ? 'اختر الطقم' : 'اللون'}</span>
+              <span class="selected-value">${color.name || ''}</span>
+            </div>
+            <div class="detail-swatches">
+              ${p.colors.map((c, i) => {
+                const bg = isSet ? getSetSwatchGradient(c) : (c.hex || '#cccccc');
+                return `<div class="detail-swatch ${i === selectedColorIndex ? 'active' : ''}" style="background:${bg};" title="${c.name || ''}" onclick="selectColor(${i})"></div>`;
+              }).join('')}
+            </div>
+            ${isSet && color.parts ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">${color.parts.map(pt => `<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:50px;background:rgba(108,92,231,0.08);font-size:0.75rem;font-weight:700;color:var(--text-dark);"><span style="width:14px;height:14px;border-radius:50%;background:${pt.hex || '#ccc'};border:1px solid rgba(0,0,0,0.15);"></span>${pt.name || 'قطعة'}: ${pt.colorName || ''}</span>`).join('')}</div>` : ''}
+          </div>` : ''}
+          ${isSet && color.parts ? `<div class="detail-section">
+            <div class="detail-section-label"><span><i class="fa-solid fa-puzzle-piece"></i> محتويات الطقم</span><span class="selected-value">${color.parts.length} قطعة</span></div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              ${color.parts.map(pt => `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(108,92,231,0.05);border:1px solid rgba(108,92,231,0.15);">
+                <span style="width:28px;height:28px;border-radius:50%;background:${pt.hex || '#ccc'};flex-shrink:0;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.1);"></span>
+                <div style="flex:1;"><strong style="font-size:0.9rem;display:block;color:var(--text-dark);">${pt.name || 'قطعة'}</strong><span style="font-size:0.75rem;color:var(--text-gray);">${pt.colorName || ''}</span></div>
+              </div>`).join('')}
+            </div>
+          </div>` : ''}
           <div class="detail-section">
             <div class="detail-section-label"><span><i class="fa-solid fa-child"></i> العمر</span><span class="selected-value">${selectedAge}</span></div>
             <div class="detail-ages">${p.ages.map(a => `<button class="detail-age ${a === selectedAge ? 'active' : ''}" onclick="selectAge('${a}', this)">${a}</button>`).join('')}</div>
@@ -963,13 +867,13 @@ ${isProductSet(p) && color.parts ? `<div class="detail-section"><div class="deta
       document.querySelectorAll('.thumbnail').forEach((t, i) => t.classList.toggle('active', i === index));
     }
 
-function selectColor(index) {
-  if (!currentProduct) return;
-  if (index === selectedColorIndex) return;
-  selectedColorIndex = index; selectedImageIndex = 0;
-  renderProductDetail();
-  updateTotalPrice();
-}
+    function selectColor(index) {
+      if (!currentProduct) return;
+      if (index === selectedColorIndex) return;
+      selectedColorIndex = index; selectedImageIndex = 0;
+      renderProductDetail();
+      updateTotalPrice();
+    }
 
     function selectAge(age, el) {
       selectedAge = age;
@@ -979,7 +883,6 @@ function selectColor(index) {
       if (ageLabel.length > 0) ageLabel[ageLabel.length - 1].textContent = age;
     }
 
-    // ✅ تعديل دالة تغيير الكمية لتحديث السعر الإجمالي
     function changeQty(delta) {
       selectedQuantity = Math.max(1, selectedQuantity + delta);
       document.getElementById('qtyValue').textContent = selectedQuantity;
@@ -1003,7 +906,8 @@ function selectColor(index) {
       img.style.opacity = '0.4';
       setTimeout(() => { img.src = lightboxImages[lightboxImageIndex]; img.style.opacity = '1'; }, 120);
       const color = currentProduct.colors[selectedColorIndex];
-      document.getElementById('lightboxCounter').innerHTML = `<span class="color-dot" style="background:${color.hex};"></span>${color.name} · ${lightboxImageIndex + 1} / ${lightboxImages.length}`;
+      const dotBg = isProductSet(currentProduct) ? getSetSwatchGradient(color) : (color.hex || '#ccc');
+      document.getElementById('lightboxCounter').innerHTML = `<span class="color-dot" style="background:${dotBg};"></span>${color.name} · ${lightboxImageIndex + 1} / ${lightboxImages.length}`;
       const showArrows = lightboxImages.length > 1;
       document.querySelectorAll('.lightbox-nav').forEach(b => b.style.display = showArrows ? 'flex' : 'none');
     }
@@ -1035,36 +939,38 @@ function selectColor(index) {
         if (Math.abs(diff) > 50) { if (diff > 0) lightboxNav(1); else lightboxNav(-1); }
       }, { passive: true });
     })();
-function buildCartItemPayload() {
-  if (!currentProduct) return null;
-  const c = currentProduct.colors[selectedColorIndex];
-  const payload = { itemId: generateId(), productId: currentProduct.id, colorIndex: selectedColorIndex, age: selectedAge, qty: selectedQuantity, price: currentProduct.price };
-  if (isProductSet(currentProduct)) {
-    payload.partIndex = selectedImageIndex;
-    payload.partName = c.parts && c.parts[selectedImageIndex] ? c.parts[selectedImageIndex].name : '';
-  }
-  return payload;
-}
-function addCurrentToCart() {
-  if (!currentProduct) return;
-  const isSet = isProductSet(currentProduct);
-  const match = it => it.productId === currentProduct.id && it.colorIndex === selectedColorIndex && it.age === selectedAge && (isSet ? it.partIndex === selectedImageIndex : true);
-  const existing = cart.find(match);
-  if (existing) existing.qty += selectedQuantity;
-  else { const np = buildCartItemPayload(); if (np) cart.push(np); }
-  saveCart(); renderCart();
-  showToast(`تمت إضافة ${selectedQuantity} ${selectedQuantity === 1 ? 'قطعة' : 'قطع'} إلى السلة ✓`);
-}
-function orderNow() { addCurrentToCartSilent(); openCheckout(); }
-function addCurrentToCartSilent() {
-  if (!currentProduct) return;
-  const isSet = isProductSet(currentProduct);
-  const match = it => it.productId === currentProduct.id && it.colorIndex === selectedColorIndex && it.age === selectedAge && (isSet ? it.partIndex === selectedImageIndex : true);
-  const existing = cart.find(match);
-  if (existing) { existing.qty = selectedQuantity; existing.price = currentProduct.price; }
-  else { const np = buildCartItemPayload(); if (np) cart.push(np); }
-  saveCart(); renderCart();
-}
+
+    // ==================== buildCartItemPayload — بدون partIndex ====================
+    function buildCartItemPayload() {
+      if (!currentProduct) return null;
+      return {
+        itemId: generateId(),
+        productId: currentProduct.id,
+        colorIndex: selectedColorIndex,
+        age: selectedAge,
+        qty: selectedQuantity,
+        price: currentProduct.price
+      };
+    }
+    function addCurrentToCart() {
+      if (!currentProduct) return;
+      const match = it => it.productId === currentProduct.id && it.colorIndex === selectedColorIndex && it.age === selectedAge;
+      const existing = cart.find(match);
+      if (existing) existing.qty += selectedQuantity;
+      else { const np = buildCartItemPayload(); if (np) cart.push(np); }
+      saveCart(); renderCart();
+      showToast(`تمت إضافة ${selectedQuantity} ${selectedQuantity === 1 ? 'قطعة' : 'قطع'} إلى السلة ✓`);
+    }
+    function orderNow() { addCurrentToCartSilent(); openCheckout(); }
+    function addCurrentToCartSilent() {
+      if (!currentProduct) return;
+      const match = it => it.productId === currentProduct.id && it.colorIndex === selectedColorIndex && it.age === selectedAge;
+      const existing = cart.find(match);
+      if (existing) { existing.qty = selectedQuantity; existing.price = currentProduct.price; }
+      else { const np = buildCartItemPayload(); if (np) cart.push(np); }
+      saveCart(); renderCart();
+    }
+
     // ==================== سلة التسوق ====================
     const cartBody = document.getElementById('cartBody');
     const cartFooter = document.getElementById('cartFooter');
@@ -1092,6 +998,7 @@ function addCurrentToCartSilent() {
     function updateCartBadge() { const q = cart.reduce((s, i) => s + i.qty, 0); cartCountEl.textContent = q; cartHeaderCount.textContent = `(${q})`; }
     function getCartSubtotal() { return cart.reduce((s, i) => s + i.price * i.qty, 0); }
 
+    // ==================== renderCart — شارات الألوان لكل قطعة ====================
     function renderCart() {
       updateCartBadge();
       if (cart.length === 0) {
@@ -1103,15 +1010,19 @@ function addCurrentToCartSilent() {
       cartBody.innerHTML = cart.map(item => {
         const p = products.find(pr => pr.id === item.productId);
         if (!p) return '';
-   const c = p.colors[item.colorIndex];
-const imgs = getColorImages(c);
-const img = (isProductSet(p) && c.parts && typeof item.partIndex === 'number' && c.parts[item.partIndex] && c.parts[item.partIndex].images && c.parts[item.partIndex].images[0]) ? c.parts[item.partIndex].images[0] : (imgs[0] || '');
-const partLabel = (isProductSet(p) && c.parts && typeof item.partIndex === 'number' && c.parts[item.partIndex]) ? c.parts[item.partIndex].name : '';
-return `<div class="cart-item" onclick="openEditModal('${item.itemId}')">
-  <img src="${img}" alt="${p.name}">
-  <div class="cart-item-info">
-    <h4>${p.name}</h4>
-    <div class="cart-item-variants"><span class="variant-tag">🎨 ${c.name}</span>${partLabel ? `<span class="variant-tag">📦 ${partLabel}</span>` : ''}<span class="variant-tag">👶 ${item.age}</span></div>
+        const c = p.colors[item.colorIndex];
+        if (!c) return '';
+        const imgs = getColorImages(c);
+        const img = imgs[0] || '';
+        const isSet = isProductSet(p);
+        const variantHtml = isSet && c.parts
+          ? c.parts.map(pt => `<span class="variant-tag" style="background:${pt.hex || 'rgba(108,92,231,0.12)'};color:${pt.hex ? '#fff' : 'var(--secondary)'};">${pt.name}: ${pt.colorName}</span>`).join('')
+          : `<span class="variant-tag">🎨 ${c.name}</span>`;
+        return `<div class="cart-item" onclick="openEditModal('${item.itemId}')">
+          <img src="${img}" alt="${p.name}" onerror="this.style.opacity=0.4">
+          <div class="cart-item-info">
+            <h4>${p.name}</h4>
+            <div class="cart-item-variants">${isSet ? `<span class="variant-tag" style="background:var(--secondary);color:#fff;">${c.name}</span>` : ''}${variantHtml}<span class="variant-tag">👶 ${item.age}</span></div>
             <div class="cart-item-price">${(item.price * item.qty).toLocaleString()} د.ج</div>
             <div class="cart-item-actions">
               <div class="qty-control" onclick="event.stopPropagation();"><button onclick="event.stopPropagation(); updateQty('${item.itemId}', -1)">−</button><span>${item.qty}</span><button onclick="event.stopPropagation(); updateQty('${item.itemId}', 1)">+</button></div>
@@ -1148,11 +1059,15 @@ return `<div class="cart-item" onclick="openEditModal('${item.itemId}')">
       editingItemId = itemId; editColorIndex = item.colorIndex; editAge = item.age;
       const p = products.find(pr => pr.id === item.productId); if (!p) return;
       const c = p.colors[editColorIndex];
+      const isSet = isProductSet(p);
       document.getElementById('editModalImage').src = getProductImage(c);
       document.getElementById('editModalTitle').textContent = p.name;
       document.getElementById('editModalPrice').textContent = p.price.toLocaleString() + ' د.ج';
-      document.getElementById('editModalColors').innerHTML = p.colors.map((col, i) => `<span class="swatch ${i === editColorIndex ? 'active' : ''}" style="background:${col.hex};" title="${col.name}" onclick="changeEditColor(${i})"></span>`).join('');
-      document.getElementById('editModalAges').innerHTML = p.ages.map(a => `<span class="age-tag ${a === editAge ? 'active' : ''}" onclick="changeEditAge(this, '${a}')">${a}</span>`).join('');
+      document.getElementById('editModalColors').innerHTML = p.colors.map((col, i) => {
+        const bg = isSet ? getSetSwatchGradient(col) : (col.hex || '#cccccc');
+        return `<span class="swatch ${i === editColorIndex ? 'active' : ''}" style="background:${bg};width:38px;height:38px;border-radius:50%;display:inline-block;margin:4px;border:2px solid ${i === editColorIndex ? 'var(--primary)' : 'rgba(0,0,0,0.08)'};cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.1);" title="${col.name || ''}" onclick="changeEditColor(${i})"></span>`;
+      }).join('');
+      document.getElementById('editModalAges').innerHTML = p.ages.map(a => `<span class="age-tag ${a === editAge ? 'active' : ''}" style="padding:8px 16px;border-radius:10px;display:inline-block;margin:4px;cursor:pointer;background:${a === editAge ? 'var(--secondary)' : 'rgba(0,0,0,0.05)'};color:${a === editAge ? '#fff' : 'var(--text-dark)'};font-weight:700;font-size:0.85rem;" onclick="changeEditAge(this, '${a}')">${a}</span>`).join('');
       document.getElementById('editModal').classList.add('show');
     }
     function changeEditColor(i) {
@@ -1162,18 +1077,25 @@ return `<div class="cart-item" onclick="openEditModal('${item.itemId}')">
       const imgEl = document.getElementById('editModalImage');
       imgEl.style.opacity = '0.5';
       setTimeout(() => { imgEl.src = getProductImage(p.colors[i]); imgEl.style.opacity = '1'; }, 150);
-      document.querySelectorAll('#editModalColors .swatch').forEach((s, idx) => s.classList.toggle('active', idx === i));
+      document.querySelectorAll('#editModalColors .swatch').forEach((s, idx) => {
+        s.classList.toggle('active', idx === i);
+        s.style.borderColor = idx === i ? 'var(--primary)' : 'rgba(0,0,0,0.08)';
+      });
     }
     function changeEditAge(el, age) {
       editAge = age;
-      document.querySelectorAll('#editModalAges .age-tag').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('#editModalAges .age-tag').forEach(t => {
+        t.classList.remove('active');
+        t.style.background = 'rgba(0,0,0,0.05)';
+        t.style.color = 'var(--text-dark)';
+      });
       el.classList.add('active');
+      el.style.background = 'var(--secondary)';
+      el.style.color = '#fff';
     }
     function saveEdit() {
       const item = cart.find(i => i.itemId === editingItemId); if (!item) return;
-      const prod = products.find(pr => pr.id === item.productId); if (!prod) return;
-      const _isSet = isProductSet(prod);
-      const dup = cart.find(i => i.itemId !== editingItemId && i.productId === item.productId && i.colorIndex === editColorIndex && i.age === editAge && (_isSet ? i.partIndex === item.partIndex : true));
+      const dup = cart.find(i => i.itemId !== editingItemId && i.productId === item.productId && i.colorIndex === editColorIndex && i.age === editAge);
       if (dup) { dup.qty += item.qty; cart = cart.filter(i => i.itemId !== editingItemId); }
       else { item.colorIndex = editColorIndex; item.age = editAge; }
       saveCart(); renderCart(); closeEditModal();
@@ -1202,7 +1124,8 @@ return `<div class="cart-item" onclick="openEditModal('${item.itemId}')">
         phone1: document.getElementById('checkoutPhone1').value,
         phone2: document.getElementById('checkoutPhone2').value,
         address: document.getElementById('checkoutAddress').value,
-delivery: (document.querySelector('input[name="delivery"]:checked') || {}).dataset?.type || 'home'      };
+        delivery: (document.querySelector('input[name="delivery"]:checked') || {}).dataset?.type || 'home'
+      };
       const hasData = data.firstName || data.lastName || data.municipality || data.phone1 || data.phone2 || data.address || data.wilaya;
       if (hasData) localStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify(data));
       else localStorage.removeItem(CHECKOUT_DRAFT_KEY);
@@ -1241,7 +1164,6 @@ delivery: (document.querySelector('input[name="delivery"]:checked') || {}).datas
     document.getElementById('checkoutMunicipality').addEventListener('change', saveCheckoutDraft);
     document.querySelectorAll('input[name="delivery"]').forEach(r => r.addEventListener('change', () => { saveCheckoutDraft(); updateDeliveryCost(); }));
 
-    // ==================== إتمام الطلب ====================
     let currentDeliveryCost = adminDelivery.home;
 
     function openCheckout() {
@@ -1258,29 +1180,29 @@ delivery: (document.querySelector('input[name="delivery"]:checked') || {}).datas
       document.getElementById('checkoutModal').classList.remove('show');
       document.body.style.overflow = '';
     }
-   function refreshDeliveryOptions(wilayaName) {
-  const code = getWilayaCodeByName(wilayaName);
-  const byW = (adminDelivery.byWilaya && adminDelivery.byWilaya[code]) || {};
-  const home = byW.home != null ? byW.home : adminDelivery.home;
-  const agency = byW.agency != null ? byW.agency : adminDelivery.agency;
-  const express = byW.express != null ? byW.express : (adminDelivery.express || 900);
-  const setOpt = (type, val) => {
-    const r = document.querySelector(`input[name="delivery"][data-type="${type}"]`);
-    if (!r) return;
-    r.value = val;
-    const lbl = document.getElementById('delivery' + type.charAt(0).toUpperCase() + type.slice(1) + 'Label');
-    if (lbl) lbl.textContent = val + ' د.ج';
-  };
-  setOpt('home', home); setOpt('agency', agency); setOpt('express', express);
-  const sel = document.querySelector('input[name="delivery"]:checked');
-  currentDeliveryCost = sel ? parseInt(sel.value) : home;
-  updateCheckoutSummary();
-}
-function updateDeliveryCost() {
-  const sel = document.querySelector('input[name="delivery"]:checked');
-  currentDeliveryCost = sel ? parseInt(sel.value) : adminDelivery.home;
-  updateCheckoutSummary();
-}
+    function refreshDeliveryOptions(wilayaName) {
+      const code = getWilayaCodeByName(wilayaName);
+      const byW = (adminDelivery.byWilaya && adminDelivery.byWilaya[code]) || {};
+      const home = byW.home != null ? byW.home : adminDelivery.home;
+      const agency = byW.agency != null ? byW.agency : adminDelivery.agency;
+      const express = byW.express != null ? byW.express : (adminDelivery.express || 900);
+      const setOpt = (type, val) => {
+        const r = document.querySelector(`input[name="delivery"][data-type="${type}"]`);
+        if (!r) return;
+        r.value = val;
+        const lbl = document.getElementById('delivery' + type.charAt(0).toUpperCase() + type.slice(1) + 'Label');
+        if (lbl) lbl.textContent = val + ' د.ج';
+      };
+      setOpt('home', home); setOpt('agency', agency); setOpt('express', express);
+      const sel = document.querySelector('input[name="delivery"]:checked');
+      currentDeliveryCost = sel ? parseInt(sel.value) : home;
+      updateCheckoutSummary();
+    }
+    function updateDeliveryCost() {
+      const sel = document.querySelector('input[name="delivery"]:checked');
+      currentDeliveryCost = sel ? parseInt(sel.value) : adminDelivery.home;
+      updateCheckoutSummary();
+    }
     function updateCheckoutSummary() {
       const sub = getCartSubtotal();
       const count = cart.reduce((s, i) => s + i.qty, 0);
@@ -1289,7 +1211,8 @@ function updateDeliveryCost() {
       document.getElementById('summaryDelivery').textContent = currentDeliveryCost.toLocaleString() + ' د.ج';
       document.getElementById('summaryTotal').textContent = (sub + currentDeliveryCost).toLocaleString() + ' د.ج';
     }
-    // ✅ إرسال الطلب إلى Turso عبر /api/orders
+
+    // ==================== submitOrder — اسم الطقم + تفاصيل القطع ====================
     async function submitOrder() {
       const form = document.getElementById('checkoutForm');
       if (!form.checkValidity()) { form.reportValidity(); return; }
@@ -1315,22 +1238,17 @@ function updateDeliveryCost() {
           const prod = products.find(x => x.id === it.productId);
           const c = prod ? prod.colors[it.colorIndex] : null;
           let img = '';
-          if (c) {
-            if (isProductSet(prod) && c.parts && typeof it.partIndex === 'number' && c.parts[it.partIndex] && c.parts[it.partIndex].images && c.parts[it.partIndex].images[0]) {
-              img = c.parts[it.partIndex].images[0];
-            } else {
-              const imgs = getColorImages(c);
-              img = imgs[0] || '';
-            }
-          }
           let colorLabel = c ? c.name : '';
-          if (isProductSet(prod) && c && c.parts && typeof it.partIndex === 'number' && c.parts[it.partIndex]) {
-            colorLabel += ' - ' + (c.parts[it.partIndex].name || '') + (c.parts[it.partIndex].colorName ? ' (' + c.parts[it.partIndex].colorName + ')' : '');
+          if (c) {
+            const imgs = getColorImages(c);
+            img = imgs[0] || '';
+            if (isProductSet(prod) && c.parts) {
+              colorLabel = c.name + ' — ' + c.parts.map(pt => `${pt.name}: ${pt.colorName}`).join(' + ');
+            }
           }
           return {
             productId: it.productId,
             colorIndex: it.colorIndex,
-            partIndex: it.partIndex,
             age: it.age,
             qty: it.qty,
             price: it.price,
@@ -1354,11 +1272,8 @@ function updateDeliveryCost() {
           orderId = result.orderId;
           savedToServer = true;
         }
-      } catch (err) {
-        console.warn('⚠️ فشل إرسال الطلب للسيرفر:', err);
-      }
+      } catch (err) { console.warn('⚠️ فشل إرسال الطلب للسيرفر:', err); }
 
-      // Fallback: إن فشل السيرفر، خزّن في المتصفح
       if (!savedToServer) {
         orderId = 'LOCAL-' + Date.now();
         try {
@@ -1460,14 +1375,13 @@ function updateDeliveryCost() {
     });
 
     // ============================================================
-    // ✅ التهيئة: تحميل كل شيء من السيرفر
+    // ✅ التهيئة
     // ============================================================
     document.addEventListener('DOMContentLoaded', async () => {
-    const ws = document.getElementById('checkoutWilaya');
-wilayas.forEach(w => { const o = document.createElement('option'); o.value = w; o.textContent = w; ws.appendChild(o); });
-ws.addEventListener('change', () => { populateMunicipalities(); saveCheckoutDraft(); refreshDeliveryOptions(ws.value); });
-refreshDeliveryOptions('');
-      // 2) جلب كل البيانات من السيرفر بالتوازي
+      const ws = document.getElementById('checkoutWilaya');
+      wilayas.forEach(w => { const o = document.createElement('option'); o.value = w; o.textContent = w; ws.appendChild(o); });
+      ws.addEventListener('change', () => { populateMunicipalities(); saveCheckoutDraft(); refreshDeliveryOptions(ws.value); });
+
       await Promise.all([
         fetchProductsFromServer(),
         fetchSettingsFromServer(),
@@ -1475,19 +1389,12 @@ refreshDeliveryOptions('');
         fetchDeliveryFromServer()
       ]);
 
-      // 3) تطبيق الإعدادات بعد التحميل
-     applyAdminSettings();
-refreshDeliveryOptions(document.getElementById('checkoutWilaya').value);
-updateDeliveryCost();
-      // 4) تحميل السلة (تحتاج products مملوءة)
+      applyAdminSettings();
+      refreshDeliveryOptions(document.getElementById('checkoutWilaya').value || '');
+      updateDeliveryCost();
       loadCart();
-
-      // 5) عرض المنتج
       const ok = initFromURL();
-      if (ok !== false) {
-        renderProductDetail();
-        renderRelated();
-      }
+      if (ok !== false) { renderProductDetail(); renderRelated(); }
       renderCart();
       updateCartBadge();
     });
