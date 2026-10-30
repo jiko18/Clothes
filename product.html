@@ -495,12 +495,11 @@
             colorName: c.name || '',
             hex: c.hex || '#cccccc'
           });
-          // تجميع الصور للطقم كاملاً لضمان عدم تكرارها
-          (c.images || []).forEach(img => {
-            if (img && img.trim() && !groups.get(key).images.includes(img)) {
-              groups.get(key).images.push(img);
-            }
-          });
+          // ✅ تجميع صورة واحدة فقط لكل طقم لمنع التكرار
+          if (groups.get(key).images.length === 0 && Array.isArray(c.images)) {
+            const validImg = c.images.find(img => img && typeof img === 'string' && img.trim());
+            if (validImg) groups.get(key).images.push(validImg);
+          }
         });
         p.colors = Array.from(groups.values());
       }
@@ -774,19 +773,50 @@
       if (totalEl) totalEl.textContent = totalPrice.toLocaleString() + ' د.ج';
       if (formulaEl) formulaEl.textContent = `${selectedQuantity} × ${currentProduct.price.toLocaleString()} د.ج`;
     }
-
+    
     // ==================== renderProductDetail — مع دوائر مقسّمة ====================
     function renderProductDetail() {
       if (!currentProduct) return;
       const p = currentProduct;
-      const color = p.colors[selectedColorIndex];
-      const colorImgs = getColorImages(color);
-      const currentImage = colorImgs[selectedImageIndex] || colorImgs[0] || '';
-      const discountPercent = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
       const isSet = isProductSet(p);
+      const color = p.colors[selectedColorIndex]; // ✅ إضافة هذا السطر مهم جداً
+      
+      let currentImage = '';
+      let thumbnailsHtml = '';
+      let hasMultipleThumbs = false;
+      
+      if (isSet) {
+        const currentCombo = p.colors[selectedColorIndex];
+        const comboImgs = getColorImages(currentCombo);
+        currentImage = comboImgs[0] || '';
+        
+        // ✅ الصور المصغرة للأطقم: صورة واحدة لكل طقم، والضغط عليها يغير الطقم
+        hasMultipleThumbs = p.colors.length > 1;
+        thumbnailsHtml = p.colors.map((c, i) => {
+          const imgs = getColorImages(c);
+          const img = imgs[0] || '';
+          return `<div class="thumbnail ${i === selectedColorIndex ? 'active' : ''}" onclick="selectColor(${i})">
+                    <img src="${img}" alt="">
+                  </div>`;
+        }).join('');
+      } else {
+        const color = p.colors[selectedColorIndex];
+        const colorImgs = getColorImages(color);
+        currentImage = colorImgs[selectedImageIndex] || colorImgs[0] || '';
+        
+        hasMultipleThumbs = colorImgs.length > 1;
+        thumbnailsHtml = colorImgs.map((url, i) => 
+          `<div class="thumbnail ${i === selectedImageIndex ? 'active' : ''}" onclick="selectImage(${i})">
+             <img src="${url}" alt="">
+             ${colorImgs.length > 1 ? `<span class="thumb-index">${i + 1}</span>` : ''}
+           </div>`
+        ).join('');
+      }
+
+      const discountPercent = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
       const hasMultipleColors = p.colors.length > 1;
-      const hasMultipleImages = colorImgs.length > 1;
       const showColorSection = hasMultipleColors || isSet;
+      
       document.getElementById('breadcrumbCategory').textContent = p.categoryLabel;
       document.getElementById('breadcrumbProduct').textContent = p.name;
       const grid = document.getElementById('productDetailGrid');
@@ -797,8 +827,8 @@
             <img class="main-image" id="mainImage" src="${currentImage}" alt="${p.name}">
             <div class="zoom-hint"><i class="fa-solid fa-magnifying-glass-plus"></i> اضغط للتكبير</div>
           </div>
-          <div class="thumbnails" id="thumbnailsContainer" style="${hasMultipleImages ? '' : 'display:none;'}">
-            ${colorImgs.map((url, i) => `<div class="thumbnail ${i === selectedImageIndex ? 'active' : ''}" onclick="selectImage(${i})"><img src="${url}" alt="">${colorImgs.length > 1 ? `<span class="thumb-index">${i + 1}</span>` : ''}</div>`).join('')}
+          <div class="thumbnails" id="thumbnailsContainer" style="${hasMultipleThumbs ? '' : 'display:none;'}">
+            ${thumbnailsHtml}
           </div>
         </div>
         <div class="product-details">
@@ -908,7 +938,9 @@
       const color = currentProduct.colors[selectedColorIndex];
       lightboxImages = getColorImages(color);
       if (lightboxImages.length === 0) return;
-      lightboxImageIndex = Math.min(selectedImageIndex, lightboxImages.length - 1);
+      
+      // إذا كان طقماً، نعرض الصورة الأولى فقط
+      lightboxImageIndex = isProductSet(currentProduct) ? 0 : Math.min(selectedImageIndex, lightboxImages.length - 1);
       updateLightbox();
       document.getElementById('lightbox').classList.add('show');
       document.body.style.overflow = 'hidden';
