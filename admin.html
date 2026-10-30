@@ -385,6 +385,26 @@
     .order-item-img{cursor:zoom-in;transition:transform .2s}
     .order-item-img:hover{transform:scale(1.08)}
     .mobile-toggle{display:none;width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;align-items:center;justify-content:center;font-size:1.1rem}
+
+    /* ====== ✅ تكبير الصور ====== */
+    .table-img, .color-image-preview, .order-prod-thumb, .order-item-img,
+    .top-product-img, .img-preview-card { cursor: zoom-in !important; }
+    .color-image-preview { position: relative; }
+    .color-image-preview::after {
+      content: '\f00e';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0);
+      color: #fff; font-size: 1.4rem;
+      opacity: 0; transition: all .25s ease;
+      pointer-events: none;
+    }
+    .color-image-preview:hover::after { opacity: 1; background: rgba(0,0,0,.45); }
+    .table-img:hover { transform: scale(1.25); box-shadow: 0 6px 18px rgba(0,0,0,.2); }
+    #pBadge, #pBadgeColorSearch { font-family: 'Cairo', sans-serif; }
+    #badgeColorSuggestions { z-index: 400; }
   </style>
 </head>
 <body>
@@ -602,6 +622,16 @@
           <div class="panel tab-panel active" id="tab-general">
             <div class="panel-header"><h3><i class="fa-solid fa-store"></i> معلومات المتجر</h3></div>
             <div class="panel-body">
+              <div class="fg" style="margin-bottom:16px;">
+                <label><i class="fa-solid fa-image"></i> شعار المتجر (Logo)</label>
+                <div class="img-preview-card" id="logoPreviewCard" style="height:110px;max-width:300px;">
+                  <div class="placeholder">لا يوجد شعار</div>
+                </div>
+                <div class="img-upload-group" style="margin-top:8px;max-width:600px;">
+                  <input type="url" id="setLogo" placeholder="رابط الشعار أو ارفع صورة" oninput="updateLogoPreview(this.value)">
+                  <button class="upload-btn" onclick="triggerImageUpload((d) => { document.getElementById('setLogo').value = d; updateLogoPreview(d); })"><i class="fa-solid fa-upload"></i></button>
+                </div>
+              </div>
               <div class="form-grid">
                 <div class="fg"><label>اسم المتجر (يظهر في الشعار)</label><input type="text" id="setStoreName" placeholder="بيبي شوب"></div>
                 <div class="fg"><label>رقم الهاتف (قسم تواصل معنا)</label><input type="tel" id="setPhone" placeholder="0550 00 00 00"></div>
@@ -751,8 +781,31 @@
           <div class="fg"><label>الجنس</label><select id="pGender"><option value="both">الكل</option><option value="girls">بنات</option><option value="boys">أولاد</option></select></div>
           <div class="fg"><label>السعر الحالي (د.ج) *</label><input type="number" id="pPrice" min="0" placeholder="3200"></div>
           <div class="fg"><label>السعر القديم (د.ج)</label><input type="number" id="pOldPrice" min="0" placeholder="اتركه فارغاً إن لم يوجد"></div>
-          <div class="fg"><label>الشارة</label><input type="text" id="pBadge" placeholder="جديد / الأكثر مبيعاً / خصم"></div>
-          <div class="fg"><label>نوع الشارة</label><select id="pBadgeType"><option value="new">جديد (أصفر)</option><option value="sale">خصم (وردي)</option></select></div>
+          <div class="fg">
+            <label><i class="fa-solid fa-tag"></i> الشارة</label>
+            <select id="pBadge" onchange="onBadgeSelectChange()" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;background:var(--bg);color:var(--text);font-family:inherit;">
+              <option value="">بدون شارة</option>
+            </select>
+            <div id="customBadgeWrap" style="display:none;margin-top:8px;">
+              <div style="display:flex;gap:6px;">
+                <input type="text" id="pCustomBadge" placeholder="اكتب الشارة الجديدة..." style="flex:1;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-family:inherit;">
+                <button type="button" class="btn btn-sm btn-primary" onclick="addCustomBadge()"><i class="fa-solid fa-check"></i> حفظ</button>
+              </div>
+            </div>
+          </div>
+          <div class="fg">
+            <label><i class="fa-solid fa-palette"></i> لون الشارة</label>
+            <div class="color-search-wrap">
+              <i class="fa-solid fa-magnifying-glass color-search-icon"></i>
+              <input type="text" class="color-search" id="pBadgeColorSearch" placeholder="ابحث باسم اللون..." oninput="filterBadgeColorOptions(this.value)" onkeydown="handleBadgeColorKeydown(event)">
+              <div class="color-suggestions" id="badgeColorSuggestions"></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
+              <input type="color" id="pBadgeColorPicker" value="#feca57" oninput="onBadgeColorChange(this.value)" style="width:50px;height:42px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;padding:2px;background:var(--bg);">
+              <span class="hex-label" id="pBadgeColorLabel">#FECA57</span>
+              <span id="pBadgeColorName" style="font-size:.82rem;color:var(--text-gray);font-weight:700;">أصفر فاتح</span>
+            </div>
+          </div>
         </div>
         <div class="fg" style="margin-top:8px;"><label>الوصف</label><textarea id="pDescription" placeholder="وصف قصير وجذاب للمنتج..."></textarea></div>
         <div class="fg" style="margin-top:16px;">
@@ -855,6 +908,7 @@
     const DEFAULT_THEME = { primary: '#ff6b81', primaryDark: '#e8556d', secondary: '#6c5ce7', accent: '#feca57' };
     const DEFAULT_DELIVERY = { home: 600, agency: 400, express: 900 };
     const DEFAULT_SETTINGS = {
+      logo: '',
       storeName: 'بيبي شوب', phone: '0550 00 00 00', email: 'contact@babyshop.dz', address: 'الجزائر العاصمة، الجزائر',
       facebook: '#', instagram: '#', tiktok: '#', whatsapp: '#',
       topBarText: 'توصيل لجميع الولايات | الدفع عند الاستلام | خصم 10% على أول طلب',
@@ -886,6 +940,92 @@
       { name: 'أبيض', hex: '#ffffff' },{ name: 'أسود', hex: '#000000' },
       { name: 'ذهبي وردي', hex: '#b76e79' },{ name: 'تركوازي', hex: '#40e0d0' },{ name: 'نحاسي', hex: '#b87333' },{ name: 'أوف وايت', hex: '#f8f4ec' },{ name: 'سالمون', hex: '#fa8072' },{ name: 'خردلي', hex: '#e1ad01' },{ name: 'أزرق ملكي', hex: '#4169e1' },{ name: 'أخضر زمردي', hex: '#50c878' },{ name: 'بنفسجي ملكي', hex: '#7851a9' },{ name: 'خمري', hex: '#722f37' },{ name: 'أزرق بحري', hex: '#2e4057' },{ name: 'أخضر بحري', hex: '#2e8b57' },{ name: 'أصفر خردلي', hex: '#ffdb58' },{ name: 'بني محروق', hex: '#a0522d' },{ name: 'أزرق ليلي', hex: '#191970' },{ name: 'زيتي فاتح', hex: '#b5b35c' },{ name: 'رصاصي', hex: '#708090' },{ name: 'وردي باهت', hex: '#f4c2c2' }
     ];
+
+    // ============ ✅ الشارات المخصصة (تُحفظ في المتصفح) ============
+    const BADGE_PRESETS = ['جديد', 'الأكثر مبيعاً', 'خصم', 'عرض خاص', 'حصري', 'تخفيض', 'هدية', 'لفترة محدودة'];
+    const CUSTOM_BADGES_KEY = 'babyshop_custom_badges';
+    function getCustomBadges() {
+      try { return JSON.parse(localStorage.getItem(CUSTOM_BADGES_KEY) || '[]'); } catch(e) { return []; }
+    }
+    function saveCustomBadge(name) {
+      name = (name || '').trim();
+      if (!name) return;
+      const list = getCustomBadges();
+      if (!list.includes(name) && !BADGE_PRESETS.includes(name)) {
+        list.push(name);
+        localStorage.setItem(CUSTOM_BADGES_KEY, JSON.stringify(list));
+      }
+    }
+    function populateBadgeSelect(selected = '') {
+      const sel = document.getElementById('pBadge');
+      if (!sel) return;
+      const custom = getCustomBadges();
+      const all = [...BADGE_PRESETS, ...custom];
+      let html = '<option value="">بدون شارة</option>';
+      all.forEach(b => { html += `<option value="${escapeAttr(b)}" ${selected === b ? 'selected' : ''}>${escapeHtml(b)}</option>`; });
+      html += '<option value="__custom__">➕ إضافة شارة جديدة...</option>';
+      sel.innerHTML = html;
+      if (selected && !all.includes(selected)) {
+        const opt = document.createElement('option');
+        opt.value = selected; opt.textContent = selected + ' (حالية)'; opt.selected = true;
+        sel.insertBefore(opt, sel.lastChild);
+      }
+    }
+    function onBadgeSelectChange() {
+      const sel = document.getElementById('pBadge');
+      const wrap = document.getElementById('customBadgeWrap');
+      if (sel.value === '__custom__') {
+        wrap.style.display = 'block';
+        document.getElementById('pCustomBadge').value = '';
+        document.getElementById('pCustomBadge').focus();
+      } else { wrap.style.display = 'none'; }
+    }
+    function addCustomBadge() {
+      const name = document.getElementById('pCustomBadge').value.trim();
+      if (!name) { showToast('اكتب اسم الشارة', 'error'); return; }
+      saveCustomBadge(name);
+      populateBadgeSelect(name);
+      document.getElementById('customBadgeWrap').style.display = 'none';
+      showToast('تم حفظ الشارة ✓ ستظهر في القائمة لاحقاً');
+    }
+    // ============ ✅ لون الشارة ============
+    function onBadgeColorChange(hex) {
+      document.getElementById('pBadgeColorPicker').value = hex;
+      document.getElementById('pBadgeColorLabel').textContent = hex.toUpperCase();
+      const predefined = PREDEFINED_COLORS.find(pc => pc.hex.toLowerCase() === hex.toLowerCase());
+      document.getElementById('pBadgeColorName').textContent = predefined ? predefined.name : 'مخصص';
+      document.getElementById('pBadgeColorSearch').value = predefined ? predefined.name : '';
+    }
+    function filterBadgeColorOptions(query) {
+      const sugg = document.getElementById('badgeColorSuggestions');
+      const q = (query || '').trim();
+      if (!q) { sugg.classList.remove('open'); sugg.innerHTML = ''; return; }
+      const matches = PREDEFINED_COLORS.filter(pc => pc.name.includes(q));
+      let html = matches.length === 0
+        ? '<div class="color-no-match"><i class="fa-solid fa-magnifying-glass"></i> لا توجد ألوان مطابقة</div>'
+        : matches.slice(0, 40).map(pc => `
+          <button type="button" class="color-suggestion-chip" onclick="selectBadgeColor('${escapeAttr(pc.name)}', '${pc.hex}')">
+            <span class="chip-swatch" style="background:${pc.hex};"></span>
+            <span>${escapeHtml(pc.name)}</span>
+            <span class="chip-hex">${pc.hex.toUpperCase()}</span>
+          </button>`).join('');
+      sugg.innerHTML = html;
+      sugg.classList.add('open');
+    }
+    function selectBadgeColor(name, hex) {
+      onBadgeColorChange(hex);
+      document.getElementById('pBadgeColorSearch').value = name;
+      document.getElementById('badgeColorSuggestions').classList.remove('open');
+    }
+    function handleBadgeColorKeydown(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const first = document.querySelector('#badgeColorSuggestions .color-suggestion-chip');
+        if (first) first.click();
+      } else if (e.key === 'Escape') {
+        document.getElementById('badgeColorSuggestions').classList.remove('open');
+      }
+    }
 
     let authToken = localStorage.getItem(TOKEN_KEY) || '';
     let currentUser = null;
@@ -1356,9 +1496,9 @@ let wilayasCache = [];
       const items = order.items || [];
       const itemsHtml = items.map(it => {
         const img = it.image;
-const imgHtml = img && !isVideoUrl(img)
-  ? `<img class="order-item-img" src="${escapeAttr(img)}" alt="" data-media-url="${escapeAttr(img)}">`
-  : `<div class="order-item-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);"><i class="fa-solid fa-box"></i></div>`;
+        return img && !isVideoUrl(img)
+          ? `<img class="order-item-img" src="${escapeAttr(img)}" alt="" data-media-url="${escapeAttr(img)}">`
+          : `<div class="order-item-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);"><i class="fa-solid fa-box"></i></div>`;
       }).join('');
       document.getElementById('orderDetailsBody').innerHTML = `
         <div class="order-details-grid">
@@ -1445,7 +1585,9 @@ const imgHtml = img && !isVideoUrl(img)
       wrap.innerHTML = `<table><thead><tr><th>الصورة</th><th>الاسم</th><th>الفئة</th><th>السعر</th><th>الخصم</th><th>الألوان / الصور</th><th>إجراءات</th></tr></thead><tbody>
         ${products.map(p => {
           const thumb = getProductThumb(p);
-          const totalImages = p.colors.reduce((sum, c) => sum + ((c.images && c.images.length) || 1), 0);
+          const uniqueImgs = new Set();
+(p.colors || []).forEach(c => (c.images || []).forEach(img => img && uniqueImgs.add(img)));
+const totalImages = uniqueImgs.size || 0;
       let thumbHtml;
 if (thumb) {
   if (isVideoUrl(thumb)) thumbHtml = `<div class="table-img" style="display:flex;align-items:center;justify-content:center;color:var(--primary);" data-media-url="${escapeAttr(thumb)}" title="عرض"><i class="fa-solid fa-video"></i></div>`;
@@ -1476,15 +1618,23 @@ if (thumb) {
     function closeImageViewer() { document.getElementById('imageViewer').classList.remove('show'); document.getElementById('imageViewerContent').innerHTML = ''; }
     document.getElementById('imageViewer').addEventListener('click', (e) => { if (e.target.id === 'imageViewer') closeImageViewer(); });
 
-// ✅ Event delegation لفتح الصور بأمان (بديل onclick المكسور)
+// ✅ Event delegation موحّد لتكبير الصور (useCapture = true يضمن العمل دائماً)
 document.addEventListener('click', (e) => {
   const mediaEl = e.target.closest('[data-media-url]');
-  if (mediaEl && mediaEl.dataset.mediaUrl && mediaEl.dataset.mediaUrl.trim()) {
-    e.preventDefault();
-    e.stopPropagation();
-    viewMedia(mediaEl.dataset.mediaUrl);
+  if (mediaEl) {
+    const url = mediaEl.dataset.mediaUrl;
+    if (url && url.trim()) {
+      e.preventDefault();
+      e.stopPropagation();
+      viewMedia(url);
+      return;
+    }
   }
-});
+  // إغلاق اقتراحات الألوان إذا نقر المستخدم خارجها
+  if (!e.target.closest('.color-search-wrap')) {
+    document.querySelectorAll('.color-suggestions.open').forEach(el => el.classList.remove('open'));
+  }
+}, true);
 
     async function deleteProduct(id) {
       if (!confirm('هل تريد حذف هذا المنتج نهائياً؟')) return;
@@ -1503,6 +1653,7 @@ document.addEventListener('click', (e) => {
 
     function openProductModal(id = null) {
       document.getElementById('productModal').classList.add('show');
+      populateBadgeSelect('');
       comboRows = [];
       document.getElementById('pIsSet').checked = false;
       document.getElementById('combosList').style.display = 'none';
@@ -1520,8 +1671,13 @@ document.addEventListener('click', (e) => {
         document.getElementById('pGender').value = p.gender;
         document.getElementById('pPrice').value = p.price;
         document.getElementById('pOldPrice').value = p.oldPrice || '';
-        document.getElementById('pBadge').value = p.badge || '';
-        document.getElementById('pBadgeType').value = p.badgeType || 'new';
+        populateBadgeSelect(p.badge || '');
+        const _bc = p.badgeColor || (p.badgeType === 'sale' ? '#ff6b81' : '#feca57');
+        const _bn = p.badgeColorName || (p.badgeType === 'sale' ? 'وردي' : 'أصفر فاتح');
+        document.getElementById('pBadgeColorPicker').value = _bc;
+        document.getElementById('pBadgeColorLabel').textContent = _bc.toUpperCase();
+        document.getElementById('pBadgeColorName').textContent = _bn;
+        document.getElementById('pBadgeColorSearch').value = isPredefinedColor(_bn) ? _bn : '';
         document.getElementById('pDescription').value = p.description || '';
         ageRows = [...(p.ages || [])];
         detailRows = [...(p.details || [])];
@@ -1531,17 +1687,38 @@ document.addEventListener('click', (e) => {
         }));
 
         // ✅ كتلة p.isSet داخل if(id) — p في النطاق هنا
-        if (p.isSet && p.combos) {
+        if (p.isSet) {
           document.getElementById('pIsSet').checked = true;
-          comboRows = p.combos.map(c => ({
-            name: c.name,
-            parts: c.parts.map(pt => ({
-              label: pt.partLabel || 'قطعة',
-              name: pt.name || '',
-              hex: pt.hex || '#cccccc',
-              images: pt.images && pt.images.length ? [...pt.images] : ['']
-            }))
-          }));
+          if (p.combos && p.combos.length) {
+            comboRows = p.combos.map(c => ({
+              name: c.name || '',
+              images: (c.images && c.images.length) ? [...c.images] : [''],
+              parts: (c.parts || []).map(pt => ({
+                label: pt.label || 'قطعة',
+                name: pt.name || '',
+                hex: pt.hex || '#cccccc'
+              }))
+            }));
+          } else if (p.colors && p.colors.length) {
+            // توافق مع هيكل قديم
+            const grouped = {};
+            p.colors.forEach(c => {
+              if (!c.comboName) return;
+              if (!grouped[c.comboName]) grouped[c.comboName] = { name: c.comboName, images: [], parts: [] };
+              grouped[c.comboName].parts.push({ label: c.partLabel || 'قطعة', name: c.name, hex: c.hex });
+              (c.images || []).forEach(img => {
+                if (img && img.trim() && !grouped[c.comboName].images.includes(img))
+                  grouped[c.comboName].images.push(img);
+              });
+            });
+            comboRows = Object.values(grouped).map(g => ({
+              name: g.name,
+              images: g.images.length ? g.images : [''],
+              parts: g.parts
+            }));
+          } else {
+            comboRows = [];
+          }
           toggleSetMode();
         }
       } else {
@@ -1553,8 +1730,12 @@ document.addEventListener('click', (e) => {
         document.getElementById('pGender').value = 'both';
         document.getElementById('pPrice').value = '';
         document.getElementById('pOldPrice').value = '';
-        document.getElementById('pBadge').value = '';
-        document.getElementById('pBadgeType').value = 'new';
+        populateBadgeSelect('');
+        document.getElementById('pBadgeColorPicker').value = '#feca57';
+        document.getElementById('pBadgeColorLabel').textContent = '#FECA57';
+        document.getElementById('pBadgeColorName').textContent = 'أصفر فاتح';
+        document.getElementById('pBadgeColorSearch').value = '';
+        document.getElementById('customBadgeWrap').style.display = 'none';
         document.getElementById('pDescription').value = '';
         ageRows = ['10 سنوات', '8 سنوات'];
         detailRows = [''];
@@ -1654,11 +1835,7 @@ document.addEventListener('click', (e) => {
       }
     }
 
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.color-search-wrap')) {
-        document.querySelectorAll('.color-suggestions.open').forEach(el => el.classList.remove('open'));
-      }
-    });
+   
 
     function renderColorsRows() {
       const el = document.getElementById('colorsList');
@@ -1776,8 +1953,13 @@ document.addEventListener('click', (e) => {
       const price = parseInt(document.getElementById('pPrice').value) || 0;
       const oldPriceVal = document.getElementById('pOldPrice').value;
       const oldPrice = oldPriceVal ? parseInt(oldPriceVal) : null;
-      const badge = document.getElementById('pBadge').value.trim();
-      const badgeType = document.getElementById('pBadgeType').value;
+      let badge = document.getElementById('pBadge').value;
+      if (badge === '__custom__') {
+        badge = document.getElementById('pCustomBadge').value.trim();
+        if (badge) saveCustomBadge(badge);
+      }
+      const badgeColor = document.getElementById('pBadgeColorPicker').value;
+      const badgeColorName = document.getElementById('pBadgeColorName').textContent || '';
       const description = document.getElementById('pDescription').value.trim();
 
       if (!name) return showToast('اسم المنتج مطلوب', 'error');
@@ -1788,19 +1970,17 @@ document.addEventListener('click', (e) => {
       const isSet = document.getElementById('pIsSet').checked;
 
       if (isSet) {
-        // ✅ تحقق مستقل لوضع الطقم
         if (!comboRows.length) return showToast('أضف طقماً واحداً على الأقل', 'error');
         for (let ci = 0; ci < comboRows.length; ci++) {
           const combo = comboRows[ci];
+          if (!(combo.images || []).some(img => img && img.trim()))
+            return showToast(`الطقم "${combo.name || ci+1}": يحتاج صورة واحدة على الأقل للطقم كاملاً`, 'error');
           if (!combo.parts || !combo.parts.length)
             return showToast(`الطقم "${combo.name || ci+1}": يجب أن يحتوي على قطعة واحدة على الأقل`, 'error');
           for (let pi = 0; pi < combo.parts.length; pi++) {
             const part = combo.parts[pi];
             if (!part.name?.trim())
-              return showToast(`الطقم "${combo.name || ci+1}": القطعة رقم ${pi+1} تحتاج لوناً`, 'error');
-            const hasImg = (part.images || []).some(img => img && img.trim());
-            if (!hasImg)
-              return showToast(`الطقم "${combo.name || ci+1}": القطعة "${part.label}" (${part.name}) تحتاج صورة واحدة على الأقل`, 'error');
+              return showToast(`الطقم "${combo.name || ci+1}": القطعة "${part.label || pi+1}" تحتاج لوناً`, 'error');
           }
         }
       } else {
@@ -1814,13 +1994,14 @@ document.addEventListener('click', (e) => {
       let colorsForSave = [];
       if (isSet) {
         comboRows.forEach(combo => {
+          const comboImgs = (combo.images || []).filter(img => img && img.trim());
           (combo.parts || []).forEach(part => {
             colorsForSave.push({
               name: part.name,
               hex: part.hex,
               comboName: combo.name,
               partLabel: part.label,
-              images: (part.images || []).filter(img => img && img.trim())
+              images: comboImgs.slice()
             });
           });
         });
@@ -1829,10 +2010,23 @@ document.addEventListener('click', (e) => {
       }
       const productPayload = {
         name, category, categoryLabel, gender, price, oldPrice,
-        badge: badge || null, badgeType, description, isSet,
+        badge: badge || null,
+        badgeColor: badgeColor,
+        badgeColorName: badgeColorName,
+        badgeType: (badgeColor === '#ff6b81' ? 'sale' : 'new'),
+        description, isSet,
         details: detailRows.filter(d => d.trim()),
         ages: ageRows.filter(a => a.trim()),
-        colors: colorsForSave
+        colors: colorsForSave,
+        combos: isSet ? comboRows.map(c => ({
+          name: (c.name || '').trim(),
+          images: (c.images || []).filter(img => img && img.trim()),
+          parts: (c.parts || []).map(pt => ({
+            label: pt.label || 'قطعة',
+            name: (pt.name || '').trim(),
+            hex: pt.hex || '#cccccc'
+          }))
+        })) : []
       };
       const btn = document.getElementById('saveProductBtn');
       btn.disabled = true;
@@ -1966,16 +2160,40 @@ document.addEventListener('click', (e) => {
       r.setProperty('--secondary', data.theme.secondary);
       r.setProperty('--accent', data.theme.accent);
     }
+    // ============ ✅ دوال الشعار ============
+    function updateLogoPreview(url) {
+      const el = document.getElementById('logoPreviewCard');
+      if (!el) return;
+      if (!url || !url.trim()) {
+        el.innerHTML = '<div class="placeholder">لا يوجد شعار</div>';
+        return;
+      }
+      if (isVideoUrl(url)) el.innerHTML = `<video src="${escapeAttr(url)}" muted></video>`;
+      else el.innerHTML = `<img src="${escapeAttr(url)}" onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'>فشل التحميل</div>'">`;
+    }
+    function applyLogoToSidebar() {
+      const h1 = document.querySelector('.sidebar-header h1');
+      if (!h1) return;
+      const logo = (data.settings.logo || '').trim();
+      const storeName = data.settings.storeName || 'بيبي شوب';
+      if (logo) {
+        h1.innerHTML = `<img src="${escapeAttr(logo)}" alt="logo" style="width:34px;height:34px;object-fit:contain;border-radius:8px;background:#fff;padding:2px;flex-shrink:0;"> ${escapeHtml(storeName)}`;
+      } else {
+        h1.innerHTML = `<i class="fa-solid fa-child-reaching"></i> ${escapeHtml(storeName)}`;
+      }
+    }
 
     // ✅ [معدّل] أضفنا حقلي تيليجرام إلى قائمة التحميل
     function loadSettingsForm() {
       const s = data.settings;
-      ['setStoreName','setPhone','setEmail','setAddress','setSearchPlaceholder','setFacebook','setInstagram','setTiktok','setWhatsapp','setTopBarText','setFooterCopyright','setTelegramBotToken','setTelegramChatId'].forEach(id => {
+      ['setStoreName','setPhone','setEmail','setAddress','setSearchPlaceholder','setFacebook','setInstagram','setTiktok','setWhatsapp','setTopBarText','setFooterCopyright','setTelegramBotToken','setTelegramChatId','setLogo'].forEach(id => {
         const key = id.replace('set','');
         const k = key.charAt(0).toLowerCase() + key.slice(1);
         const el = document.getElementById(id);
         if (el) el.value = s[k] || '';
       });
+      updateLogoPreview(s.logo || '');
+      applyLogoToSidebar();
       renderGenderEditor();
       renderCategoriesEditor();
     }
@@ -1999,7 +2217,11 @@ document.addEventListener('click', (e) => {
       data.settings.phone = document.getElementById('setPhone').value.trim();
       data.settings.email = document.getElementById('setEmail').value.trim();
       data.settings.address = document.getElementById('setAddress').value.trim();
-      if (await persistSettings()) showToast('تم حفظ المعلومات ✓');
+      data.settings.logo = document.getElementById('setLogo').value.trim();
+      if (await persistSettings()) {
+        applyLogoToSidebar();
+        showToast('تم حفظ المعلومات ✓');
+      }
     }
     async function saveHeroSettings() {
       data.settings.searchPlaceholder = document.getElementById('setSearchPlaceholder').value.trim();
@@ -2419,8 +2641,13 @@ function toggleSetMode() {
   if (isSet && comboRows.length === 0) addCombo();
   if (isSet) renderCombosRows();
 }
+// ============ ✅ دوال الطقم (الهيكل الجديد: صورة واحدة للطقم + لون لكل قطعة) ============
 function addCombo() {
-  comboRows.push({ name: `طقم ${comboRows.length + 1}`, parts: [{ label: 'قميص', name: 'أحمر', hex: '#e74c3c', images: [''] }] });
+  comboRows.push({
+    name: `طقم ${comboRows.length + 1}`,
+    images: [''],
+    parts: [{ label: 'قميص', name: 'أحمر', hex: '#e74c3c' }]
+  });
   renderCombosRows();
 }
 function removeCombo(ci) {
@@ -2430,7 +2657,7 @@ function removeCombo(ci) {
 }
 function addPartToCombo(ci) {
   if (!comboRows[ci]) return;
-  comboRows[ci].parts.push({ label: 'سروال', name: 'أسود', hex: '#000000', images: [''] });
+  comboRows[ci].parts.push({ label: 'سروال', name: 'أسود', hex: '#000000' });
   renderCombosRows();
 }
 function removePartFromCombo(ci, pi) {
@@ -2440,25 +2667,47 @@ function removePartFromCombo(ci, pi) {
 }
 function updateComboName(ci, val) { comboRows[ci].name = val; }
 function updatePartLabel(ci, pi, val) { comboRows[ci].parts[pi].label = val; }
-function updatePartColorName(ci, pi, val) { comboRows[ci].parts[pi].name = val; }
-function updatePartHex(ci, pi, val) { comboRows[ci].parts[pi].hex = val; renderCombosRows(); }
-function addPartImage(ci, pi) { comboRows[ci].parts[pi].images.push(''); renderCombosRows(); }
-function removePartImage(ci, pi, ii) {
-  if (comboRows[ci].parts[pi].images.length <= 1) { showToast('كل قطعة تحتاج صورة واحدة', 'error'); return; }
-  comboRows[ci].parts[pi].images.splice(ii, 1);
+function updatePartColorName(ci, pi, val) {
+  comboRows[ci].parts[pi].name = val;
+  filterPartColorOptions(ci, pi, val);
+}
+function updatePartHex(ci, pi, val) {
+  comboRows[ci].parts[pi].hex = val;
+  const card = document.querySelectorAll('.combo-card')[ci];
+  const part = card?.querySelectorAll('.part-card')[pi];
+  const lbl = part?.querySelector('.hex-label');
+  if (lbl) lbl.textContent = val.toUpperCase();
+}
+// صور الطقم كاملاً
+function addComboImage(ci) {
+  if (!comboRows[ci].images) comboRows[ci].images = [];
+  comboRows[ci].images.push('');
   renderCombosRows();
 }
-function updatePartImage(ci, pi, ii, val) { comboRows[ci].parts[pi].images[ii] = val; }
+function updateComboImage(ci, ii, val) { comboRows[ci].images[ii] = val; }
+function removeComboImage(ci, ii) {
+  if (comboRows[ci].images.length <= 1) { showToast('الطقم يحتاج صورة واحدة على الأقل', 'error'); return; }
+  comboRows[ci].images.splice(ii, 1);
+  renderCombosRows();
+}
+function makeComboImageMain(ci, ii) {
+  if (ii === 0) return;
+  const arr = comboRows[ci].images;
+  const [img] = arr.splice(ii, 1);
+  arr.unshift(img);
+  renderCombosRows();
+}
+
 function renderCombosRows() {
   const el = document.getElementById('combosList');
   if (!comboRows.length) { el.innerHTML = ''; return; }
   el.innerHTML = `
     <div style="font-size:.82rem; color:var(--text); margin-bottom:12px; padding:12px; background:linear-gradient(135deg, rgba(108,92,231,0.08), rgba(255,107,129,0.08)); border-radius:10px; border-right:4px solid var(--secondary); line-height:1.8;">
       <b style="color:var(--secondary);"><i class="fa-solid fa-lightbulb"></i> كيف أضيف طقماً؟</b><br>
-      <b>1.</b> اكتب اسم الطقم (مثلاً: طقم شتوي)<br>
-      <b>2.</b> لكل قطعة: اختر نوعها (قميص، سروال...) ثم <b style="color:var(--primary);">ابحث عن لونها</b> بالكتابة أو الضغط على الاقتراحات<br>
-      <b>3.</b> اضغط <b>رفع صورة</b> لإضافة صور القطعة<br>
-      <b style="color:var(--success);">✓</b> يمكنك إضافة أكثر من طقم وأكثر من قطعة داخل كل طقم.
+      <b>1.</b> اكتب اسم الطقم<br>
+      <b>2.</b> أضف <b style="color:var(--primary);">صورة واحدة (أو أكثر) للطقم كاملاً</b> (مثلاً صورة فيها القميص والسروال معاً)<br>
+      <b>3.</b> لكل قطعة: اختر نوعها (قميص، سروال...) ثم <b style="color:var(--primary);">ابحث عن لونها أو اختره من القائمة</b><br>
+      <b style="color:var(--success);">✓</b> لا حاجة لصورة لكل لون — صورة الطقم كافية.
     </div>
     ${comboRows.map((combo, ci) => `
     <div class="combo-card">
@@ -2466,67 +2715,94 @@ function renderCombosRows() {
         <input type="text" value="${escapeAttr(combo.name)}" placeholder="اسم الطقم (مثال: طقم شتوي)" oninput="updateComboName(${ci}, this.value)">
         <button class="remove-btn" onclick="removeCombo(${ci})" title="حذف الطقم"><i class="fa-solid fa-trash"></i></button>
       </div>
-      ${combo.parts.map((part, pi) => `
-        <div class="part-card">
-          <div class="part-card-header">
-            <span class="part-index">القطعة ${pi + 1}</span>
-            <select class="part-label-select" onchange="updatePartLabel(${ci}, ${pi}, this.value)" title="نوع القطعة">
-              ${PART_LABELS.map(l => `<option value="${l}" ${part.label===l?'selected':''}>${l}</option>`).join('')}
-            </select>
-            <button class="icon-btn icon-btn-del" onclick="removePartFromCombo(${ci}, ${pi})" title="حذف القطعة"><i class="fa-solid fa-xmark"></i></button>
-          </div>
 
-          <div class="part-color-search-block">
-            <label class="part-color-label"><i class="fa-solid fa-palette"></i> لون هذه القطعة</label>
-            <div class="color-search-wrap">
-              <i class="fa-solid fa-magnifying-glass color-search-icon"></i>
-              <input type="text" class="color-search" placeholder="ابحث باسم اللون..." autocomplete="off"
-                     value="${escapeAttr(part.name)}"
-                     oninput="onPartColorSearchInput(${ci}, ${pi}, this.value)"
-                     onkeydown="handlePartColorSearchKeydown(event, ${ci}, ${pi})">
-              <div class="color-suggestions" id="partColorSugg-${ci}-${pi}" onmousedown="event.preventDefault()"></div>
+      <!-- صور الطقم كاملاً -->
+      <div class="color-images-header">
+        <span class="header-label"><i class="fa-solid fa-images"></i> صور الطقم كاملاً</span>
+        <span class="image-count-badge">${(combo.images || []).filter(i => i && i.trim()).length} صورة</span>
+      </div>
+      <div class="color-images-grid">
+        ${(combo.images || ['']).map((img, ii) => {
+          let prev = '<span class="placeholder">لا يوجد</span>';
+          if (img && img.trim()) {
+            if (isVideoUrl(img)) prev = `<video src="${escapeAttr(img)}" muted></video><span class="video-badge"><i class="fa-solid fa-video"></i></span>`;
+            else prev = `<img src="${escapeAttr(img)}" onerror="this.parentElement.innerHTML='<span class=\\'placeholder\\'>فشل التحميل</span>'">`;
+          }
+          return `<div class="color-image-item">
+            <span class="image-index-badge">${ii + 1}</span>
+            <div class="color-image-preview" style="height:110px;" data-media-url="${escapeAttr(img)}">${prev}</div>
+            <div class="color-image-actions">
+              <input type="url" value="${escapeAttr(img)}" placeholder="URL أو ارفع" oninput="updateComboImage(${ci}, ${ii}, this.value); this.closest('.color-image-item').querySelector('.color-image-preview').setAttribute('data-media-url', this.value);">
+              <button class="mini-btn mini-btn-upload" title="رفع" onclick="triggerImageUpload((d) => { comboRows[${ci}].images[${ii}] = d; renderCombosRows(); })"><i class="fa-solid fa-upload"></i></button>
+              ${ii > 0 ? `<button class="mini-btn mini-btn-main" title="تعيين كرئيسية" onclick="makeComboImageMain(${ci}, ${ii})"><i class="fa-solid fa-star"></i></button>` : `<button class="mini-btn mini-btn-main is-main" disabled><i class="fa-solid fa-star"></i></button>`}
+              <button class="mini-btn mini-btn-remove" title="حذف" onclick="removeComboImage(${ci}, ${ii})"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+          </div>`;
+        }).join('')}
+        <button type="button" class="add-image-card" onclick="addComboImage(${ci})" style="min-height:160px;">
+          <i class="fa-solid fa-plus-circle"></i>
+          <span>إضافة صورة للطقم</span>
+          <small>صورة الطقم كاملاً</small>
+        </button>
+      </div>
+
+      <!-- قطع الطقم وألوانها -->
+      <div style="margin-top:16px;padding:12px;background:rgba(108,92,231,.05);border-radius:10px;border-right:3px solid var(--secondary);">
+        <div style="font-size:.82rem;font-weight:800;color:var(--secondary);margin-bottom:10px;"><i class="fa-solid fa-shirt"></i> قطع الطقم وألوانها</div>
+        ${combo.parts.map((part, pi) => `
+          <div class="part-card">
+            <div class="part-card-header">
+              <span class="part-index">القطعة ${pi + 1}</span>
+              <select class="part-label-select" onchange="updatePartLabel(${ci}, ${pi}, this.value)">
+                ${PART_LABELS.map(l => `<option value="${l}" ${part.label===l?'selected':''}>${l}</option>`).join('')}
+              </select>
+              <button class="icon-btn icon-btn-del" onclick="removePartFromCombo(${ci}, ${pi})" title="حذف القطعة"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="part-color-search-block">
+              <label class="part-color-label"><i class="fa-solid fa-palette"></i> لون القطعة</label>
+              <div class="color-search-wrap">
+                <i class="fa-solid fa-magnifying-glass color-search-icon"></i>
+                <input type="text" class="color-search" placeholder="ابحث باسم اللون..." autocomplete="off"
+                       value="${escapeAttr(part.name)}"
+                       oninput="updatePartColorName(${ci}, ${pi}, this.value)"
+                       onkeydown="handlePartColorSearchKeydown(event, ${ci}, ${pi})">
+                <div class="color-suggestions" id="partColorSugg-${ci}-${pi}" onmousedown="event.preventDefault()"></div>
+              </div>
+              <select class="color-select" onchange="onPartColorSelectChange(${ci}, ${pi}, this.value)" style="margin-top:6px;">
+                <option value="" ${!part.name?'selected':''} disabled>-- أو اختر من القائمة --</option>
+                ${PREDEFINED_COLORS.map(pc => `<option value="${escapeAttr(pc.name)}" ${part.name===pc.name?'selected':''}>${escapeHtml(pc.name)}</option>`).join('')}
+                ${part.name && !isPredefinedColor(part.name) ? `<option value="${escapeAttr(part.name)}" selected>${escapeHtml(part.name)} (مخصص)</option>` : ''}
+              </select>
+            </div>
+
+            <div class="part-color-row">
+              <input type="color" value="${part.hex}" oninput="updatePartHex(${ci}, ${pi}, this.value)" title="تعديل كود اللون">
+              <span class="hex-label">${part.hex.toUpperCase()}</span>
+              <span style="font-size:.78rem; color:var(--text-gray); font-weight:600;">اللون المختار</span>
             </div>
           </div>
-
-          <div class="part-color-row">
-            <input type="color" value="${part.hex}" oninput="updatePartHex(${ci}, ${pi}, this.value)" title="تعديل كود اللون">
-            <span class="hex-label">${part.hex.toUpperCase()}</span>
-            <span style="font-size:.78rem; color:var(--text-gray); font-weight:600;">اللون المختار</span>
-          </div>
-
-          <div class="color-images-header" style="margin-top:12px;">
-            <span class="header-label"><i class="fa-solid fa-images"></i> صور هذه القطعة</span>
-            <span class="image-count-badge">${part.images.length === 1 ? 'عنصر واحد' : part.images.length === 2 ? 'عنصران' : `${part.images.length} عناصر`}</span>
-          </div>
-          <div class="combo-images-grid">
-            ${part.images.map((img, ii) => {
-              let prev = '<span class="placeholder">لا يوجد</span>';
-              if (img && img.trim()) {
-                if (isVideoUrl(img)) prev = `<video src="${escapeAttr(img)}" muted></video>`;
-                else prev = `<img src="${escapeAttr(img)}" onerror="this.parentElement.innerHTML='<span class=\\'placeholder\\'>فشل</span>'">`;
-              }
-              return `<div class="color-image-item">
-                <span class="image-index-badge">${ii + 1}</span>
-                <div class="color-image-preview" style="height:90px;" data-media-url="${escapeAttr(img)}">${prev}</div>
-                <div class="color-image-actions">
-                  <input type="url" value="${escapeAttr(img)}" placeholder="URL أو ارفع" oninput="updatePartImage(${ci}, ${pi}, ${ii}, this.value)">
-                  <button class="mini-btn mini-btn-upload" title="رفع" onclick="triggerImageUpload((d) => { comboRows[${ci}].parts[${pi}].images[${ii}] = d; renderCombosRows(); })"><i class="fa-solid fa-upload"></i></button>
-                  ${ii > 0 ? `<button class="mini-btn mini-btn-main" title="تعيين كرئيسية" onclick="(() => { const arr = comboRows[${ci}].parts[${pi}].images; const [x] = arr.splice(${ii}, 1); arr.unshift(x); renderCombosRows(); })()"><i class="fa-solid fa-star"></i></button>` : ''}
-                  <button class="mini-btn mini-btn-remove" title="حذف" onclick="removePartImage(${ci}, ${pi}, ${ii})"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-              </div>`;
-            }).join('')}
-            <button type="button" class="add-image-card" onclick="addPartImage(${ci}, ${pi})" style="min-height:120px;">
-              <i class="fa-solid fa-plus-circle"></i><span>إضافة صورة</span><small>فيديو أو صورة</small>
-            </button>
-          </div>
-        </div>
-      `).join('')}
-      <button type="button" class="add-part-btn" onclick="addPartToCombo(${ci})"><i class="fa-solid fa-plus"></i> إضافة قطعة أخرى لهذا الطقم</button>
+        `).join('')}
+        <button type="button" class="add-part-btn" onclick="addPartToCombo(${ci})"><i class="fa-solid fa-plus"></i> إضافة قطعة أخرى لهذا الطقم</button>
+      </div>
     </div>
   `).join('')}`;
 }
-// ✅ [جديد] دوال اختيار لون القطعة في وضع الطقم
+
+// ✅ اختيار لون القطعة من القائمة المنسدلة
+function onPartColorSelectChange(ci, pi, name) {
+  if (!comboRows[ci]?.parts?.[pi] || !name) return;
+  const p = getPredefinedColor(name);
+  if (p) {
+    comboRows[ci].parts[pi].name = p.name;
+    comboRows[ci].parts[pi].hex = p.hex;
+  } else {
+    comboRows[ci].parts[pi].name = name;
+  }
+  renderCombosRows();
+}
+
+// دوال اقتراحات الألوان للقطع (تبقى كما هي)
 function filterPartColorOptions(ci, pi, query) {
   const sugg = document.getElementById(`partColorSugg-${ci}-${pi}`);
   if (!sugg) return;
@@ -2549,7 +2825,6 @@ function filterPartColorOptions(ci, pi, query) {
   sugg.innerHTML = html;
   sugg.classList.add('open');
 }
-
 function selectPartColorFromSuggestion(ci, pi, name) {
   if (!comboRows[ci]?.parts?.[pi]) return;
   const p = getPredefinedColor(name);
@@ -2558,7 +2833,6 @@ function selectPartColorFromSuggestion(ci, pi, name) {
   comboRows[ci].parts[pi].hex = p.hex;
   renderCombosRows();
 }
-
 function selectCustomPartColor(ci, pi) {
   if (!comboRows[ci]?.parts?.[pi]) return;
   comboRows[ci].parts[pi].name = '';
@@ -2572,7 +2846,6 @@ function selectCustomPartColor(ci, pi) {
     if (input) input.focus();
   }, 60);
 }
-
 function handlePartColorSearchKeydown(event, ci, pi) {
   if (event.key === 'Enter') {
     event.preventDefault();
@@ -2585,11 +2858,8 @@ function handlePartColorSearchKeydown(event, ci, pi) {
     if (sugg) { sugg.classList.remove('open'); sugg.innerHTML = ''; }
   }
 }
-
 function onPartColorSearchInput(ci, pi, val) {
-  if (!comboRows[ci]?.parts?.[pi]) return;
-  comboRows[ci].parts[pi].name = val;
-  filterPartColorOptions(ci, pi, val);
+  updatePartColorName(ci, pi, val);
 }
     async function initAdmin() {
       showLoading(true);
@@ -2605,6 +2875,7 @@ function onPartColorSearchInput(ci, pi, val) {
         loadThemeForm();
         loadSettingsForm();
         applyThemeToAdmin();
+        applyLogoToSidebar();
         // ✅ تحميل بيانات التوصيل والمستخدمين
         if (currentUser?.role === 'admin') loadUsers().catch(() => {});
         loadDeliveryAll().catch(() => {});
