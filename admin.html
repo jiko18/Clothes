@@ -377,6 +377,19 @@
     .order-item-img{cursor:zoom-in;transition:transform .2s}
     .order-item-img:hover{transform:scale(1.08)}
     .mobile-toggle{display:none;width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;align-items:center;justify-content:center;font-size:1.1rem}
+
+    /* ============ Combo color circle & part color selector ============ */
+    .combo-color-preview{display:flex;align-items:center;gap:16px;padding:14px;background:linear-gradient(135deg,rgba(108,92,231,.06),rgba(255,107,129,.06));border:1.5px solid rgba(108,92,231,.25);border-radius:12px;margin-bottom:14px}
+    .combo-color-circle{width:66px;height:66px;border-radius:50%;flex-shrink:0;border:3px solid var(--card-bg);box-shadow:0 3px 12px rgba(0,0,0,.18), inset 0 0 0 1px rgba(0,0,0,.08)}
+    .combo-color-info{flex:1;min-width:0}
+    .combo-color-info-title{font-size:.82rem;font-weight:800;color:var(--text-gray);margin-bottom:8px}
+    .combo-color-info-list{display:flex;flex-wrap:wrap;gap:6px}
+    .part-color-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:50px;background:var(--card-bg);border:1.5px solid var(--border);font-size:.78rem;font-weight:700;color:var(--text)}
+    .part-color-chip .chip-swatch{width:14px;height:14px;border-radius:50%;border:1.5px solid rgba(0,0,0,.15);flex-shrink:0}
+    .part-color-selector{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+    .part-current-color{width:34px;height:34px;border-radius:8px;flex-shrink:0;border:2px solid var(--border);box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+    .part-color-selector .color-search-wrap{flex:1;min-width:0}
+    .part-color-selector .color-search{height:34px;font-size:.82rem;padding:6px 32px 6px 10px}
   </style>
 </head>
 <body>
@@ -897,7 +910,7 @@ let wilayasCache = [];
       t._timer = setTimeout(() => t.classList.remove('show'), 3000);
     }
     function showLoading(show) { document.getElementById('loadingOverlay').classList.toggle('show', show); }
-    function escapeAttr(str) { return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function escapeAttr(str) { return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
     function escapeHtml(str) { return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
     function isVideoUrl(url) {
       if (!url || typeof url !== 'string') return false;
@@ -1268,7 +1281,8 @@ let wilayasCache = [];
           const count = items.reduce((s, i) => s + (i.qty||0), 0);
           const thumbs = items.slice(0, 3).map(it => {
             const img = it.image;
-            if (img && !isVideoUrl(img)) return `<img class="order-prod-thumb" src="${escapeAttr(img)}" alt="" onclick="event.stopPropagation(); viewMedia('${escapeAttr(img)}')">`;            return `<div class="order-prod-thumb" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);font-size:0.7rem;"><i class="fa-solid fa-box"></i></div>`;
+            if (img && !isVideoUrl(img)) return `<img class="order-prod-thumb" src="${escapeAttr(img)}" alt="" data-media="${escapeAttr(img)}">`;
+            return `<div class="order-prod-thumb" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);font-size:0.7rem;"><i class="fa-solid fa-box"></i></div>`;
           }).join('');
           const more = items.length > 3 ? `<span class="order-more-badge">+${items.length - 3}</span>` : '';
           return `<tr>
@@ -1348,7 +1362,7 @@ let wilayasCache = [];
       const itemsHtml = items.map(it => {
         const img = it.image;
                 const imgHtml = img && !isVideoUrl(img)
-          ? `<img class="order-item-img" src="${escapeAttr(img)}" alt="" onclick="viewMedia('${escapeAttr(img)}')">`
+          ? `<img class="order-item-img" src="${escapeAttr(img)}" alt="" data-media="${escapeAttr(img)}">`
           : `<div class="order-item-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);"><i class="fa-solid fa-box"></i></div>`;
         return `<div class="order-item-row">${imgHtml}<div class="order-item-info"><strong>${escapeHtml(it.productName || 'منتج')}</strong><span>اللون: ${escapeHtml(it.colorName || '-')} · العمر: ${escapeHtml(it.age || '-')} · الكمية: ${it.qty}</span></div><div class="order-item-total">${((it.qty||0) * (it.price||0)).toLocaleString()} د.ج</div></div>`;
       }).join('');
@@ -1440,8 +1454,8 @@ let wilayasCache = [];
           const totalImages = p.colors.reduce((sum, c) => sum + ((c.images && c.images.length) || 1), 0);
           let thumbHtml;
           if (thumb) {
-            if (isVideoUrl(thumb)) thumbHtml = `<div class="table-img" style="display:flex;align-items:center;justify-content:center;color:var(--primary);" onclick="viewMedia('${escapeAttr(thumb)}')"><i class="fa-solid fa-video"></i></div>`;
-            else thumbHtml = `<img class="table-img" src="${escapeAttr(thumb)}" onclick="viewMedia('${escapeAttr(thumb)}')" onerror="this.style.opacity=0.3">`;
+            if (isVideoUrl(thumb)) thumbHtml = `<div class="table-img" data-media="${escapeAttr(thumb)}" style="display:flex;align-items:center;justify-content:center;color:var(--primary);cursor:zoom-in;"><i class="fa-solid fa-video"></i></div>`;
+            else thumbHtml = `<img class="table-img" data-media="${escapeAttr(thumb)}" src="${escapeAttr(thumb)}" style="cursor:zoom-in;" onerror="this.style.opacity=0.3">`;
           } else thumbHtml = `<div class="table-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);">-</div>`;
           return `<tr>
             <td>${thumbHtml}</td>
@@ -1467,6 +1481,17 @@ let wilayasCache = [];
     }
     function closeImageViewer() { document.getElementById('imageViewer').classList.remove('show'); document.getElementById('imageViewerContent').innerHTML = ''; }
     document.getElementById('imageViewer').addEventListener('click', (e) => { if (e.target.id === 'imageViewer') closeImageViewer(); });
+    document.addEventListener('click', (e) => {
+      const mediaEl = e.target.closest('[data-media]');
+      if (mediaEl) {
+        const media = mediaEl.getAttribute('data-media');
+        if (media && media.trim()) {
+          e.preventDefault();
+          e.stopPropagation();
+          viewMedia(media);
+        }
+      }
+    });
 
     async function deleteProduct(id) {
       if (!confirm('هل تريد حذف هذا المنتج نهائياً؟')) return;
@@ -1685,7 +1710,7 @@ let wilayasCache = [];
               }
               return `<div class="color-image-item">
                 <span class="image-index-badge">${ii + 1}</span>
-                <div class="color-image-preview" style="position:relative;" onclick="viewMedia('${escapeAttr(img)}')">${prev}</div>
+                <div class="color-image-preview" style="position:relative;cursor:zoom-in;" data-media="${escapeAttr(img)}">${prev}</div>
                 <div class="color-image-actions">
                   <input type="url" value="${escapeAttr(img)}" placeholder="URL أو ارفع" oninput="updateColorImageValue(${ci}, ${ii}, this.value)">
                   <button class="mini-btn mini-btn-upload" title="رفع" onclick="triggerImageUpload((d) => { colorRows[${ci}].images[${ii}] = d; renderColorsRows(); })"><i class="fa-solid fa-upload"></i></button>
@@ -2364,7 +2389,6 @@ async function saveAllDelivery(ev) {
   } catch (err) { showToast(err.message, 'error'); }
   finally { btn.disabled = false; btn.innerHTML = orig; }
 }
-
 // ============================================================
 // COMBO (SET) PRODUCTS
 // ============================================================
@@ -2380,7 +2404,10 @@ function toggleSetMode() {
   if (isSet) renderCombosRows();
 }
 function addCombo() {
-  comboRows.push({ name: `طقم ${comboRows.length + 1}`, parts: [{ label: 'قميص', name: 'أحمر', hex: '#e74c3c', images: [''] }] });
+  comboRows.push({ name: `طقم ${comboRows.length + 1}`, parts: [
+    { label: 'قميص', name: 'أحمر', hex: '#e74c3c', images: [''] },
+    { label: 'سروال', name: 'أزرق', hex: '#3498db', images: [''] }
+  ] });
   renderCombosRows();
 }
 function removeCombo(ci) {
@@ -2390,7 +2417,9 @@ function removeCombo(ci) {
 }
 function addPartToCombo(ci) {
   if (!comboRows[ci]) return;
-  comboRows[ci].parts.push({ label: 'سروال', name: 'أسود', hex: '#000000', images: [''] });
+  const usedLabels = new Set(comboRows[ci].parts.map(p => p.label));
+  const nextLabel = PART_LABELS.find(l => !usedLabels.has(l)) || 'قطعة';
+  comboRows[ci].parts.push({ label: nextLabel, name: 'أسود', hex: '#000000', images: [''] });
   renderCombosRows();
 }
 function removePartFromCombo(ci, pi) {
@@ -2409,38 +2438,106 @@ function removePartImage(ci, pi, ii) {
   renderCombosRows();
 }
 function updatePartImage(ci, pi, ii, val) { comboRows[ci].parts[pi].images[ii] = val; }
+
+function getComboGradient(combo) {
+  const parts = (combo && combo.parts) || [];
+  if (!parts.length) return '#cccccc';
+  if (parts.length === 1) return parts[0].hex || '#cccccc';
+  if (parts.length === 2) {
+    const a = parts[0].hex || '#cccccc';
+    const b = parts[1].hex || '#cccccc';
+    return `linear-gradient(to bottom, ${a} 0%, ${a} 50%, ${b} 50%, ${b} 100%)`;
+  }
+  const step = 360 / parts.length;
+  const stops = parts.map((p, i) => `${p.hex || '#cccccc'} ${i * step}deg ${(i + 1) * step}deg`).join(', ');
+  return `conic-gradient(${stops})`;
+}
+
+function filterPartColorOptions(ci, pi, query) {
+  const sugg = document.getElementById(`partColorSuggestions-${ci}-${pi}`);
+  if (!sugg) return;
+  const q = (query || '').trim();
+  if (!q) { sugg.classList.remove('open'); sugg.innerHTML = ''; return; }
+  const matches = PREDEFINED_COLORS.filter(pc => pc.name.includes(q));
+  let html = '';
+  if (!matches.length) {
+    html += '<div class="color-no-match"><i class="fa-solid fa-magnifying-glass"></i> لا توجد ألوان مطابقة</div>';
+  } else {
+    html += matches.slice(0, 40).map(pc => `
+      <button type="button" class="color-suggestion-chip" onclick="selectPartColorFromSuggestion(${ci}, ${pi}, '${escapeAttr(pc.name)}')">
+        <span class="chip-swatch" style="background:${pc.hex};"></span>
+        <span>${escapeHtml(pc.name)}</span>
+        <span class="chip-hex">${pc.hex.toUpperCase()}</span>
+      </button>
+    `).join('');
+  }
+  sugg.innerHTML = html;
+  sugg.classList.add('open');
+}
+
+function selectPartColorFromSuggestion(ci, pi, name) {
+  const pc = getPredefinedColor(name);
+  if (!pc || !comboRows[ci]?.parts[pi]) return;
+  comboRows[ci].parts[pi].name = pc.name;
+  comboRows[ci].parts[pi].hex = pc.hex;
+  renderCombosRows();
+}
+
+function handlePartColorSearchKeydown(event, ci, pi) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    const sugg = document.getElementById(`partColorSuggestions-${ci}-${pi}`);
+    const first = sugg?.querySelector('.color-suggestion-chip');
+    if (first) first.click();
+  } else if (event.key === 'Escape') {
+    const sugg = document.getElementById(`partColorSuggestions-${ci}-${pi}`);
+    if (sugg) { sugg.classList.remove('open'); sugg.innerHTML = ''; }
+  }
+}
+
 function renderCombosRows() {
   const el = document.getElementById('combosList');
-  el.innerHTML = comboRows.map((combo, ci) => `
-    <div class="combo-card">
-      <div class="combo-header">
-        <input type="text" value="${escapeAttr(combo.name)}" placeholder="اسم الطقم" oninput="updateComboName(${ci}, this.value)">
-        <button class="remove-btn" onclick="removeCombo(${ci})"><i class="fa-solid fa-trash"></i></button>
-      </div>
-      ${combo.parts.map((part, pi) => `
+  if (!el) return;
+  el.innerHTML = comboRows.map((combo, ci) => {
+    const gradient = getComboGradient(combo);
+    const chips = combo.parts.map(p =>
+      `<span class="part-color-chip"><span class="chip-swatch" style="background:${p.hex || '#ccc'};"></span>${escapeHtml(p.label)}: ${escapeHtml(p.name || '-')}</span>`
+    ).join('');
+    const partsHtml = combo.parts.map((part, pi) => {
+      const imgs = (part.images && part.images.length) ? part.images : [''];
+      return `
         <div class="part-card">
           <div class="part-header">
             <select onchange="updatePartLabel(${ci}, ${pi}, this.value)">
-              ${PART_LABELS.map(l => `<option value="${l}" ${part.label===l?'selected':''}>${l}</option>`).join('')}
+              ${PART_LABELS.map(l => `<option value="${escapeAttr(l)}" ${part.label===l?'selected':''}>${escapeHtml(l)}</option>`).join('')}
             </select>
-            <input type="text" value="${escapeAttr(part.name)}" placeholder="اللون" oninput="updatePartColorName(${ci}, ${pi}, this.value)">
-            <button class="icon-btn icon-btn-del" onclick="removePartFromCombo(${ci}, ${pi})"><i class="fa-solid fa-xmark"></i></button>
+            <div class="part-color-selector">
+              <span class="part-current-color" style="background:${part.hex || '#ccc'};" title="${escapeAttr(part.name || '')}"></span>
+              <div class="color-search-wrap">
+                <i class="fa-solid fa-magnifying-glass color-search-icon"></i>
+                <input type="text" class="color-search" placeholder="ابحث عن لون..." value="${escapeAttr(part.name || '')}"
+                  oninput="filterPartColorOptions(${ci}, ${pi}, this.value)"
+                  onkeydown="handlePartColorSearchKeydown(event, ${ci}, ${pi})">
+                <div class="color-suggestions" id="partColorSuggestions-${ci}-${pi}" onmousedown="event.preventDefault()"></div>
+              </div>
+            </div>
+            <button class="icon-btn icon-btn-del" onclick="removePartFromCombo(${ci}, ${pi})" title="حذف القطعة"><i class="fa-solid fa-xmark"></i></button>
           </div>
           <div class="part-color-row">
-            <input type="color" value="${part.hex}" oninput="updatePartHex(${ci}, ${pi}, this.value)">
-            <span class="hex-label">${part.hex.toUpperCase()}</span>
-            <button class="mini-btn mini-btn-upload" onclick="triggerImageUpload((d) => { addPartImage(${ci}, ${pi}); comboRows[${ci}].parts[${pi}].images[comboRows[${ci}].parts[${pi}].images.length-1] = d; renderCombosRows(); })"><i class="fa-solid fa-upload"></i></button>
+            <input type="color" value="${part.hex || '#cccccc'}" oninput="updatePartHex(${ci}, ${pi}, this.value)" title="تعديل كود اللون">
+            <span class="hex-label">${(part.hex || '#cccccc').toUpperCase()}</span>
+            <button class="mini-btn mini-btn-upload" title="رفع صورة/فيديو" onclick="triggerImageUpload((d) => { comboRows[${ci}].parts[${pi}].images.push(d); renderCombosRows(); })"><i class="fa-solid fa-upload"></i></button>
           </div>
           <div class="combo-images-grid">
-            ${part.images.map((img, ii) => {
+            ${imgs.map((img, ii) => {
               let prev = '<span class="placeholder">لا يوجد</span>';
               if (img && img.trim()) {
                 if (isVideoUrl(img)) prev = `<video src="${escapeAttr(img)}" muted></video>`;
-                else prev = `<img src="${escapeAttr(img)}" onerror="this.parentElement.innerHTML='<span class=\\'placeholder\\'>فشل</span>'">`;
+                else prev = `<img src="${escapeAttr(img)}" onerror="this.parentElement.innerHTML='<span class=&quot;placeholder&quot;>فشل</span>'">`;
               }
               return `<div class="color-image-item">
                 <span class="image-index-badge">${ii + 1}</span>
-                <div class="color-image-preview" style="height:90px;cursor:zoom-in;" onclick="viewMedia('${escapeAttr(img)}')">${prev}</div>
+                <div class="color-image-preview" style="height:90px;cursor:zoom-in;" data-media="${escapeAttr(img)}">${prev}</div>
                 <div class="color-image-actions">
                   <input type="url" value="${escapeAttr(img)}" placeholder="URL" oninput="updatePartImage(${ci}, ${pi}, ${ii}, this.value)">
                   <button class="mini-btn mini-btn-upload" onclick="triggerImageUpload((d) => { comboRows[${ci}].parts[${pi}].images[${ii}] = d; renderCombosRows(); })"><i class="fa-solid fa-upload"></i></button>
@@ -2452,12 +2549,26 @@ function renderCombosRows() {
               <i class="fa-solid fa-plus-circle"></i><span>صورة/فيديو</span>
             </button>
           </div>
+        </div>`;
+    }).join('');
+    return `<div class="combo-card">
+      <div class="combo-header">
+        <input type="text" value="${escapeAttr(combo.name)}" placeholder="اسم الطقم" oninput="updateComboName(${ci}, this.value)">
+        <button class="remove-btn" onclick="removeCombo(${ci})" title="حذف الطقم"><i class="fa-solid fa-trash"></i></button>
+      </div>
+      <div class="combo-color-preview">
+        <div class="combo-color-circle" style="background:${gradient};" title="معاينة ألوان الطقم"></div>
+        <div class="combo-color-info">
+          <div class="combo-color-info-title"><i class="fa-solid fa-palette"></i> ألوان الطقم (${combo.parts.length} قطعة)</div>
+          <div class="combo-color-info-list">${chips}</div>
         </div>
-      `).join('')}
+      </div>
+      ${partsHtml}
       <button type="button" class="add-part-btn" onclick="addPartToCombo(${ci})"><i class="fa-solid fa-plus"></i> إضافة قطعة للطقم</button>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
+
     async function initAdmin() {
       showLoading(true);
       try {
@@ -2472,7 +2583,6 @@ function renderCombosRows() {
         loadThemeForm();
         loadSettingsForm();
         applyThemeToAdmin();
-        // ✅ تحميل بيانات التوصيل والمستخدمين
         if (currentUser?.role === 'admin') loadUsers().catch(() => {});
         loadDeliveryAll().catch(() => {});
       } catch (err) {
