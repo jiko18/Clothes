@@ -562,7 +562,7 @@
       { id: 5, name: "طقم بناتي خفيف", category: "light", categoryLabel: "خفيف", gender: "girls", price: 2600, oldPrice: null, badge: "جديد", badgeType: "new", description: "طقم بناتي خفيف.", details: ["قطن ناعم"], colors: [{ name: "وردي", hex: "#fd79a8", image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80", images: ["https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80"] }], ages: ["8 سنوات", "7 سنوات"] },
       { id: 6, name: "قبعة شمسية للأطفال", category: "accessories", categoryLabel: "إكسسوارات", gender: "girls", price: 900, oldPrice: 1200, badge: "خصم", badgeType: "sale", description: "قبعة شمسية.", details: ["حماية UV"], colors: [{ name: "بيج", hex: "#f5cd79", image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80", images: ["https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80"] }], ages: ["10 سنوات", "8 سنوات"] }
     ];
-    const DEFAULT_SETTINGS = { storeName: 'بيبي شوب', phone: '0550 00 00 00', email: 'contact@babyshop.dz', address: 'الجزائر العاصمة، الجزائر', facebook: '#', instagram: '#', tiktok: '#', whatsapp: '#', topBarText: 'توصيل لجميع الولايات | الدفع عند الاستلام | خصم 10% على أول طلب', searchPlaceholder: 'ابحث عن ملابس، أحذية، إكسسوارات...', footerCopyright: '© 2025 بيبي شوب - جميع الحقوق محفوظة' };
+    const DEFAULT_SETTINGS = { storeName: 'بيبي شوب',  logo: '',phone: '0550 00 00 00', email: 'contact@babyshop.dz', address: 'الجزائر العاصمة، الجزائر', facebook: '#', instagram: '#', tiktok: '#', whatsapp: '#', topBarText: 'توصيل لجميع الولايات | الدفع عند الاستلام ', searchPlaceholder: 'ابحث عن ملابس، أحذية، إكسسوارات...', footerCopyright: '© 2025 بيبي شوب - جميع الحقوق محفوظة' };
     const DEFAULT_THEME_DATA = { primary: '#ff6b81', primaryDark: '#e8556d', secondary: '#6c5ce7', accent: '#feca57' };
     const DEFAULT_DELIVERY_DATA = { home: 600, agency: 400, express: 900, byWilaya: {} };
 
@@ -641,21 +641,17 @@
       return `conic-gradient(${stops})`;
     }
 
-    async function fetchProductsFromServer() {
-      try {
-        const response = await fetch('/api/products');
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        const serverProducts = await response.json();
-        if (Array.isArray(serverProducts) && serverProducts.length > 0) {
-          products = serverProducts.map(normalizeProduct);
-        } else {
-          products = DEFAULT_PRODUCTS.map(normalizeProduct);
-        }
-      } catch (error) {
-        products = DEFAULT_PRODUCTS.map(normalizeProduct);
-      }
-    }
-
+ async function fetchProductsFromServer() {
+  try {
+    const response = await fetch('/api/products');
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const serverProducts = await response.json();
+    products = Array.isArray(serverProducts) ? serverProducts.map(normalizeProduct) : [];
+  } catch (error) {
+    console.warn('⚠️ فشل تحميل المنتجات:', error);
+    products = [];  // ✅ لا fallback — فقط منتجات السيرفر الحقيقية
+  }
+}
     async function fetchSettingsFromServer() {
       try {
         const res = await fetch('/api/settings');
@@ -694,12 +690,24 @@
         };
       } catch (e) { console.warn('Delivery fetch failed', e); }
     }
-
     function applyAdminSettings() {
       const topBar = document.querySelector('.top-bar');
       if (topBar && adminSettings.topBarText) topBar.innerHTML = `<i class="fa-solid fa-truck-fast"></i> ${adminSettings.topBarText}`;
-      const logo = document.getElementById('logo');
-      if (logo && adminSettings.storeName) logo.innerHTML = `<i class="fa-solid fa-child-reaching"></i> ${adminSettings.storeName}`;
+
+      // ✅ إصلاح: عرض اللوجو من الإعدادات بجانب اسم المتجر
+      const logoEl = document.getElementById('logo');
+      if (logoEl) {
+        const logoUrl = (adminSettings.logo || '').trim();
+        const storeName = adminSettings.storeName || 'بيبي شوب';
+        const safeName = storeName.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        if (logoUrl) {
+          const safeUrl = logoUrl.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          logoEl.innerHTML = `<img src="${safeUrl}" alt="${safeName}" style="width:40px;height:40px;object-fit:contain;border-radius:8px;background:#fff;padding:2px;flex-shrink:0;" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\\'fa-solid fa-child-reaching\\' style=\\'font-size:1.6rem;-webkit-text-fill-color:var(--primary)\\';></i> ${safeName.replace(/'/g, "\\'")}';"> ${safeName}`;
+        } else {
+          logoEl.innerHTML = `<i class="fa-solid fa-child-reaching"></i> ${safeName}`;
+        }
+      }
+
       const searchInput = document.getElementById('searchInput');
       if (searchInput && adminSettings.searchPlaceholder) searchInput.placeholder = adminSettings.searchPlaceholder;
       document.querySelectorAll('.footer-col p').forEach(p => {

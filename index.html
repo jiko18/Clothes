@@ -1567,11 +1567,12 @@
 
     const DEFAULT_SETTINGS = {
       storeName: 'بيبي شوب',
+        logo: '',                        // ✅ أضف هذا السطر
       phone: '0550 00 00 00',
       email: 'contact@babyshop.dz',
       address: 'الجزائر العاصمة، الجزائر',
       facebook: '#', instagram: '#', tiktok: '#', whatsapp: '#',
-      topBarText: 'توصيل لجميع الولايات | الدفع عند الاستلام | خصم 10% على أول طلب',
+      topBarText: 'توصيل لجميع الولايات | الدفع عند الاستلام ',
       searchPlaceholder: 'ابحث عن ملابس، أحذية، إكسسوارات...',
       footerCopyright: '© 2025 بيبي شوب - جميع الحقوق محفوظة | صُنع بحب لأطفال الجزائر',
       girlsCard: {
@@ -1619,22 +1620,18 @@
     document.documentElement.style.setProperty('--accent', adminTheme.accent);
 
     // ==================== Fetch from Server ====================
-    async function fetchProductsFromServer() {
-      try {
-        const response = await fetch('/api/products');
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        const serverProducts = await response.json();
-        if (Array.isArray(serverProducts) && serverProducts.length > 0) {
-          products = serverProducts;
-          console.log(`✅ ${serverProducts.length} منتج من السيرفر`);
-        } else {
-          products = DEFAULT_PRODUCTS;
-        }
-      } catch (error) {
-        console.warn('⚠️ fallback products:', error);
-        products = DEFAULT_PRODUCTS;
-      }
-    }
+async function fetchProductsFromServer() {
+  try {
+    const response = await fetch('/api/products');
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const serverProducts = await response.json();
+    products = Array.isArray(serverProducts) ? serverProducts : [];
+    console.log(`✅ ${products.length} منتج من السيرفر`);
+  } catch (error) {
+    console.warn('⚠️ فشل تحميل المنتجات:', error);
+    products = [];  // ✅ لا fallback — فقط منتجات السيرفر الحقيقية
+  }
+}
 
     async function fetchSettingsFromServer() {
       try {
@@ -1674,16 +1671,34 @@
       } catch (e) { console.warn('delivery fallback:', e); }
     }
 
-    // ==================== Apply Settings ====================
+   // ==================== Apply Settings ====================
     function applyAdminSettings() {
       const topBar = document.querySelector('.top-bar');
       if (topBar && adminSettings.topBarText) {
         topBar.innerHTML = `<i class="fa-solid fa-truck-fast"></i> ${adminSettings.topBarText}`;
       }
+
+      // ✅ إصلاح: عرض اللوجو من الإعدادات بجانب اسم المتجر
       const logo = document.getElementById('logo');
-      if (logo && adminSettings.storeName) {
-        logo.innerHTML = `<i class="fa-solid fa-child-reaching"></i> ${adminSettings.storeName}`;
+      if (logo) {
+        const logoUrl = (adminSettings.logo || '').trim();
+        const storeName = adminSettings.storeName || 'بيبي شوب';
+        const safeName = storeName.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        if (logoUrl) {
+          const safeUrl = logoUrl.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          logo.innerHTML = `<img src="${safeUrl}" alt="${safeName}" style="width:40px;height:40px;object-fit:contain;border-radius:8px;background:#fff;padding:2px;flex-shrink:0;"> ${safeName}`;
+          // في حال فشل تحميل الصورة، ارجع للأيقونة الافتراضية
+          const logoImg = logo.querySelector('img');
+          if (logoImg) {
+            logoImg.addEventListener('error', () => {
+              logo.innerHTML = `<i class="fa-solid fa-child-reaching"></i> ${safeName}`;
+            }, { once: true });
+          }
+        } else {
+          logo.innerHTML = `<i class="fa-solid fa-child-reaching"></i> ${safeName}`;
+        }
       }
+
       const searchInput = document.getElementById('searchInput');
       if (searchInput && adminSettings.searchPlaceholder) {
         searchInput.placeholder = adminSettings.searchPlaceholder;
@@ -1899,7 +1914,6 @@
       if (value === stored) { closeAdminGate(); window.location.href = 'admin.html'; }
       else { gateError.textContent = 'كلمة المرور غير صحيحة.'; gatePassword.value = ''; gatePassword.focus(); }
     }
-
     // ==================== Slider ====================
     let currentSlide = 0, sliderInterval = null, totalSlides = 0;
     function initSlider() {

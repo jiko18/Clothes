@@ -492,7 +492,14 @@
 
         <section class="view" id="view-orders">
           <div class="panel">
-            <div class="panel-header"><h3><i class="fa-solid fa-shopping-bag"></i> الطلبات الواردة</h3><button class="btn btn-primary" onclick="exportOrdersReport()"><i class="fa-solid fa-file-export"></i> تصدير تقرير شامل</button></div>
+            <!-- ✅ جديد: إضافة زر حذف الطلبات القديمة -->
+            <div class="panel-header">
+              <h3><i class="fa-solid fa-shopping-bag"></i> الطلبات الواردة</h3>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-danger" onclick="deleteOldDeliveredOrders()"><i class="fa-solid fa-broom"></i> حذف الطلبات القديمة</button>
+                <button class="btn btn-primary" onclick="exportOrdersReport()"><i class="fa-solid fa-file-export"></i> تصدير تقرير شامل</button>
+              </div>
+            </div>
             <div class="panel-body">
               <div class="orders-filter-bar">
                 <div class="orders-search-input-wrap">
@@ -840,6 +847,8 @@
       <div class="modal-body" id="orderDetailsBody"></div>
       <div class="modal-footer">
         <button class="btn btn-outline" onclick="closeOrderDetails()">إغلاق</button>
+        <!-- ✅ جديد: زر حذف الطلب داخل نافذة التفاصيل -->
+        <button class="btn btn-danger" onclick="deleteOrder(currentViewingOrderId)"><i class="fa-solid fa-trash"></i> حذف الطلب</button>
         <button class="btn btn-success" onclick="printDeliverySlip(currentViewingOrderId)"><i class="fa-solid fa-truck"></i> وصل التوصيل</button>
         <button class="btn btn-info" onclick="printOrderDetails()"><i class="fa-solid fa-print"></i> طباعة</button>
       </div>
@@ -893,7 +902,7 @@
       logo: '',
       storeName: 'بيبي شوب', phone: '0550 00 00 00', email: 'contact@babyshop.dz', address: 'الجزائر العاصمة، الجزائر',
       facebook: '#', instagram: '#', tiktok: '#', whatsapp: '#',
-      topBarText: 'توصيل لجميع الولايات | الدفع عند الاستلام | خصم 10% على أول طلب',
+      topBarText: 'توصيل لجميع الولايات | الدفع عند الاستلام ',
       searchPlaceholder: 'ابحث عن ملابس، أحذية، إكسسوارات...',
       footerCopyright: '© 2025 بيبي شوب - جميع الحقوق محفوظة',
       telegramBotToken: '',
@@ -1254,7 +1263,7 @@
       renderPendingNotifications();
       renderRecentOrders();
     }
-    function renderSalesChart() {
+       function renderSalesChart() {
       const chartEl = document.getElementById('salesChart');
       const deliveredOrders = data.orders.filter(o => o.status === 'delivered');
       const days = {};
@@ -1389,6 +1398,7 @@
       try { const d = new Date(iso); return d.toLocaleDateString('ar-DZ') + ' ' + d.toLocaleTimeString('ar-DZ', { hour: '2-digit', minute: '2-digit' }); } catch(e) { return '-'; }
     }
 
+    // ✅ مُحدَّث: إضافة زر حذف الطلب في كل صف
     function renderOrdersTable(orders) {
       if (!orders.length) return `<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>لا توجد طلبات</p></div>`;
       return `<table><thead><tr><th>رقم الطلب</th><th>العميل</th><th>الهاتف</th><th>المنتجات</th><th>المبلغ</th><th>الحالة</th><th>التاريخ</th><th>إجراءات</th></tr></thead><tbody>
@@ -1412,6 +1422,7 @@
             <td><div class="row-actions">
               <button class="icon-btn icon-btn-view" onclick="viewOrder('${o.orderId}')" title="عرض"><i class="fa-solid fa-eye"></i></button>
               <button class="icon-btn icon-btn-slip" onclick="printDeliverySlip('${o.orderId}')" title="طباعة وصل التوصيل"><i class="fa-solid fa-truck"></i></button>
+              <button class="icon-btn icon-btn-del" onclick="deleteOrder('${o.orderId}')" title="حذف الطلب"><i class="fa-solid fa-trash"></i></button>
               <select onchange="updateOrderStatus('${o.orderId}', this.value)" style="padding:6px 10px; border-radius:8px; border:1.5px solid var(--border); background:var(--bg); color:var(--text); font-size:0.78rem; cursor:pointer;">
                 <option value="pending" ${(!o.status || o.status==='pending')?'selected':''}>قيد الانتظار</option>
                 <option value="confirmed" ${o.status==='confirmed'?'selected':''}>مؤكد</option>
@@ -1436,6 +1447,58 @@
       } catch (err) {
         showToast(err.message || 'فشل تحديث الحالة', 'error');
       }
+    }
+
+    // ✅ جديد: حذف طلب واحد
+    async function deleteOrder(orderId) {
+      if (!orderId) return;
+      if (!confirm(`هل تريد حذف الطلب "${orderId}" نهائياً؟\nلا يمكن التراجع!`)) return;
+      showLoading(true);
+      try {
+        await apiJSON(`/api/orders/${encodeURIComponent(orderId)}`, { method: 'DELETE' });
+        data.orders = data.orders.filter(o => o.orderId !== orderId);
+        renderDashboard();
+        renderOrdersView();
+        closeOrderDetails();
+        showToast('تم حذف الطلب ✓', 'info');
+      } catch (err) {
+        showToast(err.message || 'فشل حذف الطلب', 'error');
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    // ✅ جديد: حذف جميع الطلبات المُسلَّمة القديمة (أكثر من 30 يوماً)
+    async function deleteOldDeliveredOrders() {
+      const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
+      const oldDelivered = data.orders.filter(o => {
+        if (o.status !== 'delivered') return false;
+        try { return new Date(o.createdAt).getTime() < cutoff; } catch { return false; }
+      });
+
+      if (oldDelivered.length === 0) {
+        showToast('لا توجد طلبات مُسلَّمة قديمة (أكثر من 30 يوماً) لحذفها', 'info');
+        return;
+      }
+      if (!confirm(`هل تريد حذف ${oldDelivered.length} طلب مُسلَّم قديم (أكثر من 30 يوماً)؟\nلا يمكن التراجع!`)) return;
+
+      showLoading(true);
+      let successCount = 0, failCount = 0;
+      for (const o of oldDelivered) {
+        try {
+          await apiJSON(`/api/orders/${encodeURIComponent(o.orderId)}`, { method: 'DELETE' });
+          successCount++;
+        } catch (err) {
+          failCount++;
+          console.warn('فشل حذف الطلب', o.orderId, err);
+        }
+      }
+      await loadAllData();
+      renderDashboard();
+      renderOrdersView();
+      renderProductsTable();
+      showLoading(false);
+      showToast(`تم حذف ${successCount} طلب${failCount > 0 ? ` (فشل ${failCount})` : ''} ✓`, 'success');
     }
 
     function renderOrdersView() {
@@ -1658,10 +1721,9 @@
           renderProductsTable();
           showToast(newHidden ? '✓ تم إخفاء المنتج من المتجر' : '✓ تم إظهار المنتج في المتجر', newHidden ? 'info' : 'success');
         } else {
-          // على الأقل حدّث الواجهة المحلية
           prod.hidden = newHidden;
           renderProductsTable();
-          showToast(newHidden ? '✓ تم إخفاء المنتج محلياً (السيرفر قد يحتاج دعم حقل hidden)' : '✓ تم إظهار المنتج محلياً', 'info');
+          showToast(newHidden ? '✓ تم إخفاء المنتج محلياً' : '✓ تم إظهار المنتج محلياً', 'info');
         }
       } catch (err) {
         showToast(err.message || 'فشل تحديث حالة المنتج', 'error');
@@ -1733,11 +1795,11 @@
             return cm ? [...cm.comboAvailableAges] : null;
           };
 
-      if (p.combos && p.combos.length) {
-              comboRows = p.combos.map(c => {
-                let availAges = Array.isArray(c.availableAges)
-                  ? [...c.availableAges]
-                  : null;
+          if (p.combos && p.combos.length) {
+            comboRows = p.combos.map(c => {
+              let availAges = Array.isArray(c.availableAges)
+                ? [...c.availableAges]
+                : null;
               if (availAges === null) {
                 const fromColors = getAgesFromColors(c.name);
                 if (fromColors) availAges = fromColors;

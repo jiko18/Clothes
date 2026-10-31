@@ -480,7 +480,7 @@ async function initDB() {
     ['email', 'contact@babyshop.dz'],
     ['address', 'الجزائر العاصمة، الجزائر'],
     ['facebook', '#'], ['instagram', '#'], ['tiktok', '#'], ['whatsapp', '#'],
-    ['topBarText', 'توصيل لجميع الولايات | الدفع عند الاستلام | خصم 10% على أول طلب'],
+    ['topBarText', 'توصيل لجميع الولايات | الدفع عند الاستلام '],
     ['searchPlaceholder', 'ابحث عن ملابس، أحذية، إكسسوارات...'],
     ['footerCopyright', '© 2025 بيبي شوب - جميع الحقوق محفوظة'],
     ['telegramBotToken', ''],
@@ -1208,7 +1208,24 @@ app.put('/api/orders/:id/status', authMiddleware, async (req, res) => {
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
+// ============================================================
+// ✅ حذف طلب (مع CASCADE لحذف عناصره وسجله)
+// ============================================================
+app.delete('/api/orders/:id', authMiddleware, async (req, res) => {
+  try {
+    const key = req.params.id;
+    const orderRes = await db.execute({
+      sql: 'SELECT id FROM orders WHERE order_number = ? OR id = ?',
+      args: [key, parseInt(key) || 0]
+    });
+    if (orderRes.rows.length === 0) return res.status(404).json({ error: 'الطلب غير موجود' });
+    const orderId = orderRes.rows[0].id;
 
+    // الـ CASCADE في قاعدة البيانات يتكفل بحذف order_items و order_status_history
+    await db.execute({ sql: 'DELETE FROM orders WHERE id = ?', args: [orderId] });
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
 // ============================================================
 // 8) SETTINGS (admin only)
 // ============================================================
