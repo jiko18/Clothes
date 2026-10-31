@@ -100,16 +100,121 @@
     .detail-section{margin-bottom:24px}
     .detail-section-label{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:0.88rem;font-weight:700;color:var(--text-dark)}
     .detail-section-label .selected-value{color:var(--primary-dark);font-weight:700;font-size:0.85rem}
+
+    /* ============================================================
+       ✅ إصلاح 1: دوائر الألوان — دائرية مثالية في كل الحالات
+       ============================================================ */
     .detail-swatches{display:flex;gap:12px;flex-wrap:wrap}
-    .detail-swatch{width:48px;height:48px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);position:relative;box-shadow:0 4px 12px rgba(0,0,0,0.12);background-clip:padding-box;}
-    .detail-swatch:hover{transform:scale(1.12) translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,0.2);}
-    .detail-swatch.active{border-color:var(--primary);box-shadow:0 0 0 4px rgba(255,107,129,0.25),0 6px 16px rgba(0,0,0,0.15);transform:scale(1.05);}
-    .detail-swatch.active::after{content:'\f00c';font-family:'Font Awesome 6 Free';font-weight:900;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.05rem;color:#fff;text-shadow:0 2px 5px rgba(0,0,0,0.6);}
+    .detail-swatch{
+      width:52px;
+      height:52px;
+      border-radius:50%;
+      cursor:pointer;
+      transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
+      position:relative;
+      border:none;
+      outline:none;
+      padding:0;
+      overflow:hidden;                /* ✅ يضمن قص الخلفية لدائرة مثالية */
+      box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    }
+    .detail-swatch::before{           /* ✅ حلقة داخلية خفيفة لتحسين المظهر */
+      content:'';
+      position:absolute;
+      inset:0;
+      border-radius:50%;
+      box-shadow:inset 0 0 0 2px rgba(255,255,255,0.35);
+      pointer-events:none;
+      z-index:1;
+    }
+    .detail-swatch:hover{
+      transform:scale(1.12) translateY(-2px);
+      box-shadow:0 6px 18px rgba(0,0,0,0.25);
+    }
+    .detail-swatch.active{
+      box-shadow:
+        0 0 0 3px #fff,
+        0 0 0 6px var(--primary),
+        0 6px 16px rgba(0,0,0,0.2);
+      transform:scale(1.08);
+    }
+    .detail-swatch.active::after{
+      content:'\f00c';
+      font-family:'Font Awesome 6 Free';
+      font-weight:900;
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:1.1rem;
+      color:#fff;
+      text-shadow:0 2px 6px rgba(0,0,0,0.7);
+      z-index:2;
+      pointer-events:none;
+    }
+
+    /* ============================================================
+       ✅ إصلاح 2: الأعمار غير المتوفرة
+       ============================================================ */
     .detail-ages{display:flex;gap:8px;flex-wrap:wrap}
-    .detail-age{padding:10px 20px;border-radius:12px;border:2px solid rgba(0,0,0,0.08);background:var(--bg-white);color:var(--text-dark);font-family:'Cairo',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;transition:var(--transition)}
+    .detail-age{
+      padding:10px 20px;
+      border-radius:12px;
+      border:2px solid rgba(0,0,0,0.08);
+      background:var(--bg-white);
+      color:var(--text-dark);
+      font-family:'Cairo',sans-serif;
+      font-size:0.88rem;
+      font-weight:700;
+      cursor:pointer;
+      transition:var(--transition);
+      display:inline-flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:2px;
+      min-width:80px;
+      line-height:1.3;
+    }
     html[data-theme="dark"] .detail-age{background:#252540;border-color:rgba(255,255,255,0.1)}
-    .detail-age:hover{border-color:var(--secondary);color:var(--secondary)}
-    .detail-age.active{background:var(--secondary) !important;color:#fff !important;border-color:var(--secondary) !important;box-shadow:0 6px 18px rgba(108,92,231,0.45) !important;transform:translateY(-3px);}
+    .detail-age:hover:not(.unavailable){border-color:var(--secondary);color:var(--secondary)}
+    .detail-age.active{
+      background:var(--secondary) !important;
+      color:#fff !important;
+      border-color:var(--secondary) !important;
+      box-shadow:0 6px 18px rgba(108,92,231,0.45) !important;
+      transform:translateY(-3px);
+    }
+    .detail-age.unavailable{
+      position:relative;
+      background:rgba(0,0,0,0.03) !important;
+      border-color:rgba(231,76,60,0.28) !important;
+      color:#b2bec3 !important;
+      cursor:not-allowed !important;
+      opacity:0.75;
+      pointer-events:none;
+    }
+    html[data-theme="dark"] .detail-age.unavailable{
+      background:rgba(255,255,255,0.03) !important;
+      color:#7a7a8a !important;
+    }
+    .detail-age.unavailable .strike{
+      text-decoration:line-through;
+      text-decoration-color:#e74c3c;
+      text-decoration-thickness:2.5px;
+      display:inline-block;
+    }
+    .detail-age.unavailable small{
+      font-size:0.58rem;
+      color:#e74c3c;
+      font-weight:800;
+      white-space:nowrap;
+      line-height:1;
+      margin-top:1px;
+      letter-spacing:0.1px;
+    }
+
     .qty-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
     .qty-label{font-size:0.88rem;font-weight:700;color:var(--text-dark)}
     .qty-big{display:flex;align-items:center;background:var(--bg-white);border-radius:12px;overflow:hidden;border:2px solid rgba(0,0,0,0.08)}
@@ -293,7 +398,7 @@
     .toast.toast-info{background:linear-gradient(135deg,var(--secondary),#5a4dbf)}
     @media (max-width:992px){.product-detail-grid{grid-template-columns:1fr;gap:32px}.product-gallery{position:static}.detail-title{font-size:1.7rem}.detail-price .current{font-size:1.9rem}}
     @media (max-width:768px){.header-inner{flex-wrap:wrap;height:auto;padding:12px 16px;gap:10px}.search-bar{order:3;flex:1 1 100%;max-width:100%}.section-header h2{font-size:1.5rem}.products-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}.product-image{height:180px}.product-info{padding:12px}.product-info h3{font-size:0.85rem}.price .current{font-size:1rem}.cart-sidebar{width:100vw}.form-row{grid-template-columns:1fr}.delivery-options{grid-template-columns:1fr}.detail-actions{grid-template-columns:1fr}.detail-features{grid-template-columns:1fr}.detail-title{font-size:1.4rem}.product-detail-section{padding:24px 16px 40px}.breadcrumb{padding:0 16px}.lightbox-nav{width:44px;height:44px;font-size:1rem}.lightbox-nav.nav-next{left:10px}.lightbox-nav.nav-prev{right:10px}.detail-total-line strong{font-size:1.25rem}}
-    @media (max-width:480px){.detail-price .current{font-size:1.6rem}.detail-price{gap:10px;padding:14px 0}.cart-item img{width:65px;height:65px}.detail-swatch{width:38px;height:38px}.lightbox-close{top:8px;right:8px}.lightbox-counter{bottom:-44px;font-size:0.8rem;padding:6px 16px}.thumbnails{grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:8px}.detail-total-line{padding:12px}.detail-total-line strong{font-size:1.15rem}}
+    @media (max-width:480px){.detail-price .current{font-size:1.6rem}.detail-price{gap:10px;padding:14px 0}.cart-item img{width:65px;height:65px}.detail-swatch{width:42px;height:42px}.lightbox-close{top:8px;right:8px}.lightbox-counter{bottom:-44px;font-size:0.8rem;padding:6px 16px}.thumbnails{grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:8px}.detail-total-line{padding:12px}.detail-total-line strong{font-size:1.15rem}.detail-age{font-size:0.8rem;padding:8px 14px;min-width:70px}.detail-age.unavailable small{font-size:0.52rem}}
   </style>
 </head>
 <body>
@@ -411,20 +516,20 @@
           <div class="form-row">
             <div class="form-group"><label>الولاية <span class="required">*</span></label><select id="checkoutWilaya" required><option value="">-- اختر الولاية --</option></select></div>
             <div class="form-group">
-  <label>البلدية <span class="required">*</span></label>
-  <select id="checkoutMunicipality" required><option value="">-- اختر الولاية أولاً --</option></select>
-  <input type="text" id="checkoutMunicipalityText" placeholder="اكتب اسم البلدية" style="display:none; margin-top:8px;" required>
-</div>
+              <label>البلدية <span class="required">*</span></label>
+              <select id="checkoutMunicipality" required><option value="">-- اختر الولاية أولاً --</option></select>
+              <input type="text" id="checkoutMunicipalityText" placeholder="اكتب اسم البلدية" style="display:none; margin-top:8px;">
+            </div>
           </div>
           <div class="form-row"><div class="form-group"><label>الهاتف 1 <span class="required">*</span></label><input type="tel" id="checkoutPhone1" required placeholder="05XXXXXXXX" pattern="0[5-7][0-9]{8}"></div><div class="form-group"><label>الهاتف 2</label><input type="tel" id="checkoutPhone2" placeholder="اختياري"></div></div>
           <div class="form-group"><label>العنوان الكامل <span class="required">*</span></label><textarea id="checkoutAddress" required placeholder="الشارع، رقم المنزل..."></textarea></div>
           <div class="form-group">
             <label><i class="fa-solid fa-truck-fast"></i> طريقة التوصيل</label>
-          <div class="delivery-options">
-  <label class="delivery-option"><input type="radio" name="delivery" data-type="home" value="600" checked onchange="updateDeliveryCost()"><div class="delivery-info"><i class="fa-solid fa-house"></i><div><strong>توصيل إلى المنزل</strong><span id="deliveryHomeLabel">600 د.ج</span></div></div></label>
-  <label class="delivery-option"><input type="radio" name="delivery" data-type="agency" value="400" onchange="updateDeliveryCost()"><div class="delivery-info"><i class="fa-solid fa-store"></i><div><strong>توصيل إلى الوكالة</strong><span id="deliveryAgencyLabel">400 د.ج</span></div></div></label>
-  <label class="delivery-option" style="grid-column:1/-1;"><input type="radio" name="delivery" data-type="express" value="900" onchange="updateDeliveryCost()"><div class="delivery-info"><i class="fa-solid fa-bolt"></i><div><strong>⚡ توصيل سريع (24-48 ساعة)</strong><span id="deliveryExpressLabel">900 د.ج</span></div></div></label>
-</div>
+            <div class="delivery-options">
+              <label class="delivery-option"><input type="radio" name="delivery" data-type="home" value="600" checked onchange="updateDeliveryCost()"><div class="delivery-info"><i class="fa-solid fa-house"></i><div><strong>توصيل إلى المنزل</strong><span id="deliveryHomeLabel">600 د.ج</span></div></div></label>
+              <label class="delivery-option"><input type="radio" name="delivery" data-type="agency" value="400" onchange="updateDeliveryCost()"><div class="delivery-info"><i class="fa-solid fa-store"></i><div><strong>توصيل إلى الوكالة</strong><span id="deliveryAgencyLabel">400 د.ج</span></div></div></label>
+              <label class="delivery-option" style="grid-column:1/-1;"><input type="radio" name="delivery" data-type="express" value="900" onchange="updateDeliveryCost()"><div class="delivery-info"><i class="fa-solid fa-bolt"></i><div><strong>⚡ توصيل سريع (24-48 ساعة)</strong><span id="deliveryExpressLabel">900 د.ج</span></div></div></label>
+            </div>
           </div>
           <div class="order-summary">
             <h4><i class="fa-solid fa-receipt"></i> ملخص الطلب</h4>
@@ -480,33 +585,48 @@
     document.documentElement.style.setProperty('--secondary', adminTheme.secondary);
     document.documentElement.style.setProperty('--accent', adminTheme.accent);
 
-    // ==================== normalizeProduct ====================
+    // ==================== ✅ normalizeProduct (مُصلَح) ====================
     function normalizeProduct(p) {
       if (!p) return p;
       const isSet = !!p.isSet || p.setType === 'set';
-      if (isSet) p.setType = 'set';
-      if (isSet && Array.isArray(p.colors) && p.colors.length > 0 && p.colors[0] && p.colors[0].comboName) {
-        const groups = new Map();
-        p.colors.forEach(c => {
-          const key = c.comboName || 'طقم';
-          if (!groups.has(key)) groups.set(key, { name: key, images: [], parts: [] });
-          groups.get(key).parts.push({
-            name: c.partLabel || 'قطعة',
-            colorName: c.name || '',
-            hex: c.hex || '#cccccc'
+      if (isSet) {
+        p.setType = 'set';
+        // ✅ Fix: استخدم p.combos أولاً لأنها تحتوي على availableAges
+        if (Array.isArray(p.combos) && p.combos.length > 0) {
+          p.colors = p.combos.map(c => ({
+            name: c.name || 'طقم',
+            images: (c.images && c.images.length) ? [...c.images] : [],
+            parts: (c.parts || []).map(pt => ({
+              name: pt.label || 'قطعة',
+              colorName: pt.name || '',
+              hex: pt.hex || '#cccccc'
+            })),
+            availableAges: (Array.isArray(c.availableAges) && c.availableAges.length)
+              ? [...c.availableAges]
+              : [...(p.ages || [])]
+          }));
+        } else if (Array.isArray(p.colors) && p.colors.length > 0 && p.colors[0] && p.colors[0].comboName) {
+          // هيكل قديم (flat with comboName)
+          const groups = new Map();
+          p.colors.forEach(c => {
+            const key = c.comboName || 'طقم';
+            if (!groups.has(key)) groups.set(key, { name: key, images: [], parts: [], availableAges: [...(p.ages || [])] });
+            groups.get(key).parts.push({
+              name: c.partLabel || 'قطعة',
+              colorName: c.name || '',
+              hex: c.hex || '#cccccc'
+            });
+            if (groups.get(key).images.length === 0 && Array.isArray(c.images)) {
+              const validImg = c.images.find(img => img && typeof img === 'string' && img.trim());
+              if (validImg) groups.get(key).images.push(validImg);
+            }
           });
-          // ✅ تجميع صورة واحدة فقط لكل طقم لمنع التكرار
-          if (groups.get(key).images.length === 0 && Array.isArray(c.images)) {
-            const validImg = c.images.find(img => img && typeof img === 'string' && img.trim());
-            if (validImg) groups.get(key).images.push(validImg);
-          }
-        });
-        p.colors = Array.from(groups.values());
+          p.colors = Array.from(groups.values());
+        }
       }
       return p;
     }
 
-    // ==================== getSetSwatchGradient ====================
     function getSetSwatchGradient(combo) {
       if (!combo || !combo.parts || combo.parts.length === 0) return combo.hex || '#cccccc';
       const parts = combo.parts;
@@ -620,13 +740,70 @@
       {code:'57',name:'المغير'},{code:'58',name:'المنيعة'}
     ];
     const wilayas = WILAYAS.map(w => w.name);
-    function getWilayaCodeByName(name) { const w = WILAYAS.find(x => x.name === name); return w ? w.code : ''; }
+
+    // ✅ بيانات البلديات لجميع الولايات الـ58 (مصدر محلي كامل)
     const wilayaMunicipalities = {
-      'الجزائر': ['الجزائر الوسطى','باب الوادي','بئر مراد رايس','حسين داي','الحراش','بولوغين','القبة','الدار البيضاء','برج الكيفان','الرويبة','رغاية','بئر خادم','الشراقة','درارية','بئر توتة','زرالدة','بوزريعة','سيدي امحمد','المدنية','القصبة','باب الزوار','عين البنيان','دالي إبراهيم'],
-      'وهران': ['وهران','بئر الجير','السانية','عين الترك','أرزيو','بطيوة','مرسى الحجاج','بوتليليس','وادي تليلات','مسرغين','بوسفر','العنصر','حاسي بونيف','الكرمة','قديل','حاسي مفسوخ','عين الكرمة'],
-      'قسنطينة': ['قسنطينة','الخروب','عين اسمارة','ديدوش مراد','زيغود يوسف','بني حميدان','ابن زياد','حامة بوزيان','ابن باديس','مسعود بوجريو','أولاد رحمون'],
-      'عنابة': ['عنابة','الحجار','سيدي عمار','برحال','شطايبي','البوني','سرايدي','عين الباردة','التريعات','وادي العنب']
+      'أدرار':['أدرار','تامست','شروين','رقان','إن زغمير','زاوية كنتة','أولف','تسابيت','تيمياوين','أولاد أحمد تيمي','بودة','فنوغيل','تامنطيط','سبع','أقبلي','تيت','برج باجي مختار القديمة'],
+      'الشلف':['الشلف','تنس','بوقادير','وادي الفضة','الأبيض مجاجة','بني حواء','الكريمية','وادي سلي','الظهرة','تاوقريت','بوزغاية','عين مران','أولاد فارس','مصدق','الحجاج','أولاد بن عبد القادر','أولاد عباس','بني بوعتاب','الزبوجة','المرسى','سنجاس','الصبحة','بني حمد','أبو الحسن','الهرانفة','تلعصة','بني راشد','وادي قوسين','بريشة','سيدي عكاشة','الماين','الشطية','عين بوسيف'],
+      'الأغواط':['الأغواط','أفلو','قصر الحيران','عين ماضي','الحويطة','تاجموت','حاسي الرمل','بريدة','الغيشة','تاويالة','الحاج مشري','وادي مرة','قلتة سيدي سعد','البيضاء','تاجرونة','الحويطة','خنق سيدي ناجي','عين سيدي علي','تاويالة','الحاسي'],
+      'أم البواقي':['أم البواقي','عين البيضاء','عين مليلة','عين فكرون','مسكيانة','عين كرشة','عين بابوش','بحير الشرقي','الجازية','الحرملية','الرحية','أولاد حملة','عين الديس','سوق نعمان','ضلعة','عين الزيتون','الزرق','بحير الغربي','سيدي بوالجمعة','بن يحي','بلالة','أولاد زواي','الشيحية','سوق نعمان','عين الكرشة'],
+      'باتنة':['باتنة','بريكة','عين توتة','مروانة','أريس','بوزينة','تازولت','سريانة','عين جاسر','نقاوس','تيمقاد','الحاسي','لمسان','لازرو','بومقر','الشمرة','سفيان','رأس العيون','تيغرغار','غيور','بيطام','أولاد سي سليمان','سقانة','تيلاطو','آريس','مسكيانة','إينوغيسن','سريانة','بومية','فم الطوب','عين ياقوت','البازر','قصر بلزمة','سقانة','بومقر','حيدوسة','أولاد سلام','حيدرة','رأس العيون','منعة','تازولت'],
+      'بجاية':['بجاية','أقبو','سوق الاثنين','أميزور','صدوق','خراطة','تيشي','أوقاس','تيمزريت','سيدي عيش','أدكار','بني معوش','وادي غير','تاوريرت إغيل','شميني','تيبار','تيش','تاسكريوت','أمالو','أولاد علي','بني كسيلة','أنبي','أدني','بني مليكش','درقينة','أقفادو','إغيل علي','أوزلاقن','سوق أوفلا','تيفرة','تيندوك','بني جليل','العنصر','سيدي أيش','تيزي نبربر','شميني','تاوريرت إغيل','فرعون'],
+      'بسكرة':['بسكرة','طولقة','أولاد جلال (سابقاً)','سيدي عقبة','زريبة الوادي','أوماش','القنطرة','الوطاية','بوشقرون','جمورة','ليشانة','البرانس','شتمة','أولاد رحمة','مشونش','فوغالة','المزيرعة','لوطاية','بسباس','سيدي عقبة','برج بن عزوز','خنقة سيدي ناجي','القنطرة','زمورة'],
+      'بشار':['بشار','القنادسة','العبادلة','بني ونيف','تاغيت','لحمر','موغل','المريجة','مشرع هواري بومدين','بوكايس','العناصر','مريجة','الواتة','بني عباس (سابقاً)','تامترت'],
+      'البليدة':['البليدة','بوفاريك','الأربعاء','موزاية','أولاد يعيش','بني تامو','مفتاح','الشبلي','بوقرة','سوما','الشريعة','أولاد سلامة','وادي العلايق','الأفرون','عين الرمانة','الشبلي','بني مراد','حمام ملوان','أولاد سلامة','الشريعة','مفتاح','الشبلي','بوفاريك','الصومعة','مزغنة','العفرون','بن خليل','سوما','الأربعاء'],
+      'البويرة':['البويرة','الأخضرية','سور الغزلان','قصر البخاري','عين بسام','مشدالة','برج أوخريص','الحاشمية','بشلول','الهاشمية','عين الترك','الشرفاء','الحجرة الزرقاء','رأس الوادي','أولاد راشد','بئر غبالو','الدشمية','الأصنام','بوعيش','حدادة','حيزر','معلة','الزبربر','تقصطر','أهل القصر','العجيبة','وادي البردي','خزانة','أحمد راشدي','الأربعاء','سيدي زهار'],
+      'تمنراست':['تمنراست','أبلسة','إن غار','إدلس','تاظروك','عين أمقل','فقارات الزوا','إين أمقل','سيلت','إدلس','تيمياوين','الحجيرة'],
+      'تبسة':['تبسة','بئر العاتر','الشريعة','الونزة','مرسط','الحمامات','بكارية','الماء الأبيض','الكويف','نقرين','العقلة','الڨريقر','الحويجبات','الونزة','أم علي','الحدادة','بجن','المريج','الڨريقر','الحمامات','بئر مقدم','العوينات','صفصاف الوسرى','الونزة','نقرين','مرسط'],
+      'تلمسان':['تلمسان','المنصورة','شتوان','رمشي','مغنية','الرمشي','الغزوات','باب العسة','هنين','سوق الثلاثاء','عين تالوت','أولاد ميمون','سبدو','بني مستار','بني سنوس','الحناية','بني بوسعيد','عمير','عين فتاح','بني وارسوس','زناتة','بني خلاد','جبل اللوز','مغنية','باب العسة','الغزوات','الطارف','ندرومة','مسيردة الفواقة','سيدي الجيلاني','حسين','وادي الصفصاف','أولاد رياح'],
+      'تيارت':['تيارت','السوقر','فرندة','قصر الشلالة','مهدية','عين الذهب','دحموني','حمادية','رحوية','مدريسة','عين كرمس','تخمرت','عين الحديد','مادنة','سيدي بختي','سرغين','الفايجة','توسنينة','الناظورة','سيدي علي ملال','نعيمة','تيدة','تخمرت','رشايقة','ملاكو','عين الزرقة','بوقرة','تاقدمت','سبعين','تسالة لمطاعي'],
+      'تيزي وزو':['تيزي وزو','ذراع بن خدة','عزازقة','ذراع الميزان','بوغني','أزفون','أقبو (سابقاً)','مقلع','واقنون','عزفون','تيقزيرت','أيت يحيى','الماين','بني دوالة','إيفرحونن','تيزي غنيف','معاتقة','بوجيمة','تقزيرت','عين الحمام','ترميت','ميزرانة','بني زمنزر','آث يني','بني عيسي','أولاد عيسي','سيدي نعمان','مشطراس','فرعون','أبي يوسف'],
+      'الجزائر':['الجزائر الوسطى','باب الوادي','بئر مراد رايس','حسين داي','الحراش','بولوغين','القبة','الدار البيضاء','برج الكيفان','الرويبة','رغاية','بئر خادم','الشراقة','درارية','بئر توتة','زرالدة','بوزريعة','سيدي امحمد','المدنية','القصبة','باب الزوار','عين البنيان','دالي إبراهيم','بئر مراد رايس','المرادية','السوالم','أولاد شبل','براقي','باش جراح','سيدي موسى','الدرارية','بابا حسن','خريبة','الرغاية'],
+      'الجلفة':['الجلفة','عين وسارة','مسعد','الإدريسية','حاسي بحبح','دار الشيوخ','سيدي لعجال','حد الصحاري','بيرين','الشارف','بنهار','زكار','عين الإبل','الخميس','حاسي العش','الحسينية','قطارة','دويس','القرنيني','مجبارة','سيدي بايزيد','تعظميت','الخميس','الشارف','عين الشهداء','بيرين','زكار','عمورة'],
+      'جيجل':['جيجل','الطاهير','العنصر','الميلية','سيدي معروف','زيامة منصورية','الأمير عبد القادر','تاكسنة','العوانة','الشقفة','سيدي عبد العزيز','القنار نشفي','العنصر','الميلية','بوسيف أولاد عسكر','سلمى بن زيادة','العش','جيملة','الأمير عبد القادر','الطاهير','شقفة','أولاد يحيى خدروش'],
+      'سطيف':['سطيف','العلمة','عين ولمان','بوقاعة','عين الكبيرة','عين أرنات','بابور','عين آزال','جميلة','قجال','بني عزيز','أولاد سي أحمد','بئر العرش','العلمة','الرصفة','بازر سكرة','بوسلام','تاشودة','بني محلي','بني فودة','عين لقراج','بني وسين','الوريسية','الأوريسية','بئر حدادة','عين أرنات','عين الكبيرة','بوقاعة','بابور','قجال','بوقاعة','العلمة'],
+      'سعيدة':['سعيدة','عين الحجر','يوب','أولاد براهيم','الحساسنة','سيدي بوبكر','تيرسين','أولاد خالد','دوي ثابت','عين السخونة','سيدي أحمد','هونت','يوب','أولاد براهيم','المعمورة','سعيدة','تيرسين','سيدي بوبكر','الحساسنة'],
+      'سكيكدة':['سكيكدة','عزابة','القل','الحروش','تمالوس','أم الطوب','الشريعة','بني ولبان','الشرايع','رمضان جمال','سيدي مزغيش','فلفلة','السبت','بوشطاطة','الزيتونة','بني بشير','عين شرشار','الحروش','القل','بن عزوز','أولاد عطية','زردازة','الشرايع','سيدي مزغيش','عزابة'],
+      'سيدي بلعباس':['سيدي بلعباس','تلاغ','سفيزف','بن باديس','مرحوم','عين البرد','سيدي لحسن','رأس الماء','بن عشيبة','تنيرة','مرين','حاسي زهانة','عين تندمين','سيدي دحمان','وادي سفيون','سيدي علي بن يوب','زروالة','مصطفى بن ابراهيم','الأربعاء','سيدي ياسين','عين الثريد'],
+      'عنابة':['عنابة','الحجار','سيدي عمار','برحال','شطايبي','البوني','سرايدي','عين الباردة','التريعات','وادي العنب','سيدي سالم','العلمة','برحال','شطايبي'],
+      'قالمة':['قالمة','وادي الزناتي','بوشقوف','حمام دباغ','عين مخلوف','هيليوبوليس','حمام النبائل','بومهرة أحمد','عين العربي','قلعة بوصبع','وادي فراغة','النشماية','خزارة','حمام دباغ','مجاز عمار','عين سندل','بومهرة أحمد','جبل حلوف','وادي الشحم'],
+      'قسنطينة':['قسنطينة','الخروب','عين اسمارة','ديدوش مراد','زيغود يوسف','بني حميدان','ابن زياد','حامة بوزيان','ابن باديس','مسعود بوجريو','أولاد رحمون','بني حميدان','حامة بوزيان'],
+      'المدية':['المدية','البرواقية','قصر البخاري','عزيز','وزرة','شلالة العذاورة','السواقي','سي المحجوب','عين بوسيف','تابلاط','بني سليمان','العمارية','الكساسبة','سيدي نعمان','شلالة العذاورة','البرواقية','تابلاط','العمارية','سيدي دامد','بني سليمان','بوعيشون','دراق','مفاتحة','أولاد بوعشرة','بوعقوب','جواب','الكساسبة'],
+      'مستغانم':['مستغانم','عين تادلس','سيدي علي','ماسرة','حاسي مماش','بوقيرات','خير الدين','مزغران','عين النويصي','حجاج','صيادة','الطواهرية','أولاد مع الله','زهرة','بوقيرات','حاسي مماش','بوجمعة','مزغران','الصور','سيدي خطاب','خير الدين'],
+      'المسيلة':['المسيلة','بوسعادة','سيدي عيسى','عين الملح','حمام الضلعة','جبل مساعد','برهوم','المعاضيد','الهامل','بن سرور','عين فارس','أولاد دراج','أولاد ماضي','عين الخضراء','مسيف','خبانة','حمام الضلعة','مجدل','سيدي هجرس','بلعايبة','بني يلمان','تارمونت','خبانة','أولاد عطية','الدهاهنة','سيدي عيسى'],
+      'معسكر':['معسكر','محمدية','سيق','غريس','تيغنيف','بوحنيفية','عين فارس','وادي الأبطال','زهانة','المحمدية','مascarا','تيغنيف','غريس','عين فارس','وادي الأبطال','بوحنيفية','سيق','زهانة','المحمدية','البرج','عين فراح','الحشم','المامونية','سيدي قادة','القرط','وادي التاغية'],
+      'ورقلة':['ورقلة','حاسي مسعود','الرويسات','انقوسة','سيدي خويلد','الحجيرة','البرمة','العالية','ن قوسة','الرويسات','حاسي مسعود','البرمة','العالية','سيدي خويلد','انقوسة'],
+      'وهران':['وهران','بئر الجير','السانية','عين الترك','أرزيو','بطيوة','مرسى الحجاج','بوتليليس','وادي تليلات','مسرغين','بوسفر','العنصر','حاسي بونيف','الكرمة','قديل','حاسي مفسوخ','عين الكرمة','سيدي الشحمي','العنصر','وهران','بئر الجير','أرزيو','السانية'],
+      'البيض':['البيض','بوقطب','الأبيض سيدي الشيخ','روقاصة','بريزينة','شلالة','الغاسول','الخيثر','عين العراك','استيتن','المحرة','البنود','الخيثر','بوقطب','شلالة','روقاصة','بريزينة','الغاسول','استيتن','المحرة'],
+      'إليزي':['إليزي','برج عمر إدريس','إن أمناس','دبداب','برج الحواس','إن أميناس','إليزي'],
+      'برج بوعريريج':['برج بوعريريج','رأس الوادي','المنصورة','الحمادية','مجانة','العناصر','بئر قاصد علي','الجعافرة','أولاد براهم','المنصورة','رأس الوادي','الحمادية','بئر قاصد علي','مجانة','العناصر','جعافرة','الحمادية','خليل','سيدي أمبارك','المهير','تفرق','العش','أولاد دحمان'],
+      'بومرداس':['بومرداس','برج منايل','الثنية','بغلية','دلس','خميس الخشنة','أولاد موسى','الناصرية','الأربعطاش','بودواو','الرغاية (سابقاً)','الثنية','بغلية','دلس','خميس الخشنة','الناصرية','الأربعطاش','سي مصطفى','أعفير','سيدي داود','زموري','أولاد هداج','شعبة العامر','الجنات','بوزقزة','قورصو','تيجلابين'],
+      'الطارف':['الطارف','القالة','بوثلجة','الذرعان','بن مهيدي','الشط','بريحان','الطارف','بوحجار','عين العسل','البسباس','زريزر','الشافية','وادي الزيتون','السوارخ','بوقوس','عين الكرمة','الشط','البسباس'],
+      'تندوف':['تندوف','أم العسل'],
+      'تيسمسيلت':['تيسمسيلت','ثنية الأحد','برج بونعامة','خميستي','بوقايد','العيون','لرجام','الازهرية','سيدي سليمان','سيدي عابد','بني شعيب','الأزهرية','بوقايد','خميستي','ثنية الأحد','برج بونعامة','سيدي بوتشنت','لعيون','بني لحسن'],
+      'الوادي':['الوادي','الرقيبة','قمار','الدبيلة','حساني عبد الكريم','المقرن','كوينين','حاسي خليفة','الطريفاوي','العقلة','النخلة','الوادي','الرقيبة','قمار','الدبيلة','المقرن','حاسي خليفة','الطريفاوي','وادي العلندة','الحمراية','العلاقة'],
+      'خنشلة':['خنشلة','ششار','ببار','الحامة','أنسيغة','الرميلة','المحمل','عين الطويلة','بابار','بوحمامة','قايس','شلية','يابوس','الولجة','الحامة','المحمل','خنشلة','ببار'],
+      'سوق أهراس':['سوق أهراس','سدراتة','مداوروش','الحدادة','تاورة','مشروحة','بئر بوحوش','المراهنة','أم العظائم','الزعرورية','الحدادة','تاورة','مداوروش','سدراتة','مشروحة','بئر بوحوش','الزعرورية','عين سلطان','خميسة','أولاد مؤمن','حنانشة','لخضارة','الدريعة','الودية'],
+      'تيبازة':['تيبازة','حجوط','الشرشال','القليعة','فوكة','دواودة','سيدي عمار','الداموس','بوسماعيل','أحمر العين','سيدي غيلاس','العلاهم','عين تقورايت','بني ميلك','الشعيبة','قوراية','الشرشال','حجوط','سيدي غيلاس','مناصر','أحمر العين'],
+      'ميلة':['ميلة','فرجيوة','شلغوم العيد','تلاغمة','وادي العثمانية','التلاغمة','تاجنانت','القرارم قوقة','رواشد','عين البيضاء حرشة','سيدي مروان','وادي النجاء','تسدان حدادة','ترعي باينان','أولاد خلوف','زغاية','ميلة','شلغوم العيد','فرجيوة','تاجنانت'],
+      'عين الدفلى':['عين الدفلى','خميس مليانة','العطاف','مليانة','بومدفع','الأبيض مجاجة','العامرة','حمام ريغة','الروينة','جليدة','الماين','العطاف','خميس مليانة','بومدفع','حمام ريغة','العامرة','الروينة','جليدة','بئر ولد خليفة','الأربعاء','سيدي لخضر','العامرة','الماين'],
+      'النعامة':['النعامة','مشرية','عين الصفراء','صفيصيفة','مكمن بن عمار','العين الصفراء','تيوت','سفيسيفة','عين الصفراء','مشرية','مكمن بن عمار','النعامة','أسلا'],
+      'عين تموشنت':['عين تموشنت','حمام بوحجر','بني صاف','المالح','الأمير عبد القادر','العامرية','أولاد الكيحل','شعبة اللحم','أولاد مسعود','عين الكيحل','حاسي الغلة','شنتوف','وادي الصباح','شعبة اللحم','حمام بوحجر','بني صاف','المالح'],
+      'غرداية':['غرداية','متليلي','بريان','القرارة','زلفانة','بونورة','ضاية بن ضحوة','العطف','المدابيح','سبseb','بريان','القرارة','زلفانة','ضاية بن ضحوة','العطف','متليلي','بونورة','شعبة اللحم'],
+      'غليزان':['غليزان','وادي رهيو','مازونة','عمي موسى','جديوية','زمورة','سيدي محمد بن علي','يلل','المطمر','سيدي خطاب','حمري','القطار','سيدي لعجال','وادي رهيو','مازونة','عمي موسى','جديوية','زمورة','سيدي خطاب','حمري','القطار','بني زنتيس'],
+      'تيميمون':['تيميمون','أولاد السعيد','قصر قدور','طالمين','أوقروت','دلدول','شروين','المطارفة','تينركوك','أولاد سعيد','طالمين','أوقروت','شروين'],
+      'برج باجي مختار':['برج باجي مختار','تيمياوين'],
+      'أولاد جلال':['أولاد جلال','سيدي خالد','الدوسن','الشعيبة','رأس الميعاد','بسباس','أولاد جلال','سيدي خالد','الدوسن','الشعيبة','رأس الميعاد'],
+      'بني عباس':['بني عباس','أولاد خضير','تامترت','إقلي','تابلبالة','الواتة','كرزاز','بني عباس','أولاد خضير','تامترت','إقلي','تابلبالة','الواتة','كرزاز'],
+      'عين صالح':['عين صالح','فقارة الزوى','إن غار'],
+      'عين قزام':['عين قزام','تين زواتين'],
+      'تقرت':['تقرت','تماسين','المقارين','الزاوية العابدية','البلدة القديمة','النزلة','سيدي سليمان','العطف','بلدة أعمر','الزاوية العابدية','تماسين','المقارين','تقرت'],
+      'جانت':['جانت','برج الحواس'],
+      'المغير':['المغير','جامعة','سيدي عمران','سيدي خليل','أم الطيور','سطيل','المرارة','تندلة','المغير','جامعة','سيدي عمران','سيدي خليل','أم الطيور'],
+      'المنيعة':['المنيعة','حاسي الفحل','حاسي القارة','المنيعة','حاسي الفحل']
     };
+
+    function getWilayaCodeByName(name) { const w = WILAYAS.find(x => x.name === name); return w ? w.code : ''; }
 
     let cart = [];
     let currentProduct = null;
@@ -653,15 +830,12 @@
       setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 2600);
     }
 
-    // ==================== getColorImages — كل صور كل قطع الطقم ====================
     function getColorImages(color) {
       if (!color) return [];
-      // الأولوية لصور الطقم المجمعة (لضمان صورة واحدة لكل طقم)
       if (Array.isArray(color.images) && color.images.length > 0) {
         const valid = color.images.filter(u => u && typeof u === 'string' && u.trim());
         if (valid.length > 0) return valid;
       }
-      // fallback للهيكل القديم
       if (Array.isArray(color.parts) && color.parts.length > 0) {
         const imgs = [];
         color.parts.forEach(pt => {
@@ -676,6 +850,16 @@
     }
     function isProductSet(p) { return p && p.setType === 'set'; }
     function getProductImage(color) { const imgs = getColorImages(color); return imgs[0] || ''; }
+
+    // ✅ دالة جديدة: الأعمار المتاحة للطقم الحالي
+    function getAvailableAges() {
+      if (!currentProduct) return [];
+      if (isProductSet(currentProduct)) {
+        const combo = currentProduct.colors[selectedColorIndex];
+        if (combo && Array.isArray(combo.availableAges) && combo.availableAges.length > 0) return combo.availableAges;
+      }
+      return currentProduct.ages || [];
+    }
 
     // ==================== الوضع الليلي ====================
     const themeToggle = document.getElementById('themeToggle');
@@ -759,7 +943,9 @@
         showToast('المنتج غير موجود، تم تحويلك لمنتج آخر', 'info');
       }
       selectedColorIndex = 0; selectedImageIndex = 0;
-      selectedAge = currentProduct.ages[0];
+      // ✅ اختر أول عمر متوفر
+      const avail = getAvailableAges();
+      selectedAge = avail[0] || currentProduct.ages[0];
       selectedQuantity = 1;
       document.title = `${adminSettings.storeName} | ${currentProduct.name}`;
       return true;
@@ -773,39 +959,33 @@
       if (totalEl) totalEl.textContent = totalPrice.toLocaleString() + ' د.ج';
       if (formulaEl) formulaEl.textContent = `${selectedQuantity} × ${currentProduct.price.toLocaleString()} د.ج`;
     }
-    
-    // ==================== renderProductDetail — مع دوائر مقسّمة ====================
+
+    // ==================== renderProductDetail (مُصلَح - يدعم الأعمار غير المتوفرة) ====================
     function renderProductDetail() {
       if (!currentProduct) return;
       const p = currentProduct;
       const isSet = isProductSet(p);
-      const color = p.colors[selectedColorIndex]; // ✅ إضافة هذا السطر مهم جداً
-      
+      const color = p.colors[selectedColorIndex];
+
       let currentImage = '';
       let thumbnailsHtml = '';
       let hasMultipleThumbs = false;
-      
+
       if (isSet) {
         const currentCombo = p.colors[selectedColorIndex];
         const comboImgs = getColorImages(currentCombo);
         currentImage = comboImgs[0] || '';
-        
-        // ✅ الصور المصغرة للأطقم: صورة واحدة لكل طقم، والضغط عليها يغير الطقم
         hasMultipleThumbs = p.colors.length > 1;
         thumbnailsHtml = p.colors.map((c, i) => {
           const imgs = getColorImages(c);
           const img = imgs[0] || '';
-          return `<div class="thumbnail ${i === selectedColorIndex ? 'active' : ''}" onclick="selectColor(${i})">
-                    <img src="${img}" alt="">
-                  </div>`;
+          return `<div class="thumbnail ${i === selectedColorIndex ? 'active' : ''}" onclick="selectColor(${i})"><img src="${img}" alt=""></div>`;
         }).join('');
       } else {
-        const color = p.colors[selectedColorIndex];
         const colorImgs = getColorImages(color);
         currentImage = colorImgs[selectedImageIndex] || colorImgs[0] || '';
-        
         hasMultipleThumbs = colorImgs.length > 1;
-        thumbnailsHtml = colorImgs.map((url, i) => 
+        thumbnailsHtml = colorImgs.map((url, i) =>
           `<div class="thumbnail ${i === selectedImageIndex ? 'active' : ''}" onclick="selectImage(${i})">
              <img src="${url}" alt="">
              ${colorImgs.length > 1 ? `<span class="thumb-index">${i + 1}</span>` : ''}
@@ -816,7 +996,24 @@
       const discountPercent = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
       const hasMultipleColors = p.colors.length > 1;
       const showColorSection = hasMultipleColors || isSet;
-      
+
+      // ✅ بناء الأعمار مع مراعاة المتوفر/غير المتوفر
+      const availAges = getAvailableAges();
+      const agesHtml = p.ages.map(a => {
+        const isAvail = availAges.includes(a);
+        const isActive = a === selectedAge && isAvail;
+        if (!isAvail) {
+          return `<button class="detail-age unavailable" disabled title="هذا العمر غير متوفر في هذا الطقم">
+            <span class="strike">${a}</span>
+            <small>غير متوفر حاليا</small>
+          </button>`;
+        }
+        return `<button class="detail-age ${isActive ? 'active' : ''}" onclick="selectAge('${a}', this)">${a}</button>`;
+      }).join('');
+
+      // ✅ قيمة العمر المعروضة
+      const ageDisplayValue = (selectedAge && availAges.includes(selectedAge)) ? selectedAge : 'اختر عمراً';
+
       document.getElementById('breadcrumbCategory').textContent = p.categoryLabel;
       document.getElementById('breadcrumbProduct').textContent = p.name;
       const grid = document.getElementById('productDetailGrid');
@@ -864,8 +1061,8 @@
             </div>
           </div>` : ''}
           <div class="detail-section">
-            <div class="detail-section-label"><span><i class="fa-solid fa-child"></i> العمر</span><span class="selected-value">${selectedAge}</span></div>
-            <div class="detail-ages">${p.ages.map(a => `<button class="detail-age ${a === selectedAge ? 'active' : ''}" onclick="selectAge('${a}', this)">${a}</button>`).join('')}</div>
+            <div class="detail-section-label"><span><i class="fa-solid fa-child"></i> العمر</span><span class="selected-value">${ageDisplayValue}</span></div>
+            <div class="detail-ages">${agesHtml}</div>
           </div>
           <div class="detail-section">
             <div class="qty-row">
@@ -910,20 +1107,30 @@
       document.querySelectorAll('.thumbnail').forEach((t, i) => t.classList.toggle('active', i === index));
     }
 
+    // ✅ selectColor - تُحدّث العمر تلقائياً عند تغيير الطقم
     function selectColor(index) {
       if (!currentProduct) return;
       if (index === selectedColorIndex) return;
       selectedColorIndex = index; selectedImageIndex = 0;
+      // ✅ إذا كان الطقم الجديد لا يحتوي على العمر المحدد، اختر أول عمر متوفر
+      if (isProductSet(currentProduct)) {
+        const availAges = getAvailableAges();
+        if (!selectedAge || !availAges.includes(selectedAge)) {
+          selectedAge = availAges[0] || null;
+        }
+      }
       renderProductDetail();
       updateTotalPrice();
     }
 
     function selectAge(age, el) {
+      const availAges = getAvailableAges();
+      if (!availAges.includes(age)) return; // منع اختيار عمر غير متوفر
       selectedAge = age;
       document.querySelectorAll('.detail-ages .detail-age').forEach(b => b.classList.remove('active'));
-      el.classList.add('active');
-      const ageLabel = document.querySelectorAll('.detail-section-label .selected-value');
-      if (ageLabel.length > 0) ageLabel[ageLabel.length - 1].textContent = age;
+      if (el) el.classList.add('active');
+      const ageLabels = document.querySelectorAll('.detail-section-label .selected-value');
+      if (ageLabels.length > 0) ageLabels[ageLabels.length - 1].textContent = age;
     }
 
     function changeQty(delta) {
@@ -938,8 +1145,6 @@
       const color = currentProduct.colors[selectedColorIndex];
       lightboxImages = getColorImages(color);
       if (lightboxImages.length === 0) return;
-      
-      // إذا كان طقماً، نعرض الصورة الأولى فقط
       lightboxImageIndex = isProductSet(currentProduct) ? 0 : Math.min(selectedImageIndex, lightboxImages.length - 1);
       updateLightbox();
       document.getElementById('lightbox').classList.add('show');
@@ -985,7 +1190,7 @@
       }, { passive: true });
     })();
 
-    // ==================== buildCartItemPayload — بدون partIndex ====================
+    // ==================== السلة ====================
     function buildCartItemPayload() {
       if (!currentProduct) return null;
       return {
@@ -997,8 +1202,15 @@
         price: currentProduct.price
       };
     }
+
+    // ✅ addCurrentToCart مع التحقق من توفر العمر
     function addCurrentToCart() {
       if (!currentProduct) return;
+      const availAges = getAvailableAges();
+      if (!selectedAge || !availAges.includes(selectedAge)) {
+        showToast('الرجاء اختيار عمر متوفر في هذا الطقم', 'error');
+        return;
+      }
       const match = it => it.productId === currentProduct.id && it.colorIndex === selectedColorIndex && it.age === selectedAge;
       const existing = cart.find(match);
       if (existing) existing.qty += selectedQuantity;
@@ -1006,7 +1218,15 @@
       saveCart(); renderCart();
       showToast(`تمت إضافة ${selectedQuantity} ${selectedQuantity === 1 ? 'قطعة' : 'قطع'} إلى السلة ✓`);
     }
-    function orderNow() { addCurrentToCartSilent(); openCart(); }
+    function orderNow() {
+      const availAges = getAvailableAges();
+      if (!selectedAge || !availAges.includes(selectedAge)) {
+        showToast('الرجاء اختيار عمر متوفر في هذا الطقم', 'error');
+        return;
+      }
+      addCurrentToCartSilent();
+      openCart();
+    }
     function addCurrentToCartSilent() {
       if (!currentProduct) return;
       const match = it => it.productId === currentProduct.id && it.colorIndex === selectedColorIndex && it.age === selectedAge;
@@ -1016,7 +1236,6 @@
       saveCart(); renderCart();
     }
 
-    // ==================== سلة التسوق ====================
     const cartBody = document.getElementById('cartBody');
     const cartFooter = document.getElementById('cartFooter');
     const cartSidebar = document.getElementById('cartSidebar');
@@ -1043,7 +1262,6 @@
     function updateCartBadge() { const q = cart.reduce((s, i) => s + i.qty, 0); cartCountEl.textContent = q; cartHeaderCount.textContent = `(${q})`; }
     function getCartSubtotal() { return cart.reduce((s, i) => s + i.price * i.qty, 0); }
 
-    // ==================== renderCart — شارات الألوان لكل قطعة ====================
     function renderCart() {
       updateCartBadge();
       if (cart.length === 0) {
@@ -1112,21 +1330,56 @@
         const bg = isSet ? getSetSwatchGradient(col) : (col.hex || '#cccccc');
         return `<span class="swatch ${i === editColorIndex ? 'active' : ''}" style="background:${bg};width:38px;height:38px;border-radius:50%;display:inline-block;margin:4px;border:2px solid ${i === editColorIndex ? 'var(--primary)' : 'rgba(0,0,0,0.08)'};cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.1);" title="${col.name || ''}" onclick="changeEditColor(${i})"></span>`;
       }).join('');
-      document.getElementById('editModalAges').innerHTML = p.ages.map(a => `<span class="age-tag ${a === editAge ? 'active' : ''}" style="padding:8px 16px;border-radius:10px;display:inline-block;margin:4px;cursor:pointer;background:${a === editAge ? 'var(--secondary)' : 'rgba(0,0,0,0.05)'};color:${a === editAge ? '#fff' : 'var(--text-dark)'};font-weight:700;font-size:0.85rem;" onclick="changeEditAge(this, '${a}')">${a}</span>`).join('');
+      // الأعمار المتاحة للطقم المختار
+      let availAges = p.ages || [];
+      if (isSet) {
+        const combo = p.colors[editColorIndex];
+        if (combo && Array.isArray(combo.availableAges) && combo.availableAges.length) availAges = combo.availableAges;
+      }
+      document.getElementById('editModalAges').innerHTML = p.ages.map(a => {
+        const isAvail = availAges.includes(a);
+        if (!isAvail) {
+          return `<span class="age-tag" style="padding:8px 16px;border-radius:10px;display:inline-block;margin:4px;cursor:not-allowed;background:rgba(231,76,60,0.08);color:#b2bec3;font-weight:700;font-size:0.85rem;text-decoration:line-through;opacity:0.7;" title="غير متوفر">${a}</span>`;
+        }
+        return `<span class="age-tag ${a === editAge ? 'active' : ''}" style="padding:8px 16px;border-radius:10px;display:inline-block;margin:4px;cursor:pointer;background:${a === editAge ? 'var(--secondary)' : 'rgba(0,0,0,0.05)'};color:${a === editAge ? '#fff' : 'var(--text-dark)'};font-weight:700;font-size:0.85rem;" onclick="changeEditAge(this, '${a}')">${a}</span>`;
+      }).join('');
       document.getElementById('editModal').classList.add('show');
     }
+
     function changeEditColor(i) {
-      editColorIndex = i;
-      const item = cart.find(it => it.itemId === editingItemId);
-      const p = products.find(pr => pr.id === item.productId);
-      const imgEl = document.getElementById('editModalImage');
-      imgEl.style.opacity = '0.5';
-      setTimeout(() => { imgEl.src = getProductImage(p.colors[i]); imgEl.style.opacity = '1'; }, 150);
-      document.querySelectorAll('#editModalColors .swatch').forEach((s, idx) => {
-        s.classList.toggle('active', idx === i);
-        s.style.borderColor = idx === i ? 'var(--primary)' : 'rgba(0,0,0,0.08)';
-      });
+  editColorIndex = i;
+  const item = cart.find(it => it.itemId === editingItemId);
+  const p = products.find(pr => pr.id === item.productId);
+  const isSet = isProductSet(p);
+  const imgEl = document.getElementById('editModalImage');
+  imgEl.style.opacity = '0.5';
+  setTimeout(() => { imgEl.src = getProductImage(p.colors[i]); imgEl.style.opacity = '1'; }, 150);
+  document.querySelectorAll('#editModalColors .swatch').forEach((s, idx) => {
+    s.classList.toggle('active', idx === i);
+    s.style.borderColor = idx === i ? 'var(--primary)' : 'rgba(0,0,0,0.08)';
+  });
+
+  // ✅ الأعمار المتاحة للطقم الجديد
+  let availAges = p.ages || [];
+  if (isSet) {
+    const combo = p.colors[i];
+    if (combo && Array.isArray(combo.availableAges) && combo.availableAges.length) {
+      availAges = combo.availableAges;
     }
+  }
+  // ✅ إذا كان العمر المحدد غير متوفر في الطقم الجديد، اختر أول عمر متوفر
+  if (!availAges.includes(editAge)) {
+    editAge = availAges[0] || null;
+  }
+  // ✅ أعد رسم الأعمار
+  document.getElementById('editModalAges').innerHTML = p.ages.map(a => {
+    const isAvail = availAges.includes(a);
+    if (!isAvail) {
+      return `<span class="age-tag" style="padding:8px 16px;border-radius:10px;display:inline-block;margin:4px;cursor:not-allowed;background:rgba(231,76,60,0.08);color:#b2bec3;font-weight:700;font-size:0.85rem;text-decoration:line-through;opacity:0.7;" title="غير متوفر">${a}</span>`;
+    }
+    return `<span class="age-tag ${a === editAge ? 'active' : ''}" style="padding:8px 16px;border-radius:10px;display:inline-block;margin:4px;cursor:pointer;background:${a === editAge ? 'var(--secondary)' : 'rgba(0,0,0,0.05)'};color:${a === editAge ? '#fff' : 'var(--text-dark)'};font-weight:700;font-size:0.85rem;" onclick="changeEditAge(this, '${a}')">${a}</span>`;
+  }).join('');
+}
     function changeEditAge(el, age) {
       editAge = age;
       document.querySelectorAll('#editModalAges .age-tag').forEach(t => {
@@ -1151,42 +1404,34 @@
     // ==================== نموذج الطلب ====================
     const CHECKOUT_DRAFT_KEY = 'babyshop_checkout_draft';
 
-    async function populateMunicipalities(selectedMunicipality = '') {
+    // ✅ populateMunicipalities - تعمل الآن بالبيانات المحلية الكاملة
+    function populateMunicipalities(selectedMunicipality = '') {
       const wilayaName = document.getElementById('checkoutWilaya').value;
       const sel = document.getElementById('checkoutMunicipality');
       const txt = document.getElementById('checkoutMunicipalityText');
-      
-      sel.innerHTML = '<option value="">جاري التحميل...</option>';
-      sel.style.display = 'block';
-      txt.style.display = 'none';
-      txt.required = false;
-      
-      if (!wilayaName) { 
-        sel.innerHTML = '<option value="">-- اختر الولاية أولاً --</option>'; 
-        return; 
+
+      if (!wilayaName) {
+        sel.innerHTML = '<option value="">-- اختر الولاية أولاً --</option>';
+        sel.style.display = 'block';
+        txt.style.display = 'none';
+        txt.required = false;
+        return;
       }
-      
-      const wilayaObj = WILAYAS.find(w => w.name === wilayaName);
-      if (wilayaObj) {
-        try {
-          const res = await fetch(`/api/wilayas/${parseInt(wilayaObj.code)}/municipalities`);
-          if (res.ok) {
-            const muns = await res.json();
-            if (muns.length > 0) {
-              sel.innerHTML = '<option value="">-- اختر البلدية --</option>' + muns.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
-              if (selectedMunicipality) sel.value = selectedMunicipality;
-              return;
-            }
-          }
-        } catch(e) { console.warn('API municipalities failed', e); }
-      }
-      
-      if (wilayaMunicipalities[wilayaName]) {
-        sel.innerHTML = '<option value="">-- اختر البلدية --</option>' + wilayaMunicipalities[wilayaName].map(m => `<option value="${m}">${m}</option>`).join('');
-        if (selectedMunicipality) sel.value = selectedMunicipality;
+
+      const muns = wilayaMunicipalities[wilayaName];
+      if (Array.isArray(muns) && muns.length > 0) {
+        sel.innerHTML = '<option value="">-- اختر البلدية --</option>' + muns.map(m => `<option value="${m}">${m}</option>`).join('');
+        if (selectedMunicipality && muns.includes(selectedMunicipality)) sel.value = selectedMunicipality;
+        sel.style.display = 'block';
+        sel.required = true;
+        txt.style.display = 'none';
+        txt.required = false;
+        txt.value = '';
       } else {
+        // Fallback: كتابة يدوية
         sel.innerHTML = '<option value="">-- اكتب البلدية يدوياً --</option>';
         sel.style.display = 'none';
+        sel.required = false;
         txt.style.display = 'block';
         txt.required = true;
         if (selectedMunicipality) txt.value = selectedMunicipality;
@@ -1198,7 +1443,7 @@
         firstName: document.getElementById('checkoutFirstName').value,
         lastName: document.getElementById('checkoutLastName').value,
         wilaya: document.getElementById('checkoutWilaya').value,
-        municipality: document.getElementById('checkoutMunicipalityText').style.display === 'block' 
+        municipality: document.getElementById('checkoutMunicipalityText').style.display === 'block'
                       ? document.getElementById('checkoutMunicipalityText').value.trim()
                       : document.getElementById('checkoutMunicipality').value,
         phone1: document.getElementById('checkoutPhone1').value,
@@ -1210,7 +1455,7 @@
       if (hasData) localStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify(data));
       else localStorage.removeItem(CHECKOUT_DRAFT_KEY);
     }
-       async function loadCheckoutDraft() {
+    function loadCheckoutDraft() {
       const banner = document.getElementById('draftBanner');
       try {
         const data = JSON.parse(localStorage.getItem(CHECKOUT_DRAFT_KEY) || 'null');
@@ -1218,10 +1463,7 @@
         document.getElementById('checkoutFirstName').value = data.firstName || '';
         document.getElementById('checkoutLastName').value = data.lastName || '';
         document.getElementById('checkoutWilaya').value = data.wilaya || '';
-        
-        // إضافة await لضمان تحميل البلديات قبل المتابعة
-        await populateMunicipalities(data.municipality || '');
-        
+        populateMunicipalities(data.municipality || '');
         document.getElementById('checkoutPhone1').value = data.phone1 || '';
         document.getElementById('checkoutPhone2').value = data.phone2 || '';
         document.getElementById('checkoutAddress').value = data.address || '';
@@ -1245,7 +1487,7 @@
       if (el) el.addEventListener('input', saveCheckoutDraft);
     });
     document.getElementById('checkoutMunicipality').addEventListener('change', saveCheckoutDraft);
-        document.getElementById('checkoutMunicipalityText').addEventListener('input', saveCheckoutDraft);
+    document.getElementById('checkoutMunicipalityText').addEventListener('input', saveCheckoutDraft);
     document.querySelectorAll('input[name="delivery"]').forEach(r => r.addEventListener('change', () => { saveCheckoutDraft(); updateDeliveryCost(); }));
 
     let currentDeliveryCost = adminDelivery.home;
@@ -1279,28 +1521,23 @@
           if (labelWrap) labelWrap.style.display = 'none';
           r.checked = false;
         } else {
-          if (labelWrap) labelWrap.style.display = ''; // إرجاع العرض الافتراضي من CSS
+          if (labelWrap) labelWrap.style.display = '';
           r.value = val;
           const lbl = document.getElementById('delivery' + type.charAt(0).toUpperCase() + type.slice(1) + 'Label');
           if (lbl) lbl.textContent = val + ' د.ج';
         }
       };
-      
-      setOpt('home', home); 
-      setOpt('agency', agency); 
+
+      setOpt('home', home);
+      setOpt('agency', agency);
       setOpt('express', express);
 
-      // التحقق من الخيار المحدد حالياً
       const checked = document.querySelector('input[name="delivery"]:checked');
       let isCheckedValid = false;
       if (checked) {
         const labelWrap = checked.closest('.delivery-option');
-        if (labelWrap && labelWrap.style.display !== 'none') {
-          isCheckedValid = true;
-        }
+        if (labelWrap && labelWrap.style.display !== 'none') isCheckedValid = true;
       }
-      
-      // إذا لم يكن هناك خيار محدد أو كان الخيار المحدد مخفياً، نختار أول خيار مرئي
       if (!isCheckedValid) {
         const visibleInput = Array.from(document.querySelectorAll('input[name="delivery"]')).find(r => r.closest('.delivery-option').style.display !== 'none');
         if (visibleInput) visibleInput.checked = true;
@@ -1324,7 +1561,6 @@
       document.getElementById('summaryTotal').textContent = (sub + currentDeliveryCost).toLocaleString() + ' د.ج';
     }
 
-    // ==================== submitOrder — اسم الطقم + تفاصيل القطع ====================
     async function submitOrder() {
       const form = document.getElementById('checkoutForm');
       if (!form.checkValidity()) { form.reportValidity(); return; }
@@ -1342,7 +1578,7 @@
         phone1: document.getElementById('checkoutPhone1').value.trim(),
         phone2: document.getElementById('checkoutPhone2').value.trim() || null,
         wilaya: document.getElementById('checkoutWilaya').value,
-        municipality: document.getElementById('checkoutMunicipalityText').style.display === 'block' 
+        municipality: document.getElementById('checkoutMunicipalityText').style.display === 'block'
                       ? document.getElementById('checkoutMunicipalityText').value.trim()
                       : document.getElementById('checkoutMunicipality').value,
         address: document.getElementById('checkoutAddress').value.trim(),
@@ -1440,9 +1676,14 @@
     function goToProduct(id) { window.location.href = `product.html?id=${id}`; }
     function quickAdd(productId) {
       const p = products.find(pr => pr.id === productId); if (!p) return;
-      const existing = cart.find(i => i.productId === productId && i.colorIndex === 0 && i.age === p.ages[0]);
+      // ✅ اختر أول عمر متوفر
+      let availAge = p.ages[0];
+      if (isProductSet(p) && p.colors[0] && Array.isArray(p.colors[0].availableAges) && p.colors[0].availableAges.length) {
+        availAge = p.colors[0].availableAges[0];
+      }
+      const existing = cart.find(i => i.productId === productId && i.colorIndex === 0 && i.age === availAge);
       if (existing) existing.qty += 1;
-      else cart.push({ itemId: generateId(), productId, colorIndex: 0, age: p.ages[0], qty: 1, price: p.price });
+      else cart.push({ itemId: generateId(), productId, colorIndex: 0, age: availAge, qty: 1, price: p.price });
       saveCart(); renderCart();
       showToast(`تمت إضافة "${p.name}" إلى السلة ✓`);
     }

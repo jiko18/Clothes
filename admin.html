@@ -1693,6 +1693,7 @@ document.addEventListener('click', (e) => {
             comboRows = p.combos.map(c => ({
               name: c.name || '',
               images: (c.images && c.images.length) ? [...c.images] : [''],
+              availableAges: Array.isArray(c.availableAges) ? [...c.availableAges] : [...(p.ages || [])],
               parts: (c.parts || []).map(pt => ({
                 label: pt.label || 'قطعة',
                 name: pt.name || '',
@@ -1715,6 +1716,8 @@ document.addEventListener('click', (e) => {
               name: g.name,
               images: g.images.length ? g.images : [''],
               parts: g.parts
+                availableAges: [...(p.ages || [])]   // ← أضف هذا السطر
+
             }));
           } else {
             comboRows = [];
@@ -1748,8 +1751,16 @@ document.addEventListener('click', (e) => {
     function renderAgesRows() {
       document.getElementById('agesList').innerHTML = ageRows.map((a, i) => `<div class="dynamic-item"><input type="text" value="${escapeAttr(a)}" placeholder="مثال: 8 سنوات" oninput="ageRows[${i}] = this.value"><button class="remove-btn" onclick="removeAgeRow(${i})"><i class="fa-solid fa-xmark"></i></button></div>`).join('');
     }
-    function addAgeRow(val) { ageRows.push(val); renderAgesRows(); }
-    function removeAgeRow(i) { ageRows.splice(i, 1); renderAgesRows(); }
+    function addAgeRow(val) { 
+      ageRows.push(val); 
+      renderAgesRows(); 
+      if (document.getElementById('pIsSet')?.checked) renderCombosRows();
+    }
+    function removeAgeRow(i) { 
+      ageRows.splice(i, 1); 
+      renderAgesRows(); 
+      if (document.getElementById('pIsSet')?.checked) renderCombosRows();
+    }
 
     function renderDetailsRows() {
       document.getElementById('detailsList').innerHTML = detailRows.map((d, i) => `<div class="dynamic-item"><input type="text" value="${escapeAttr(d)}" placeholder="مثال: قطن 100%" oninput="detailRows[${i}] = this.value"><button class="remove-btn" onclick="removeDetailRow(${i})"><i class="fa-solid fa-xmark"></i></button></div>`).join('');
@@ -1968,6 +1979,7 @@ document.addEventListener('click', (e) => {
 
       // ✅ نقرأ isSet أولاً قبل التحقق
       const isSet = document.getElementById('pIsSet').checked;
+      const cleanAges = ageRows.filter(a => a.trim());
 
       if (isSet) {
         if (!comboRows.length) return showToast('أضف طقماً واحداً على الأقل', 'error');
@@ -1982,6 +1994,8 @@ document.addEventListener('click', (e) => {
             if (!part.name?.trim())
               return showToast(`الطقم "${combo.name || ci+1}": القطعة "${part.label || pi+1}" تحتاج لوناً`, 'error');
           }
+          if (!(combo.availableAges || []).filter(a => cleanAges.includes(a)).length)
+            return showToast(`الطقم "${combo.name || ci+1}": يجب اختيار عمر واحد على الأقل`, 'error');
         }
       } else {
         // ✅ تحقق مستقل للمنتج العادي فقط
@@ -2016,7 +2030,7 @@ document.addEventListener('click', (e) => {
         badgeType: (badgeColor === '#ff6b81' ? 'sale' : 'new'),
         description, isSet,
         details: detailRows.filter(d => d.trim()),
-        ages: ageRows.filter(a => a.trim()),
+        ages: cleanAges,
         colors: colorsForSave,
         combos: isSet ? comboRows.map(c => ({
           name: (c.name || '').trim(),
@@ -2025,7 +2039,8 @@ document.addEventListener('click', (e) => {
             label: pt.label || 'قطعة',
             name: (pt.name || '').trim(),
             hex: pt.hex || '#cccccc'
-          }))
+          })),
+          availableAges: (c.availableAges || []).filter(a => cleanAges.includes(a))
         })) : []
       };
       const btn = document.getElementById('saveProductBtn');
@@ -2646,7 +2661,8 @@ function addCombo() {
   comboRows.push({
     name: `طقم ${comboRows.length + 1}`,
     images: [''],
-    parts: [{ label: 'قميص', name: 'أحمر', hex: '#e74c3c' }]
+    parts: [{ label: 'قميص', name: 'أحمر', hex: '#e74c3c' }],
+    availableAges: ageRows.filter(a => a && a.trim())
   });
   renderCombosRows();
 }
@@ -2697,7 +2713,28 @@ function makeComboImageMain(ci, ii) {
   arr.unshift(img);
   renderCombosRows();
 }
-
+function toggleComboAge(ci, age, isChecked, labelEl) {
+  if (!comboRows[ci]) return;
+  if (!Array.isArray(comboRows[ci].availableAges)) comboRows[ci].availableAges = [];
+  if (isChecked) {
+    if (!comboRows[ci].availableAges.includes(age)) comboRows[ci].availableAges.push(age);
+  } else {
+    comboRows[ci].availableAges = comboRows[ci].availableAges.filter(a => a !== age);
+  }
+  if (labelEl) {
+    labelEl.style.background  = isChecked ? 'var(--card-bg)' : 'var(--bg)';
+    labelEl.style.borderColor = isChecked ? 'var(--success)' : 'var(--border)';
+    labelEl.style.opacity     = isChecked ? '1' : '0.65';
+    const span = labelEl.querySelector('span');
+    if (span) span.style.textDecoration = isChecked ? 'none' : 'line-through';
+    const card  = labelEl.closest('.combo-card');
+    const badge = card?.querySelector('.combo-age-count');
+    if (badge) {
+      const total = ageRows.filter(a => a && a.trim()).length;
+      badge.textContent = `${comboRows[ci].availableAges.filter(a => a && a.trim()).length} / ${total}`;
+    }
+  }
+}
 function renderCombosRows() {
   const el = document.getElementById('combosList');
   if (!comboRows.length) { el.innerHTML = ''; return; }
@@ -2784,6 +2821,32 @@ function renderCombosRows() {
           </div>
         `).join('')}
         <button type="button" class="add-part-btn" onclick="addPartToCombo(${ci})"><i class="fa-solid fa-plus"></i> إضافة قطعة أخرى لهذا الطقم</button>
+          </div>
+
+      <!-- ✅ الأعمار المتوفرة في هذا الطقم -->
+      <div style="margin-top:16px;padding:14px;background:linear-gradient(135deg, rgba(254,202,87,0.06), rgba(243,156,18,0.06));border-radius:10px;border-right:3px solid var(--warning);">
+        <div style="font-size:.85rem;font-weight:800;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+          <i class="fa-solid fa-child" style="color:var(--warning);"></i>
+          الأعمار المتوفرة في هذا الطقم
+          <span class="combo-age-count" style="margin-right:auto;font-size:.72rem;font-weight:700;color:var(--text-gray);background:var(--card-bg);padding:3px 10px;border-radius:50px;">
+            ${(combo.availableAges || []).filter(a => a && a.trim()).length} / ${ageRows.filter(a => a && a.trim()).length}
+          </span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          ${ageRows.filter(a => a && a.trim()).map(age => {
+            const isAvailable = Array.isArray(combo.availableAges) && combo.availableAges.includes(age);
+            return `<label style="display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:24px;background:${isAvailable ? 'var(--card-bg)' : 'var(--bg)'};border:1.5px solid ${isAvailable ? 'var(--success)' : 'var(--border)'};cursor:pointer;font-size:.82rem;font-weight:700;opacity:${isAvailable ? 1 : 0.65};transition:all .2s;user-select:none;">
+              <input type="checkbox" ${isAvailable ? 'checked' : ''}
+                     onchange="toggleComboAge(${ci}, '${escapeAttr(age)}', this.checked, this.closest('label'))"
+                     style="width:16px;height:16px;cursor:pointer;accent-color:var(--success);">
+              <span style="${!isAvailable ? 'text-decoration:line-through;' : ''}">${escapeHtml(age)}</span>
+            </label>`;
+          }).join('') || '<span style="font-size:.8rem;color:var(--text-gray);">أضف أعماراً أولاً من القسم أعلاه</span>'}
+        </div>
+        <div style="font-size:.72rem;color:var(--text-gray);margin-top:10px;line-height:1.6;">
+          <i class="fa-solid fa-circle-info" style="color:var(--info);"></i>
+          المحدد = <b>متوفر</b> في هذا الطقم · غير المحدد = يظهر في صفحة المنتج <b>مشطوباً وباهتاً</b>.
+        </div>
       </div>
     </div>
   `).join('')}`;
