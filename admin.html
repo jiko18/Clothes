@@ -273,7 +273,6 @@
     .loading-overlay.show{display:flex}
     .spinner{width:52px;height:52px;border:5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
-
     .color-search-wrap { position: relative; z-index: 1; }
     .color-search-wrap:focus-within { z-index: 300; }
     .color-search-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-gray); font-size: .8rem; pointer-events: none; z-index: 1; }
@@ -288,7 +287,6 @@
     .color-suggestion-chip.is-custom .chip-swatch { background: var(--bg); color: var(--primary); border-style: dashed; border-color: var(--primary); }
     .color-no-match { padding: 14px 12px; text-align: center; color: var(--text-gray); font-size: .82rem; font-weight: 600; }
     .color-no-match i { margin-left: 6px; opacity: .6; }
-
     .theme-legend { background: linear-gradient(135deg, rgba(108,92,231,.06), rgba(255,107,129,.06)); border-radius: 14px; padding: 20px; margin-bottom: 24px; border: 1.5px solid rgba(255,107,129,.18); }
     .theme-legend-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px dashed var(--border); }
     .theme-legend-header i { font-size: 1.3rem; color: var(--primary); }
@@ -303,7 +301,6 @@
     .legend-info p { font-size: .78rem; color: var(--text-gray); line-height: 1.8; margin: 0; }
     .legend-info p b { color: var(--text); font-weight: 700; }
     .legend-info p em { font-style: normal; color: var(--primary); font-weight: 700; }
-
     .orders-filter-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; align-items: flex-end; }
     .orders-search-input-wrap { flex: 1; min-width: 260px; position: relative; }
     .orders-search-input-wrap i { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--text-gray); font-size: .9rem; pointer-events: none; }
@@ -314,7 +311,6 @@
     .orders-status-filter select:focus { border-color: var(--primary); background: var(--card-bg); box-shadow: 0 0 0 3px rgba(255,107,129,.12); }
     .orders-results-count { font-size: .82rem; color: var(--text-gray); font-weight: 600; margin-bottom: 12px; padding-right: 4px; }
     .orders-results-count strong { color: var(--primary); }
-
     @media (max-width:992px){.dash-charts,.dash-bottom{grid-template-columns:1fr}}
     @media (max-width:900px){
       .admin-layout{grid-template-columns:1fr}
@@ -334,17 +330,15 @@
       .color-card-header{grid-template-columns:1fr 42px;grid-template-areas:"name remove" "hex hex";gap:8px}
       .color-name-wrap{grid-area:name}.color-hex-wrap{grid-area:hex;justify-content:flex-end}.color-card-header .remove-btn{grid-area:remove}
     }
-        /* ============ Delivery per wilaya ============ */
     .delivery-search-wrap{position:relative;max-width:320px;margin-bottom:16px}
     .delivery-search-wrap i{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-gray)}
     .delivery-search-wrap input{width:100%;padding:10px 38px 10px 14px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);font-family:inherit;outline:none}
-        .delivery-search-wrap input:focus{border-color:var(--primary);background:var(--card-bg);box-shadow:0 0 0 3px rgba(255,107,129,.12)}
+    .delivery-search-wrap input:focus{border-color:var(--primary);background:var(--card-bg);box-shadow:0 0 0 3px rgba(255,107,129,.12)}
     .delivery-wilaya-table{width:100%;border-collapse:collapse}
     .delivery-wilaya-table th{background:var(--bg);padding:10px 12px;text-align:right;font-size:.78rem;font-weight:800;color:var(--text-gray)}
     .delivery-wilaya-table td{padding:8px 12px;border-bottom:1px solid var(--border)}
     .delivery-wilaya-table input[type="number"]{width:100%;max-width:110px;padding:6px 10px;border:1.5px solid var(--border);border-radius:6px;background:var(--card-bg);color:var(--text);font-size:.82rem;font-family:inherit;outline:none}
     .delivery-wilaya-table tr.edited{background:rgba(255,107,129,.04)}
-    /* ============ Users ============ */
     .users-table{width:100%;border-collapse:collapse}
     .users-table th,.users-table td{padding:12px 14px;text-align:right;border-bottom:1px solid var(--border)}
     .users-table th{background:var(--bg);font-size:.78rem;font-weight:800;color:var(--text-gray)}
@@ -352,7 +346,6 @@
     .role-admin{background:rgba(255,107,129,.15);color:var(--primary)}
     .role-staff{background:rgba(9,132,227,.15);color:var(--info)}
     .role-manager{background:rgba(108,92,231,.15);color:var(--secondary)}
-    /* ============ Combo (Set) products ============ */
     .set-toggle-banner{display:flex;align-items:center;gap:12px;padding:14px;background:linear-gradient(135deg,rgba(108,92,231,.08),rgba(255,107,129,.08));border:2px solid var(--secondary);border-radius:12px;margin-bottom:16px;cursor:pointer}
     .set-toggle-banner input{width:20px;height:20px;cursor:pointer;accent-color:var(--secondary)}
     .set-toggle-banner .set-icon{font-size:1.4rem;color:var(--secondary)}
@@ -363,30 +356,23 @@
     .combo-header input{flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text);font-family:inherit;font-weight:700;outline:none}
     .combo-header .remove-btn{width:38px;height:38px;border-radius:8px;border:none;background:rgba(231,76,60,.12);color:var(--danger);cursor:pointer;display:flex;align-items:center;justify-content:center}
     .part-card{background:var(--card-bg);border-radius:10px;padding:12px;margin-bottom:10px;border:1.5px solid var(--border)}
-    .part-header{display:grid;grid-template-columns:130px 1fr 36px;gap:8px;align-items:center;margin-bottom:10px}
-    .part-header select{padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-family:inherit;font-weight:700;font-size:.85rem;outline:none}
-    .part-header input{padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-family:inherit;font-size:.85rem;outline:none}
     .part-color-row{display:grid;grid-template-columns:44px 1fr auto;gap:8px;align-items:center;margin-bottom:10px}
     .part-color-row input[type="color"]{width:44px;height:38px;padding:2px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;background:var(--bg)}
     .combo-images-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:10px}
     .add-part-btn{width:100%;padding:8px;border:2px dashed var(--border);border-radius:8px;background:transparent;color:var(--text-gray);font-family:inherit;font-weight:700;font-size:.82rem;cursor:pointer;margin-top:8px}
     .add-part-btn:hover{border-color:var(--secondary);color:var(--secondary)}
-/* ✅ أنماط جديدة لتحسين واجهة الطقم */
-.part-card-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed var(--border);}
-.part-index{font-size:.78rem;font-weight:800;color:var(--secondary);background:rgba(108,92,231,.12);padding:3px 10px;border-radius:50px;}
-.part-label-select{flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text);font-family:inherit;font-weight:700;font-size:.85rem;outline:none;cursor:pointer;}
-.part-label-select:focus{border-color:var(--secondary);box-shadow:0 0 0 3px rgba(108,92,231,.15);}
-.part-color-search-block{margin-bottom:10px;}
-.part-color-label{display:block;font-size:.8rem;font-weight:700;color:var(--text-gray);margin-bottom:6px;}
-.part-color-label i{color:var(--secondary);margin-left:4px;}
-    /* ============ Clickable order images ============ */
+    .part-card-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed var(--border);}
+    .part-index{font-size:.78rem;font-weight:800;color:var(--secondary);background:rgba(108,92,231,.12);padding:3px 10px;border-radius:50px;}
+    .part-label-select{flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text);font-family:inherit;font-weight:700;font-size:.85rem;outline:none;cursor:pointer;}
+    .part-label-select:focus{border-color:var(--secondary);box-shadow:0 0 0 3px rgba(108,92,231,.15);}
+    .part-color-search-block{margin-bottom:10px;}
+    .part-color-label{display:block;font-size:.8rem;font-weight:700;color:var(--text-gray);margin-bottom:6px;}
+    .part-color-label i{color:var(--secondary);margin-left:4px;}
     .order-prod-thumb{cursor:zoom-in;transition:transform .2s}
     .order-prod-thumb:hover{transform:scale(1.15);border-color:var(--primary)}
     .order-item-img{cursor:zoom-in;transition:transform .2s}
     .order-item-img:hover{transform:scale(1.08)}
     .mobile-toggle{display:none;width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;align-items:center;justify-content:center;font-size:1.1rem}
-
-    /* ====== ✅ تكبير الصور ====== */
     .table-img, .color-image-preview, .order-prod-thumb, .order-item-img,
     .top-product-img, .img-preview-card { cursor: zoom-in !important; }
     .color-image-preview { position: relative; }
@@ -531,34 +517,34 @@
         </section>
 
         <section class="view" id="view-delivery">
-  <div class="panel">
-    <div class="panel-header">
-      <h3><i class="fa-solid fa-truck-fast"></i> أسعار التوصيل لكل ولاية</h3>
-      <button class="btn btn-primary" onclick="saveAllDelivery(event)"><i class="fa-solid fa-check"></i> حفظ جميع التغييرات</button>
-    </div>
-    <div class="panel-body">
-      <div style="padding:14px; background:rgba(108,92,231,.06); border-radius:10px; margin-bottom:16px; border-right:4px solid var(--secondary); font-size:.85rem; line-height:1.8; color:var(--text-gray);">
-        <b style="color:var(--secondary);">💡 ملاحظة:</b> اترك الحقل فارغاً لاستخدام السعر الافتراضي.
-        <div style="margin-top:8px;"><b>الافتراضي:</b> المنزل: <b id="defHome">600</b> د.ج · الوكالة: <b id="defAgency">400</b> د.ج · السريع: <b id="defExpress">900</b> د.ج</div>
-      </div>
-      <div class="form-grid" style="margin-bottom:16px; max-width:700px;">
-        <div class="fg"><label>المنزل الافتراضي (د.ج)</label><input type="number" id="defHomeInput" min="0"></div>
-        <div class="fg"><label>الوكالة الافتراضية (د.ج)</label><input type="number" id="defAgencyInput" min="0"></div>
-        <div class="fg"><label>السريع الافتراضي (د.ج)</label><input type="number" id="defExpressInput" min="0"></div>
-      </div>
-      <div class="delivery-search-wrap">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" id="deliverySearch" placeholder="ابحث عن ولاية..." oninput="filterDeliveryTable()">
-      </div>
-      <div class="table-wrap">
-        <table class="delivery-wilaya-table">
-          <thead><tr><th style="width:60px;">الرمز</th><th>الولاية</th><th>المنزل (د.ج)</th><th>الوكالة (د.ج)</th><th>السريع (د.ج)</th></tr></thead>
-          <tbody id="deliveryTableBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</section>
+          <div class="panel">
+            <div class="panel-header">
+              <h3><i class="fa-solid fa-truck-fast"></i> أسعار التوصيل لكل ولاية</h3>
+              <button class="btn btn-primary" onclick="saveAllDelivery(event)"><i class="fa-solid fa-check"></i> حفظ جميع التغييرات</button>
+            </div>
+            <div class="panel-body">
+              <div style="padding:14px; background:rgba(108,92,231,.06); border-radius:10px; margin-bottom:16px; border-right:4px solid var(--secondary); font-size:.85rem; line-height:1.8; color:var(--text-gray);">
+                <b style="color:var(--secondary);">💡 ملاحظة:</b> اترك الحقل فارغاً لاستخدام السعر الافتراضي.
+                <div style="margin-top:8px;"><b>الافتراضي:</b> المنزل: <b id="defHome">600</b> د.ج · الوكالة: <b id="defAgency">400</b> د.ج · السريع: <b id="defExpress">900</b> د.ج</div>
+              </div>
+              <div class="form-grid" style="margin-bottom:16px; max-width:700px;">
+                <div class="fg"><label>المنزل الافتراضي (د.ج)</label><input type="number" id="defHomeInput" min="0"></div>
+                <div class="fg"><label>الوكالة الافتراضية (د.ج)</label><input type="number" id="defAgencyInput" min="0"></div>
+                <div class="fg"><label>السريع الافتراضي (د.ج)</label><input type="number" id="defExpressInput" min="0"></div>
+              </div>
+              <div class="delivery-search-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="deliverySearch" placeholder="ابحث عن ولاية..." oninput="filterDeliveryTable()">
+              </div>
+              <div class="table-wrap">
+                <table class="delivery-wilaya-table">
+                  <thead><tr><th style="width:60px;">الرمز</th><th>الولاية</th><th>المنزل (د.ج)</th><th>الوكالة (د.ج)</th><th>السريع (د.ج)</th></tr></thead>
+                  <tbody id="deliveryTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <section class="view" id="view-theme">
           <div class="panel">
@@ -682,8 +668,6 @@
               <button class="btn btn-primary" style="margin-top:12px;" onclick="saveTextSettings()"><i class="fa-solid fa-check"></i> حفظ النصوص</button>
             </div>
           </div>
-
-          <!-- ✅ NEW: Telegram Tab -->
           <div class="panel tab-panel" id="tab-telegram">
             <div class="panel-header"><h3><i class="fa-brands fa-telegram" style="color:#0088cc;"></i> إشعارات بوت تيليجرام</h3></div>
             <div class="panel-body">
@@ -700,7 +684,6 @@
                   <li>رقم الطلب وتاريخه</li>
                 </ul>
               </div>
-
               <div class="form-grid">
                 <div class="fg">
                   <label><i class="fa-solid fa-key"></i> Bot Token</label>
@@ -711,13 +694,11 @@
                   <input type="text" id="setTelegramChatId" placeholder="123456789 أو -1001234567890 (للمجموعة)" autocomplete="off" style="direction:ltr;text-align:left;font-family:monospace;font-size:.85rem;">
                 </div>
               </div>
-
               <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;">
                 <button class="btn btn-primary" onclick="saveTelegramSettings()"><i class="fa-solid fa-check"></i> حفظ الإعدادات</button>
                 <button class="btn btn-success" onclick="testTelegramConnection()"><i class="fa-solid fa-paper-plane"></i> إرسال رسالة تجريبية</button>
                 <button class="btn btn-outline" onclick="openTelegramHelp()"><i class="fa-solid fa-circle-question"></i> كيف أحصل على التوكن والآيدي؟</button>
               </div>
-
               <div style="margin-top:20px; padding:16px; background:rgba(231,76,60,0.06); border-radius:10px; border-right:4px solid var(--danger);">
                 <p style="font-size:0.85rem; font-weight:700; color:var(--danger); margin-bottom:8px;">
                   <i class="fa-solid fa-triangle-exclamation"></i> ملاحظات مهمة
@@ -731,7 +712,6 @@
               </div>
             </div>
           </div>
-
           <div class="panel tab-panel" id="tab-backup">
             <div class="panel-header"><h3><i class="fa-solid fa-database"></i> النسخ الاحتياطي</h3></div>
             <div class="panel-body">
@@ -746,7 +726,8 @@
             </div>
           </div>
         </section>
-                <section class="view" id="view-users">
+
+        <section class="view" id="view-users">
           <div class="panel">
             <div class="panel-header">
               <h3><i class="fa-solid fa-users-gear"></i> إدارة المستخدمين</h3>
@@ -828,7 +809,7 @@
             <b>4.</b> أضف لوناً آخر بالضغط على <b style="color:var(--secondary);">"إضافة لون جديد"</b><br>
             <b style="color:var(--success);">✓</b> عند الحفظ، تُرفع الصور تلقائياً إلى <b>Cloudinary</b>.
           </div>
-                    <div class="set-toggle-banner" onclick="document.getElementById('pIsSet').click();">
+          <div class="set-toggle-banner" onclick="document.getElementById('pIsSet').click();">
             <input type="checkbox" id="pIsSet" onchange="toggleSetMode()" onclick="event.stopPropagation();">
             <span class="set-icon"><i class="fa-solid fa-layer-group"></i></span>
             <div>
@@ -844,6 +825,7 @@
           <button type="button" class="add-combo-btn" id="addComboBtn" onclick="addCombo()" style="display:none;">
             <i class="fa-solid fa-plus"></i> إضافة طقم/تركيبة جديدة
           </button>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-outline" onclick="closeProductModal()">إلغاء</button>
@@ -941,7 +923,6 @@
       { name: 'ذهبي وردي', hex: '#b76e79' },{ name: 'تركوازي', hex: '#40e0d0' },{ name: 'نحاسي', hex: '#b87333' },{ name: 'أوف وايت', hex: '#f8f4ec' },{ name: 'سالمون', hex: '#fa8072' },{ name: 'خردلي', hex: '#e1ad01' },{ name: 'أزرق ملكي', hex: '#4169e1' },{ name: 'أخضر زمردي', hex: '#50c878' },{ name: 'بنفسجي ملكي', hex: '#7851a9' },{ name: 'خمري', hex: '#722f37' },{ name: 'أزرق بحري', hex: '#2e4057' },{ name: 'أخضر بحري', hex: '#2e8b57' },{ name: 'أصفر خردلي', hex: '#ffdb58' },{ name: 'بني محروق', hex: '#a0522d' },{ name: 'أزرق ليلي', hex: '#191970' },{ name: 'زيتي فاتح', hex: '#b5b35c' },{ name: 'رصاصي', hex: '#708090' },{ name: 'وردي باهت', hex: '#f4c2c2' }
     ];
 
-    // ============ ✅ الشارات المخصصة (تُحفظ في المتصفح) ============
     const BADGE_PRESETS = ['جديد', 'الأكثر مبيعاً', 'خصم', 'عرض خاص', 'حصري', 'تخفيض', 'هدية', 'لفترة محدودة'];
     const CUSTOM_BADGES_KEY = 'babyshop_custom_badges';
     function getCustomBadges() {
@@ -988,7 +969,6 @@
       document.getElementById('customBadgeWrap').style.display = 'none';
       showToast('تم حفظ الشارة ✓ ستظهر في القائمة لاحقاً');
     }
-    // ============ ✅ لون الشارة ============
     function onBadgeColorChange(hex) {
       document.getElementById('pBadgeColorPicker').value = hex;
       document.getElementById('pBadgeColorLabel').textContent = hex.toUpperCase();
@@ -1031,10 +1011,11 @@
     let currentUser = null;
     let data = { products: [], settings: {...DEFAULT_SETTINGS}, theme: {...DEFAULT_THEME}, delivery: {...DEFAULT_DELIVERY}, orders: [], stats: null };
     let currentViewingOrderId = null;
-let ageRows = [], detailRows = [], colorRows = [], comboRows = [];
-let usersCache = [];
-let deliveryAllCache = { defaults: {}, byWilaya: {} };
-let wilayasCache = [];
+    let ageRows = [], detailRows = [], colorRows = [], comboRows = [];
+    let usersCache = [];
+    let deliveryAllCache = { defaults: {}, byWilaya: {} };
+    let wilayasCache = [];
+
     function showToast(msg, type = 'success') {
       const t = document.getElementById('toast');
       t.className = `toast ${type}`;
@@ -1231,7 +1212,7 @@ let wilayasCache = [];
       document.getElementById('headerTitle').textContent = info.title;
       document.getElementById('headerIcon').className = `fa-solid fa-${info.icon}`;
       document.getElementById('sidebar').classList.remove('open');
-            if (viewName === 'delivery') loadDeliveryAll().catch(() => {});
+      if (viewName === 'delivery') loadDeliveryAll().catch(() => {});
       if (viewName === 'users') loadUsers().catch(() => {});
     }
     document.querySelectorAll('.nav-item').forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
@@ -1247,7 +1228,6 @@ let wilayasCache = [];
       });
     });
 
-    // ✅ [معدّل] الإيرادات تُحسب فقط من الطلبات التي حالتها "تم التوصيل"
     function getDeliveredRevenue() {
       return data.orders
         .filter(o => o.status === 'delivered')
@@ -1274,7 +1254,6 @@ let wilayasCache = [];
       renderPendingNotifications();
       renderRecentOrders();
     }
-
     function renderSalesChart() {
       const chartEl = document.getElementById('salesChart');
       const deliveredOrders = data.orders.filter(o => o.status === 'delivered');
@@ -1292,10 +1271,12 @@ let wilayasCache = [];
       Object.values(days).forEach(d => { if (d.total > maxTotal) maxTotal = d.total; });
       const grandTotal = Object.values(days).reduce((s, d) => s + d.total, 0);
       document.getElementById('salesTotal').textContent = `الإجمالي: ${grandTotal.toLocaleString()} د.ج`;
+
       if (maxTotal === 0) {
         chartEl.innerHTML = '<p style="text-align:center;color:var(--text-gray);padding:40px 20px;width:100%;font-size:.85rem;"><i class="fa-solid fa-chart-simple" style="font-size:2rem;opacity:.3;display:block;margin-bottom:8px;"></i> لا توجد مبيعات مُسلَّمة في آخر 7 أيام<br><small style="font-size:.72rem;">(تُحتسب فقط الطلبات التي تم توصيلها)</small></p>';
         return;
       }
+
       chartEl.innerHTML = Object.values(days).map(d => {
         const h = Math.max(4, (d.total / maxTotal) * 100);
         return `<div class="vbar-wrapper"><span class="vbar-value">${d.total > 0 ? d.total.toLocaleString() : ''}</span><div class="vbar" style="height:${h}%;"></div><span class="vbar-label">${d.label}</span></div>`;
@@ -1400,7 +1381,7 @@ let wilayasCache = [];
     function statusLabel(status) {
       return { pending: 'قيد الانتظار', confirmed: 'مؤكد', out_for_delivery: 'قيد التوصيل', delivered: 'تم التوصيل', cancelled: 'ملغى' }[status] || 'قيد الانتظار';
     }
-        function deliveryLabel(m) {
+    function deliveryLabel(m) {
       return { home: 'المنزل', agency: 'الوكالة', express: 'سريع' }[m] || 'المنزل';
     }
     function formatDate(iso) {
@@ -1414,11 +1395,11 @@ let wilayasCache = [];
         ${orders.map(o => {
           const items = o.items || [];
           const count = items.reduce((s, i) => s + (i.qty||0), 0);
-         const thumbs = items.slice(0, 3).map(it => {
-  const img = it.image;
-  if (img && !isVideoUrl(img)) return `<img class="order-prod-thumb" src="${escapeAttr(img)}" alt="" data-media-url="${escapeAttr(img)}">`;
-  return `<div class="order-prod-thumb" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);font-size:0.7rem;"><i class="fa-solid fa-box"></i></div>`;
-}).join('');
+          const thumbs = items.slice(0, 3).map(it => {
+            const img = it.image;
+            if (img && !isVideoUrl(img)) return `<img class="order-prod-thumb" src="${escapeAttr(img)}" alt="" data-media-url="${escapeAttr(img)}">`;
+            return `<div class="order-prod-thumb" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);font-size:0.7rem;"><i class="fa-solid fa-box"></i></div>`;
+          }).join('');
           const more = items.length > 3 ? `<span class="order-more-badge">+${items.length - 3}</span>` : '';
           return `<tr>
             <td style="font-size:0.8rem; font-weight:700;">${escapeHtml(o.orderId || '-')}</td>
@@ -1586,22 +1567,26 @@ let wilayasCache = [];
         ${products.map(p => {
           const thumb = getProductThumb(p);
           const uniqueImgs = new Set();
-(p.colors || []).forEach(c => (c.images || []).forEach(img => img && uniqueImgs.add(img)));
-const totalImages = uniqueImgs.size || 0;
-      let thumbHtml;
-if (thumb) {
-  if (isVideoUrl(thumb)) thumbHtml = `<div class="table-img" style="display:flex;align-items:center;justify-content:center;color:var(--primary);" data-media-url="${escapeAttr(thumb)}" title="عرض"><i class="fa-solid fa-video"></i></div>`;
-  else thumbHtml = `<img class="table-img" src="${escapeAttr(thumb)}" data-media-url="${escapeAttr(thumb)}" alt="" onerror="this.style.opacity=0.3">`;
-} else thumbHtml = `<div class="table-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);">-</div>`;
-          return `<tr>
+          (p.colors || []).forEach(c => (c.images || []).forEach(img => img && uniqueImgs.add(img)));
+          const totalImages = uniqueImgs.size || 0;
+          let thumbHtml;
+          if (thumb) {
+            if (isVideoUrl(thumb)) thumbHtml = `<div class="table-img" style="display:flex;align-items:center;justify-content:center;color:var(--primary);" data-media-url="${escapeAttr(thumb)}" title="عرض"><i class="fa-solid fa-video"></i></div>`;
+            else thumbHtml = `<img class="table-img" src="${escapeAttr(thumb)}" data-media-url="${escapeAttr(thumb)}" alt="" onerror="this.style.opacity=0.3">`;
+          } else thumbHtml = `<div class="table-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);">-</div>`;
+          const isHidden = !!p.hidden;
+          const rowStyle = isHidden ? 'opacity:.55;background:rgba(231,76,60,0.05);' : '';
+          const hiddenBadge = isHidden ? ` <span class="status-badge" style="background:rgba(231,76,60,0.15);color:var(--danger);font-size:.65rem;margin-right:6px;vertical-align:middle;"><i class="fa-solid fa-eye-slash"></i> مخفي</span>` : '';
+          return `<tr style="${rowStyle}">
             <td>${thumbHtml}</td>
-            <td style="font-weight:700;">${escapeHtml(p.name)}</td>
+            <td style="font-weight:700;">${escapeHtml(p.name)}${hiddenBadge}</td>
             <td><span class="status-badge" style="background:rgba(108,92,231,0.12); color:var(--secondary);">${escapeHtml(p.categoryLabel)}</span></td>
             <td style="font-weight:800; color:var(--primary-dark);">${p.price.toLocaleString()} د.ج</td>
             <td style="font-size:0.82rem;">${p.oldPrice ? p.oldPrice.toLocaleString() + ' د.ج' : '-'}</td>
             <td><span style="font-weight:700;">${p.colors.length} لون</span> <span style="font-size:0.75rem; color:var(--text-gray);">(${totalImages} صورة)</span></td>
             <td><div class="row-actions">
               <button class="icon-btn icon-btn-edit" onclick="openProductModal(${p.id})" title="تعديل"><i class="fa-solid fa-pen"></i></button>
+              <button class="icon-btn" onclick="toggleProductVisibility(${p.id})" title="${isHidden ? 'إظهار في المتجر' : 'إخفاء من المتجر'}" style="background:${isHidden ? 'rgba(0,184,148,0.12)' : 'rgba(243,156,18,0.12)'};color:${isHidden ? 'var(--success)' : 'var(--warning)'};"><i class="fa-solid fa-${isHidden ? 'eye' : 'eye-slash'}"></i></button>
               <button class="icon-btn icon-btn-del" onclick="deleteProduct(${p.id})" title="حذف"><i class="fa-solid fa-trash"></i></button>
             </div></td>
           </tr>`;
@@ -1618,23 +1603,72 @@ if (thumb) {
     function closeImageViewer() { document.getElementById('imageViewer').classList.remove('show'); document.getElementById('imageViewerContent').innerHTML = ''; }
     document.getElementById('imageViewer').addEventListener('click', (e) => { if (e.target.id === 'imageViewer') closeImageViewer(); });
 
-// ✅ Event delegation موحّد لتكبير الصور (useCapture = true يضمن العمل دائماً)
-document.addEventListener('click', (e) => {
-  const mediaEl = e.target.closest('[data-media-url]');
-  if (mediaEl) {
-    const url = mediaEl.dataset.mediaUrl;
-    if (url && url.trim()) {
-      e.preventDefault();
-      e.stopPropagation();
-      viewMedia(url);
-      return;
+    document.addEventListener('click', (e) => {
+      const mediaEl = e.target.closest('[data-media-url]');
+      if (mediaEl) {
+        const url = mediaEl.dataset.mediaUrl;
+        if (url && url.trim()) {
+          e.preventDefault();
+          e.stopPropagation();
+          viewMedia(url);
+          return;
+        }
+      }
+      if (!e.target.closest('.color-search-wrap')) {
+        document.querySelectorAll('.color-suggestions.open').forEach(el => el.classList.remove('open'));
+      }
+    }, true);
+
+    // ✅ إخفاء/إظهار المنتج من المتجر (بدون حذف)
+    async function toggleProductVisibility(id) {
+      const prod = data.products.find(x => x.id === id);
+      if (!prod) return;
+      const newHidden = !prod.hidden;
+
+      const payload = {
+        name: prod.name,
+        category: prod.category,
+        categoryLabel: prod.categoryLabel,
+        gender: prod.gender,
+        price: prod.price,
+        oldPrice: prod.oldPrice,
+        hidden: newHidden,
+        badge: prod.badge || null,
+        badgeColor: prod.badgeColor,
+        badgeColorName: prod.badgeColorName,
+        badgeType: prod.badgeType,
+        description: prod.description,
+        isSet: prod.isSet,
+        details: prod.details || [],
+        ages: prod.ages || [],
+        colors: prod.colors || [],
+        combos: prod.combos || []
+      };
+
+      try {
+        showLoading(true);
+        await apiJSON(`/api/products/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+
+        const freshProducts = await apiJSON('/api/products');
+        const savedProd = freshProducts.find(x => x.id === id);
+        const actuallySaved = savedProd && (!!savedProd.hidden === newHidden);
+
+        if (actuallySaved) {
+          data.products = freshProducts;
+          renderProductsTable();
+          showToast(newHidden ? '✓ تم إخفاء المنتج من المتجر' : '✓ تم إظهار المنتج في المتجر', newHidden ? 'info' : 'success');
+        } else {
+          // على الأقل حدّث الواجهة المحلية
+          prod.hidden = newHidden;
+          renderProductsTable();
+          showToast(newHidden ? '✓ تم إخفاء المنتج محلياً (السيرفر قد يحتاج دعم حقل hidden)' : '✓ تم إظهار المنتج محلياً', 'info');
+        }
+      } catch (err) {
+        showToast(err.message || 'فشل تحديث حالة المنتج', 'error');
+      } finally {
+        showLoading(false);
+      }
     }
-  }
-  // إغلاق اقتراحات الألوان إذا نقر المستخدم خارجها
-  if (!e.target.closest('.color-search-wrap')) {
-    document.querySelectorAll('.color-suggestions.open').forEach(el => el.classList.remove('open'));
-  }
-}, true);
 
     async function deleteProduct(id) {
       if (!confirm('هل تريد حذف هذا المنتج نهائياً؟')) return;
@@ -1686,38 +1720,64 @@ document.addEventListener('click', (e) => {
           images: (c.images && c.images.length) ? [...c.images] : (c.image ? [c.image] : [''])
         }));
 
-        // ✅ كتلة p.isSet داخل if(id) — p في النطاق هنا
         if (p.isSet) {
           document.getElementById('pIsSet').checked = true;
+
+          const getAgesFromColors = (comboName) => {
+            if (!p.colors || !p.colors.length) return null;
+            const cm = p.colors.find(cl =>
+              cl.comboName === comboName &&
+              Array.isArray(cl.comboAvailableAges) &&
+              cl.comboAvailableAges.length > 0
+            );
+            return cm ? [...cm.comboAvailableAges] : null;
+          };
+
           if (p.combos && p.combos.length) {
-            comboRows = p.combos.map(c => ({
-              name: c.name || '',
-              images: (c.images && c.images.length) ? [...c.images] : [''],
-              availableAges: Array.isArray(c.availableAges) ? [...c.availableAges] : [...(p.ages || [])],
-              parts: (c.parts || []).map(pt => ({
-                label: pt.label || 'قطعة',
-                name: pt.name || '',
-                hex: pt.hex || '#cccccc'
-              }))
-            }));
-          } else if (p.colors && p.colors.length) {
-            // توافق مع هيكل قديم
+            comboRows = p.combos.map(c => {
+              let availAges = (Array.isArray(c.availableAges) && c.availableAges.length > 0)
+                ? [...c.availableAges]
+                : null;
+              if (availAges === null) {
+                const fromColors = getAgesFromColors(c.name);
+                if (fromColors) availAges = fromColors;
+              }
+              if (availAges === null) availAges = [...(p.ages || [])];
+              return {
+                name: c.name || '',
+                images: (c.images && c.images.length) ? [...c.images] : [''],
+                availableAges: availAges,
+                parts: (c.parts || []).map(pt => ({
+                  label: pt.label || 'قطعة',
+                  name: pt.name || '',
+                  hex: pt.hex || '#cccccc'
+                }))
+              };
+            });
+          } else if (p.colors && p.colors.length && p.colors[0] && p.colors[0].comboName) {
             const grouped = {};
             p.colors.forEach(c => {
               if (!c.comboName) return;
-              if (!grouped[c.comboName]) grouped[c.comboName] = { name: c.comboName, images: [], parts: [] };
+              if (!grouped[c.comboName]) grouped[c.comboName] = {
+                name: c.comboName, images: [], parts: [], availableAges: null
+              };
               grouped[c.comboName].parts.push({ label: c.partLabel || 'قطعة', name: c.name, hex: c.hex });
+              if (grouped[c.comboName].availableAges === null &&
+                  Array.isArray(c.comboAvailableAges) &&
+                  c.comboAvailableAges.length > 0) {
+                grouped[c.comboName].availableAges = [...c.comboAvailableAges];
+              }
               (c.images || []).forEach(img => {
                 if (img && img.trim() && !grouped[c.comboName].images.includes(img))
                   grouped[c.comboName].images.push(img);
               });
             });
-           comboRows = Object.values(grouped).map(g => ({
-  name: g.name,
-  images: g.images.length ? g.images : [''],
-  parts: g.parts,
-  availableAges: [...(p.ages || [])]
-}));
+            comboRows = Object.values(grouped).map(g => ({
+              name: g.name,
+              images: g.images.length ? g.images : [''],
+              parts: g.parts,
+              availableAges: g.availableAges !== null ? g.availableAges : [...(p.ages || [])]
+            }));
           } else {
             comboRows = [];
           }
@@ -1750,14 +1810,14 @@ document.addEventListener('click', (e) => {
     function renderAgesRows() {
       document.getElementById('agesList').innerHTML = ageRows.map((a, i) => `<div class="dynamic-item"><input type="text" value="${escapeAttr(a)}" placeholder="مثال: 8 سنوات" oninput="ageRows[${i}] = this.value"><button class="remove-btn" onclick="removeAgeRow(${i})"><i class="fa-solid fa-xmark"></i></button></div>`).join('');
     }
-    function addAgeRow(val) { 
-      ageRows.push(val); 
-      renderAgesRows(); 
+    function addAgeRow(val) {
+      ageRows.push(val);
+      renderAgesRows();
       if (document.getElementById('pIsSet')?.checked) renderCombosRows();
     }
-    function removeAgeRow(i) { 
-      ageRows.splice(i, 1); 
-      renderAgesRows(); 
+    function removeAgeRow(i) {
+      ageRows.splice(i, 1);
+      renderAgesRows();
       if (document.getElementById('pIsSet')?.checked) renderCombosRows();
     }
 
@@ -1844,8 +1904,6 @@ document.addEventListener('click', (e) => {
         if (sugg) { sugg.classList.remove('open'); sugg.innerHTML = ''; }
       }
     }
-
-   
 
     function renderColorsRows() {
       const el = document.getElementById('colorsList');
@@ -1976,7 +2034,6 @@ document.addEventListener('click', (e) => {
       if (price <= 0) return showToast('السعر يجب أن يكون أكبر من 0', 'error');
       if (!ageRows.filter(a => a.trim()).length) return showToast('أضف عمراً واحداً على الأقل', 'error');
 
-      // ✅ نقرأ isSet أولاً قبل التحقق
       const isSet = document.getElementById('pIsSet').checked;
       const cleanAges = ageRows.filter(a => a.trim());
 
@@ -1997,7 +2054,6 @@ document.addEventListener('click', (e) => {
             return showToast(`الطقم "${combo.name || ci+1}": يجب اختيار عمر واحد على الأقل`, 'error');
         }
       } else {
-        // ✅ تحقق مستقل للمنتج العادي فقط
         for (let i = 0; i < colorRows.length; i++) {
           const c = colorRows[i];
           if (!c.name?.trim()) return showToast(`اللون رقم ${i+1}: الاسم مطلوب`, 'error');
@@ -2008,21 +2064,28 @@ document.addEventListener('click', (e) => {
       if (isSet) {
         comboRows.forEach(combo => {
           const comboImgs = (combo.images || []).filter(img => img && img.trim());
+          const comboAges = (combo.availableAges || []).filter(a => cleanAges.includes(a));
           (combo.parts || []).forEach(part => {
             colorsForSave.push({
               name: part.name,
               hex: part.hex,
               comboName: combo.name,
               partLabel: part.label,
-              images: comboImgs.slice()
+              images: comboImgs.slice(),
+              comboAvailableAges: [...comboAges]
             });
           });
         });
       } else {
         colorsForSave = colorRows.map(c => ({ name: c.name.trim(), hex: c.hex, images: (c.images || []).filter(img => img && img.trim()) }));
       }
+
+      const _editingProduct = idVal ? data.products.find(x => x.id === parseInt(idVal)) : null;
+      const _currentHidden = _editingProduct ? !!_editingProduct.hidden : false;
+
       const productPayload = {
         name, category, categoryLabel, gender, price, oldPrice,
+        hidden: _currentHidden,
         badge: badge || null,
         badgeColor: badgeColor,
         badgeColorName: badgeColorName,
@@ -2105,7 +2168,6 @@ document.addEventListener('click', (e) => {
       reader.readAsDataURL(file);
     });
 
-
     function loadThemeForm() {
       const t = data.theme;
       ['primary', 'primaryDark', 'secondary', 'accent'].forEach(key => {
@@ -2174,7 +2236,7 @@ document.addEventListener('click', (e) => {
       r.setProperty('--secondary', data.theme.secondary);
       r.setProperty('--accent', data.theme.accent);
     }
-    // ============ ✅ دوال الشعار ============
+
     function updateLogoPreview(url) {
       const el = document.getElementById('logoPreviewCard');
       if (!el) return;
@@ -2197,7 +2259,6 @@ document.addEventListener('click', (e) => {
       }
     }
 
-    // ✅ [معدّل] أضفنا حقلي تيليجرام إلى قائمة التحميل
     function loadSettingsForm() {
       const s = data.settings;
       ['setStoreName','setPhone','setEmail','setAddress','setSearchPlaceholder','setFacebook','setInstagram','setTiktok','setWhatsapp','setTopBarText','setFooterCopyright','setTelegramBotToken','setTelegramChatId','setLogo'].forEach(id => {
@@ -2254,14 +2315,12 @@ document.addEventListener('click', (e) => {
       if (await persistSettings()) showToast('تم الحفظ ✓');
     }
 
-    // ✅ [جديد] حفظ إعدادات تيليجرام
     async function saveTelegramSettings() {
       data.settings.telegramBotToken = document.getElementById('setTelegramBotToken').value.trim();
       data.settings.telegramChatId = document.getElementById('setTelegramChatId').value.trim();
       if (await persistSettings()) showToast('تم حفظ إعدادات تيليجرام ✓');
     }
 
-    // ✅ [جديد] اختبار الاتصال بتيليجرام (يرسل رسالة تجريبية عبر السيرفر)
     async function testTelegramConnection() {
       const token = document.getElementById('setTelegramBotToken').value.trim();
       const chatId = document.getElementById('setTelegramChatId').value.trim();
@@ -2269,7 +2328,6 @@ document.addEventListener('click', (e) => {
         showToast('يرجى إدخال Bot Token و Chat ID أولاً', 'error');
         return;
       }
-      // احفظ أولاً ليتمكن السيرفر من قراءتهم
       data.settings.telegramBotToken = token;
       data.settings.telegramChatId = chatId;
       const saved = await persistSettings();
@@ -2285,7 +2343,6 @@ document.addEventListener('click', (e) => {
       }
     }
 
-    // ✅ [جديد] نافذة المساعدة لشرح كيفية الحصول على التوكن والآيدي
     function openTelegramHelp() {
       const win = window.open('', '_blank');
       win.document.write(`<!DOCTYPE html>
@@ -2461,475 +2518,471 @@ document.addEventListener('click', (e) => {
       } catch(e) { showToast('فشل التصدير', 'error'); }
       finally { showLoading(false); }
     }
-// ============================================================
-// PERMISSIONS
-// ============================================================
-function canAccess(view) {
-  if (!currentUser) return false;
-  const role = currentUser.role;
-  if (role === 'admin') return true;
-  if (role === 'manager') return ['dashboard', 'products', 'orders', 'delivery'].includes(view);
-  if (role === 'staff') return ['dashboard', 'orders'].includes(view);
-  return false;
-}
-function applyPermissions() {
-  const role = currentUser?.role;
-  document.querySelectorAll('.nav-item').forEach(btn => {
-    const view = btn.dataset.view;
-    if (view === 'users') { btn.style.display = role === 'admin' ? 'flex' : 'none'; return; }
-    btn.style.display = canAccess(view) ? 'flex' : 'none';
-  });
-}
 
-// ============================================================
-// USERS
-// ============================================================
-async function loadUsers() {
-  try {
-    usersCache = await apiJSON('/api/users');
-    renderUsersTable();
-  } catch (e) { showToast(e.message, 'error'); }
-}
-function renderUsersTable() {
-  const wrap = document.getElementById('usersTableWrap');
-  if (!usersCache.length) { wrap.innerHTML = '<div class="empty-state"><i class="fa-solid fa-users"></i><p>لا يوجد مستخدمون</p></div>'; return; }
-  const roleLabel = { admin: 'أدمن', manager: 'مدير', staff: 'موظف' };
-  wrap.innerHTML = `<table class="users-table"><thead><tr>
-    <th>اسم المستخدم</th><th>الاسم الكامل</th><th>الدور</th><th>الحالة</th><th>آخر دخول</th><th>إجراءات</th>
-  </tr></thead><tbody>${usersCache.map(u => {
-    const isActive = Number(u.is_active) === 1;
-    const lastLogin = u.last_login_at ? new Date(u.last_login_at).toLocaleString('ar-DZ') : 'لم يدخل بعد';
-    return `<tr>
-      <td style="font-weight:700;">${escapeHtml(u.username)}</td>
-      <td>${escapeHtml(u.full_name || '-')}</td>
-      <td><span class="user-role-badge role-${u.role}">${roleLabel[u.role] || u.role}</span></td>
-      <td>${isActive ? '<span style="color:var(--success);font-weight:700;">✓ نشط</span>' : '<span style="color:var(--danger);font-weight:700;">✗ معطّل</span>'}</td>
-      <td style="font-size:.82rem; color:var(--text-gray);">${lastLogin}</td>
-      <td><div class="row-actions">
-        <button class="icon-btn icon-btn-edit" onclick="openUserModal(${u.id})" title="تعديل"><i class="fa-solid fa-pen"></i></button>
-        <button class="icon-btn icon-btn-del" onclick="deleteUser(${u.id})" title="حذف"><i class="fa-solid fa-trash"></i></button>
-      </div></td>
-    </tr>`;
-  }).join('')}</tbody></table>`;
-}
-function openUserModal(id = null) {
-  const modal = document.getElementById('userModal');
-  modal.classList.add('show');
-  if (id) {
-    const u = usersCache.find(x => x.id === id);
-    if (!u) return;
-    document.getElementById('userModalTitle').innerHTML = '<i class="fa-solid fa-pen"></i> تعديل مستخدم';
-    document.getElementById('uId').value = u.id;
-    document.getElementById('uUsername').value = u.username;
-    document.getElementById('uUsername').disabled = true;
-    document.getElementById('uFullName').value = u.full_name || '';
-    document.getElementById('uEmail').value = u.email || '';
-    document.getElementById('uRole').value = u.role;
-    document.getElementById('uIsActive').checked = Number(u.is_active) === 1;
-    document.getElementById('uPasswordLabel').textContent = 'كلمة مرور جديدة (اتركها فارغة لعدم التغيير)';
-    document.getElementById('uPassword').value = '';
-  } else {
-    document.getElementById('userModalTitle').innerHTML = '<i class="fa-solid fa-user-plus"></i> إضافة مستخدم';
-    document.getElementById('uId').value = '';
-    document.getElementById('uUsername').value = '';
-    document.getElementById('uUsername').disabled = false;
-    document.getElementById('uFullName').value = '';
-    document.getElementById('uEmail').value = '';
-    document.getElementById('uRole').value = 'staff';
-    document.getElementById('uIsActive').checked = true;
-    document.getElementById('uPasswordLabel').textContent = 'كلمة المرور *';
-    document.getElementById('uPassword').value = '';
-  }
-}
-function closeUserModal() { document.getElementById('userModal').classList.remove('show'); }
-async function saveUser() {
-  const idVal = document.getElementById('uId').value;
-  const username = document.getElementById('uUsername').value.trim();
-  const password = document.getElementById('uPassword').value;
-  const full_name = document.getElementById('uFullName').value.trim();
-  const email = document.getElementById('uEmail').value.trim();
-  const role = document.getElementById('uRole').value;
-  const is_active = document.getElementById('uIsActive').checked;
-  const btn = document.getElementById('saveUserBtn');
-  btn.disabled = true;
-  try {
-    if (idVal) {
-      const payload = { role, is_active, full_name: full_name || null, email: email || null };
-      if (password) payload.password = password;
-      await apiJSON(`/api/users/${idVal}`, { method: 'PUT', body: JSON.stringify(payload) });
-    } else {
-      if (!username || !password) throw new Error('اسم المستخدم وكلمة المرور مطلوبان');
-      await apiJSON('/api/users', { method: 'POST', body: JSON.stringify({ username, password, role, full_name: full_name || null, email: email || null }) });
+    // ============================================================
+    // PERMISSIONS
+    // ============================================================
+    function canAccess(view) {
+      if (!currentUser) return false;
+      const role = currentUser.role;
+      if (role === 'admin') return true;
+      if (role === 'manager') return ['dashboard', 'products', 'orders', 'delivery'].includes(view);
+      if (role === 'staff') return ['dashboard', 'orders'].includes(view);
+      return false;
     }
-    await loadUsers();
-    closeUserModal();
-    showToast('تم الحفظ ✓');
-  } catch (err) { showToast(err.message, 'error'); }
-  finally { btn.disabled = false; }
-}
-async function deleteUser(id) {
-  if (!confirm('حذف هذا المستخدم نهائياً؟')) return;
-  try {
-    await apiJSON(`/api/users/${id}`, { method: 'DELETE' });
-    await loadUsers();
-    showToast('تم الحذف', 'info');
-  } catch (err) { showToast(err.message, 'error'); }
-}
-
-// ============================================================
-// DELIVERY PER WILAYA
-// ============================================================
-async function loadDeliveryAll() {
-  try {
-    const [deliveryData, wilayas] = await Promise.all([
-      apiJSON('/api/delivery/all'),
-      apiJSON('/api/wilayas')
-    ]);
-    deliveryAllCache = deliveryData;
-    wilayasCache = wilayas;
-    document.getElementById('defHome').textContent = deliveryData.defaults.home || 0;
-    document.getElementById('defAgency').textContent = deliveryData.defaults.agency || 0;
-    document.getElementById('defExpress').textContent = deliveryData.defaults.express || 0;
-    document.getElementById('defHomeInput').value = deliveryData.defaults.home || 0;
-    document.getElementById('defAgencyInput').value = deliveryData.defaults.agency || 0;
-    document.getElementById('defExpressInput').value = deliveryData.defaults.express || 0;
-    renderDeliveryTable();
-  } catch (e) { showToast(e.message, 'error'); }
-}
-function renderDeliveryTable() {
-  const search = (document.getElementById('deliverySearch').value || '').trim().toLowerCase();
-  const body = document.getElementById('deliveryTableBody');
-  const filtered = search ? wilayasCache.filter(w => w.name.toLowerCase().includes(search)) : wilayasCache;
-  body.innerHTML = filtered.map(w => {
-    const prices = deliveryAllCache.byWilaya[w.name] || {};
-    return `<tr>
-      <td style="font-weight:700; color:var(--text-gray);">${w.code}</td>
-      <td style="font-weight:700;">${escapeHtml(w.name)}</td>
-      <td><input type="number" min="0" placeholder="${deliveryAllCache.defaults.home || 0}" value="${prices.home ?? ''}" oninput="this.closest('tr').classList.add('edited')" data-wilaya="${escapeAttr(w.name)}" data-type="home"></td>
-      <td><input type="number" min="0" placeholder="${deliveryAllCache.defaults.agency || 0}" value="${prices.agency ?? ''}" oninput="this.closest('tr').classList.add('edited')" data-wilaya="${escapeAttr(w.name)}" data-type="agency"></td>
-      <td><input type="number" min="0" placeholder="${deliveryAllCache.defaults.express || 0}" value="${prices.express ?? ''}" oninput="this.closest('tr').classList.add('edited')" data-wilaya="${escapeAttr(w.name)}" data-type="express"></td>
-    </tr>`;
-  }).join('');
-}
-function filterDeliveryTable() { renderDeliveryTable(); }
-async function saveAllDelivery(ev) {
-  const btn = ev.target.closest('button');
-  btn.disabled = true;
-  const orig = btn.innerHTML;
-  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
-  try {
-    await apiJSON('/api/delivery', { method: 'PUT', body: JSON.stringify({
-      home: Number(document.getElementById('defHomeInput').value) || 0,
-      agency: Number(document.getElementById('defAgencyInput').value) || 0,
-      express: Number(document.getElementById('defExpressInput').value) || 0
-    }) });
-    const changes = {};
-    document.querySelectorAll('.delivery-wilaya-table input[data-wilaya]').forEach(input => {
-      const w = input.dataset.wilaya;
-      const type = input.dataset.type;
-      const val = input.value.trim();
-      if (!changes[w]) changes[w] = {};
-      if (val !== '') changes[w][type] = Number(val);
-    });
-    for (const [wilaya, prices] of Object.entries(changes)) {
-      if (Object.keys(prices).length === 0) continue;
-      await apiJSON(`/api/delivery/wilaya/${encodeURIComponent(wilaya)}`, { method: 'PUT', body: JSON.stringify(prices) });
+    function applyPermissions() {
+      const role = currentUser?.role;
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        const view = btn.dataset.view;
+        if (view === 'users') { btn.style.display = role === 'admin' ? 'flex' : 'none'; return; }
+        btn.style.display = canAccess(view) ? 'flex' : 'none';
+      });
     }
-    await loadDeliveryAll();
-    showToast('تم حفظ جميع الأسعار ✓');
-  } catch (err) { showToast(err.message, 'error'); }
-  finally { btn.disabled = false; btn.innerHTML = orig; }
-}
 
-// ============================================================
-// COMBO (SET) PRODUCTS
-// ============================================================
-const PART_LABELS = ['قميص', 'سروال', 'جاكيت', 'بنطلون', 'حذاء', 'قبعة', 'فستان', 'تنورة', 'وشاح', 'قطعة'];
-
-function toggleSetMode() {
-  const isSet = document.getElementById('pIsSet').checked;
-  document.getElementById('combosList').style.display = isSet ? 'block' : 'none';
-  document.getElementById('colorsList').style.display = isSet ? 'none' : 'block';
-  document.getElementById('addColorBtn').style.display = isSet ? 'none' : 'flex';
-  document.getElementById('addComboBtn').style.display = isSet ? 'flex' : 'none';
-  if (isSet && comboRows.length === 0) addCombo();
-  if (isSet) renderCombosRows();
-}
-// ============ ✅ دوال الطقم (الهيكل الجديد: صورة واحدة للطقم + لون لكل قطعة) ============
-function addCombo() {
-  comboRows.push({
-    name: `طقم ${comboRows.length + 1}`,
-    images: [''],
-    parts: [{ label: 'قميص', name: 'أحمر', hex: '#e74c3c' }],
-    availableAges: ageRows.filter(a => a && a.trim())
-  });
-  renderCombosRows();
-}
-function removeCombo(ci) {
-  if (!confirm('حذف هذا الطقم؟')) return;
-  comboRows.splice(ci, 1);
-  renderCombosRows();
-}
-function addPartToCombo(ci) {
-  if (!comboRows[ci]) return;
-  comboRows[ci].parts.push({ label: 'سروال', name: 'أسود', hex: '#000000' });
-  renderCombosRows();
-}
-function removePartFromCombo(ci, pi) {
-  if (comboRows[ci].parts.length <= 1) { showToast('كل طقم يحتاج قطعة واحدة على الأقل', 'error'); return; }
-  comboRows[ci].parts.splice(pi, 1);
-  renderCombosRows();
-}
-function updateComboName(ci, val) { comboRows[ci].name = val; }
-function updatePartLabel(ci, pi, val) { comboRows[ci].parts[pi].label = val; }
-function updatePartColorName(ci, pi, val) {
-  comboRows[ci].parts[pi].name = val;
-  filterPartColorOptions(ci, pi, val);
-}
-function updatePartHex(ci, pi, val) {
-  comboRows[ci].parts[pi].hex = val;
-  const card = document.querySelectorAll('.combo-card')[ci];
-  const part = card?.querySelectorAll('.part-card')[pi];
-  const lbl = part?.querySelector('.hex-label');
-  if (lbl) lbl.textContent = val.toUpperCase();
-}
-// صور الطقم كاملاً
-function addComboImage(ci) {
-  if (!comboRows[ci].images) comboRows[ci].images = [];
-  comboRows[ci].images.push('');
-  renderCombosRows();
-}
-function updateComboImage(ci, ii, val) { comboRows[ci].images[ii] = val; }
-function removeComboImage(ci, ii) {
-  if (comboRows[ci].images.length <= 1) { showToast('الطقم يحتاج صورة واحدة على الأقل', 'error'); return; }
-  comboRows[ci].images.splice(ii, 1);
-  renderCombosRows();
-}
-function makeComboImageMain(ci, ii) {
-  if (ii === 0) return;
-  const arr = comboRows[ci].images;
-  const [img] = arr.splice(ii, 1);
-  arr.unshift(img);
-  renderCombosRows();
-}
-function toggleComboAge(ci, age, isChecked, labelEl) {
-  if (!comboRows[ci]) return;
-  if (!Array.isArray(comboRows[ci].availableAges)) comboRows[ci].availableAges = [];
-  if (isChecked) {
-    if (!comboRows[ci].availableAges.includes(age)) comboRows[ci].availableAges.push(age);
-  } else {
-    comboRows[ci].availableAges = comboRows[ci].availableAges.filter(a => a !== age);
-  }
-  if (labelEl) {
-    labelEl.style.background  = isChecked ? 'var(--card-bg)' : 'var(--bg)';
-    labelEl.style.borderColor = isChecked ? 'var(--success)' : 'var(--border)';
-    labelEl.style.opacity     = isChecked ? '1' : '0.65';
-    const span = labelEl.querySelector('span');
-    if (span) span.style.textDecoration = isChecked ? 'none' : 'line-through';
-    const card  = labelEl.closest('.combo-card');
-    const badge = card?.querySelector('.combo-age-count');
-    if (badge) {
-      const total = ageRows.filter(a => a && a.trim()).length;
-      badge.textContent = `${comboRows[ci].availableAges.filter(a => a && a.trim()).length} / ${total}`;
+    // ============================================================
+    // USERS
+    // ============================================================
+    async function loadUsers() {
+      try {
+        usersCache = await apiJSON('/api/users');
+        renderUsersTable();
+      } catch (e) { showToast(e.message, 'error'); }
     }
-  }
-}
-function renderCombosRows() {
-  const el = document.getElementById('combosList');
-  if (!comboRows.length) { el.innerHTML = ''; return; }
-  el.innerHTML = `
-    <div style="font-size:.82rem; color:var(--text); margin-bottom:12px; padding:12px; background:linear-gradient(135deg, rgba(108,92,231,0.08), rgba(255,107,129,0.08)); border-radius:10px; border-right:4px solid var(--secondary); line-height:1.8;">
-      <b style="color:var(--secondary);"><i class="fa-solid fa-lightbulb"></i> كيف أضيف طقماً؟</b><br>
-      <b>1.</b> اكتب اسم الطقم<br>
-      <b>2.</b> أضف <b style="color:var(--primary);">صورة واحدة (أو أكثر) للطقم كاملاً</b> (مثلاً صورة فيها القميص والسروال معاً)<br>
-      <b>3.</b> لكل قطعة: اختر نوعها (قميص، سروال...) ثم <b style="color:var(--primary);">ابحث عن لونها أو اختره من القائمة</b><br>
-      <b style="color:var(--success);">✓</b> لا حاجة لصورة لكل لون — صورة الطقم كافية.
-    </div>
-    ${comboRows.map((combo, ci) => `
-    <div class="combo-card">
-      <div class="combo-header">
-        <input type="text" value="${escapeAttr(combo.name)}" placeholder="اسم الطقم (مثال: طقم شتوي)" oninput="updateComboName(${ci}, this.value)">
-        <button class="remove-btn" onclick="removeCombo(${ci})" title="حذف الطقم"><i class="fa-solid fa-trash"></i></button>
-      </div>
+    function renderUsersTable() {
+      const wrap = document.getElementById('usersTableWrap');
+      if (!usersCache.length) { wrap.innerHTML = '<div class="empty-state"><i class="fa-solid fa-users"></i><p>لا يوجد مستخدمون</p></div>'; return; }
+      const roleLabel = { admin: 'أدمن', manager: 'مدير', staff: 'موظف' };
+      wrap.innerHTML = `<table class="users-table"><thead><tr>
+        <th>اسم المستخدم</th><th>الاسم الكامل</th><th>الدور</th><th>الحالة</th><th>آخر دخول</th><th>إجراءات</th>
+      </tr></thead><tbody>${usersCache.map(u => {
+        const isActive = Number(u.is_active) === 1;
+        const lastLogin = u.last_login_at ? new Date(u.last_login_at).toLocaleString('ar-DZ') : 'لم يدخل بعد';
+        return `<tr>
+          <td style="font-weight:700;">${escapeHtml(u.username)}</td>
+          <td>${escapeHtml(u.full_name || '-')}</td>
+          <td><span class="user-role-badge role-${u.role}">${roleLabel[u.role] || u.role}</span></td>
+          <td>${isActive ? '<span style="color:var(--success);font-weight:700;">✓ نشط</span>' : '<span style="color:var(--danger);font-weight:700;">✗ معطّل</span>'}</td>
+          <td style="font-size:.82rem; color:var(--text-gray);">${lastLogin}</td>
+          <td><div class="row-actions">
+            <button class="icon-btn icon-btn-edit" onclick="openUserModal(${u.id})" title="تعديل"><i class="fa-solid fa-pen"></i></button>
+            <button class="icon-btn icon-btn-del" onclick="deleteUser(${u.id})" title="حذف"><i class="fa-solid fa-trash"></i></button>
+          </div></td>
+        </tr>`;
+      }).join('')}</tbody></table>`;
+    }
+    function openUserModal(id = null) {
+      const modal = document.getElementById('userModal');
+      modal.classList.add('show');
+      if (id) {
+        const u = usersCache.find(x => x.id === id);
+        if (!u) return;
+        document.getElementById('userModalTitle').innerHTML = '<i class="fa-solid fa-pen"></i> تعديل مستخدم';
+        document.getElementById('uId').value = u.id;
+        document.getElementById('uUsername').value = u.username;
+        document.getElementById('uUsername').disabled = true;
+        document.getElementById('uFullName').value = u.full_name || '';
+        document.getElementById('uEmail').value = u.email || '';
+        document.getElementById('uRole').value = u.role;
+        document.getElementById('uIsActive').checked = Number(u.is_active) === 1;
+        document.getElementById('uPasswordLabel').textContent = 'كلمة مرور جديدة (اتركها فارغة لعدم التغيير)';
+        document.getElementById('uPassword').value = '';
+      } else {
+        document.getElementById('userModalTitle').innerHTML = '<i class="fa-solid fa-user-plus"></i> إضافة مستخدم';
+        document.getElementById('uId').value = '';
+        document.getElementById('uUsername').value = '';
+        document.getElementById('uUsername').disabled = false;
+        document.getElementById('uFullName').value = '';
+        document.getElementById('uEmail').value = '';
+        document.getElementById('uRole').value = 'staff';
+        document.getElementById('uIsActive').checked = true;
+        document.getElementById('uPasswordLabel').textContent = 'كلمة المرور *';
+        document.getElementById('uPassword').value = '';
+      }
+    }
+    function closeUserModal() { document.getElementById('userModal').classList.remove('show'); }
+    async function saveUser() {
+      const idVal = document.getElementById('uId').value;
+      const username = document.getElementById('uUsername').value.trim();
+      const password = document.getElementById('uPassword').value;
+      const full_name = document.getElementById('uFullName').value.trim();
+      const email = document.getElementById('uEmail').value.trim();
+      const role = document.getElementById('uRole').value;
+      const is_active = document.getElementById('uIsActive').checked;
+      const btn = document.getElementById('saveUserBtn');
+      btn.disabled = true;
+      try {
+        if (idVal) {
+          const payload = { role, is_active, full_name: full_name || null, email: email || null };
+          if (password) payload.password = password;
+          await apiJSON(`/api/users/${idVal}`, { method: 'PUT', body: JSON.stringify(payload) });
+        } else {
+          if (!username || !password) throw new Error('اسم المستخدم وكلمة المرور مطلوبان');
+          await apiJSON('/api/users', { method: 'POST', body: JSON.stringify({ username, password, role, full_name: full_name || null, email: email || null }) });
+        }
+        await loadUsers();
+        closeUserModal();
+        showToast('تم الحفظ ✓');
+      } catch (err) { showToast(err.message, 'error'); }
+      finally { btn.disabled = false; }
+    }
+    async function deleteUser(id) {
+      if (!confirm('حذف هذا المستخدم نهائياً؟')) return;
+      try {
+        await apiJSON(`/api/users/${id}`, { method: 'DELETE' });
+        await loadUsers();
+        showToast('تم الحذف', 'info');
+      } catch (err) { showToast(err.message, 'error'); }
+    }
 
-      <!-- صور الطقم كاملاً -->
-      <div class="color-images-header">
-        <span class="header-label"><i class="fa-solid fa-images"></i> صور الطقم كاملاً</span>
-        <span class="image-count-badge">${(combo.images || []).filter(i => i && i.trim()).length} صورة</span>
-      </div>
-      <div class="color-images-grid">
-        ${(combo.images || ['']).map((img, ii) => {
-          let prev = '<span class="placeholder">لا يوجد</span>';
-          if (img && img.trim()) {
-            if (isVideoUrl(img)) prev = `<video src="${escapeAttr(img)}" muted></video><span class="video-badge"><i class="fa-solid fa-video"></i></span>`;
-            else prev = `<img src="${escapeAttr(img)}" onerror="this.parentElement.innerHTML='<span class=\\'placeholder\\'>فشل التحميل</span>'">`;
-          }
-          return `<div class="color-image-item">
-            <span class="image-index-badge">${ii + 1}</span>
-            <div class="color-image-preview" style="height:110px;" data-media-url="${escapeAttr(img)}">${prev}</div>
-            <div class="color-image-actions">
-              <input type="url" value="${escapeAttr(img)}" placeholder="URL أو ارفع" oninput="updateComboImage(${ci}, ${ii}, this.value); this.closest('.color-image-item').querySelector('.color-image-preview').setAttribute('data-media-url', this.value);">
-              <button class="mini-btn mini-btn-upload" title="رفع" onclick="triggerImageUpload((d) => { comboRows[${ci}].images[${ii}] = d; renderCombosRows(); })"><i class="fa-solid fa-upload"></i></button>
-              ${ii > 0 ? `<button class="mini-btn mini-btn-main" title="تعيين كرئيسية" onclick="makeComboImageMain(${ci}, ${ii})"><i class="fa-solid fa-star"></i></button>` : `<button class="mini-btn mini-btn-main is-main" disabled><i class="fa-solid fa-star"></i></button>`}
-              <button class="mini-btn mini-btn-remove" title="حذف" onclick="removeComboImage(${ci}, ${ii})"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-          </div>`;
-        }).join('')}
-        <button type="button" class="add-image-card" onclick="addComboImage(${ci})" style="min-height:160px;">
-          <i class="fa-solid fa-plus-circle"></i>
-          <span>إضافة صورة للطقم</span>
-          <small>صورة الطقم كاملاً</small>
-        </button>
-      </div>
+    // ============================================================
+    // DELIVERY PER WILAYA
+    // ============================================================
+    async function loadDeliveryAll() {
+      try {
+        const [deliveryData, wilayas] = await Promise.all([
+          apiJSON('/api/delivery/all'),
+          apiJSON('/api/wilayas')
+        ]);
+        deliveryAllCache = deliveryData;
+        wilayasCache = wilayas;
+        document.getElementById('defHome').textContent = deliveryData.defaults.home || 0;
+        document.getElementById('defAgency').textContent = deliveryData.defaults.agency || 0;
+        document.getElementById('defExpress').textContent = deliveryData.defaults.express || 0;
+        document.getElementById('defHomeInput').value = deliveryData.defaults.home || 0;
+        document.getElementById('defAgencyInput').value = deliveryData.defaults.agency || 0;
+        document.getElementById('defExpressInput').value = deliveryData.defaults.express || 0;
+        renderDeliveryTable();
+      } catch (e) { showToast(e.message, 'error'); }
+    }
+    function renderDeliveryTable() {
+      const search = (document.getElementById('deliverySearch').value || '').trim().toLowerCase();
+      const body = document.getElementById('deliveryTableBody');
+      const filtered = search ? wilayasCache.filter(w => w.name.toLowerCase().includes(search)) : wilayasCache;
+      body.innerHTML = filtered.map(w => {
+        const prices = deliveryAllCache.byWilaya[w.name] || {};
+        return `<tr>
+          <td style="font-weight:700; color:var(--text-gray);">${w.code}</td>
+          <td style="font-weight:700;">${escapeHtml(w.name)}</td>
+          <td><input type="number" min="0" placeholder="${deliveryAllCache.defaults.home || 0}" value="${prices.home ?? ''}" oninput="this.closest('tr').classList.add('edited')" data-wilaya="${escapeAttr(w.name)}" data-type="home"></td>
+          <td><input type="number" min="0" placeholder="${deliveryAllCache.defaults.agency || 0}" value="${prices.agency ?? ''}" oninput="this.closest('tr').classList.add('edited')" data-wilaya="${escapeAttr(w.name)}" data-type="agency"></td>
+          <td><input type="number" min="0" placeholder="${deliveryAllCache.defaults.express || 0}" value="${prices.express ?? ''}" oninput="this.closest('tr').classList.add('edited')" data-wilaya="${escapeAttr(w.name)}" data-type="express"></td>
+        </tr>`;
+      }).join('');
+    }
+    function filterDeliveryTable() { renderDeliveryTable(); }
+    async function saveAllDelivery(ev) {
+      const btn = ev.target.closest('button');
+      btn.disabled = true;
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
+      try {
+        await apiJSON('/api/delivery', { method: 'PUT', body: JSON.stringify({
+          home: Number(document.getElementById('defHomeInput').value) || 0,
+          agency: Number(document.getElementById('defAgencyInput').value) || 0,
+          express: Number(document.getElementById('defExpressInput').value) || 0
+        }) });
+        const changes = {};
+        document.querySelectorAll('.delivery-wilaya-table input[data-wilaya]').forEach(input => {
+          const w = input.dataset.wilaya;
+          const type = input.dataset.type;
+          const val = input.value.trim();
+          if (!changes[w]) changes[w] = {};
+          if (val !== '') changes[w][type] = Number(val);
+        });
+        for (const [wilaya, prices] of Object.entries(changes)) {
+          if (Object.keys(prices).length === 0) continue;
+          await apiJSON(`/api/delivery/wilaya/${encodeURIComponent(wilaya)}`, { method: 'PUT', body: JSON.stringify(prices) });
+        }
+        await loadDeliveryAll();
+        showToast('تم حفظ جميع الأسعار ✓');
+      } catch (err) { showToast(err.message, 'error'); }
+      finally { btn.disabled = false; btn.innerHTML = orig; }
+    }
 
-      <!-- قطع الطقم وألوانها -->
-      <div style="margin-top:16px;padding:12px;background:rgba(108,92,231,.05);border-radius:10px;border-right:3px solid var(--secondary);">
-        <div style="font-size:.82rem;font-weight:800;color:var(--secondary);margin-bottom:10px;"><i class="fa-solid fa-shirt"></i> قطع الطقم وألوانها</div>
-        ${combo.parts.map((part, pi) => `
-          <div class="part-card">
-            <div class="part-card-header">
-              <span class="part-index">القطعة ${pi + 1}</span>
-              <select class="part-label-select" onchange="updatePartLabel(${ci}, ${pi}, this.value)">
-                ${PART_LABELS.map(l => `<option value="${l}" ${part.label===l?'selected':''}>${l}</option>`).join('')}
-              </select>
-              <button class="icon-btn icon-btn-del" onclick="removePartFromCombo(${ci}, ${pi})" title="حذف القطعة"><i class="fa-solid fa-xmark"></i></button>
-            </div>
+    // ============================================================
+    // COMBO (SET) PRODUCTS
+    // ============================================================
+    const PART_LABELS = ['قميص', 'سروال', 'جاكيت', 'بنطلون', 'حذاء', 'قبعة', 'فستان', 'تنورة', 'وشاح', 'قطعة'];
 
-            <div class="part-color-search-block">
-              <label class="part-color-label"><i class="fa-solid fa-palette"></i> لون القطعة</label>
-              <div class="color-search-wrap">
-                <i class="fa-solid fa-magnifying-glass color-search-icon"></i>
-                <input type="text" class="color-search" placeholder="ابحث باسم اللون..." autocomplete="off"
-                       value="${escapeAttr(part.name)}"
-                       oninput="updatePartColorName(${ci}, ${pi}, this.value)"
-                       onkeydown="handlePartColorSearchKeydown(event, ${ci}, ${pi})">
-                <div class="color-suggestions" id="partColorSugg-${ci}-${pi}" onmousedown="event.preventDefault()"></div>
+    function toggleSetMode() {
+      const isSet = document.getElementById('pIsSet').checked;
+      document.getElementById('combosList').style.display = isSet ? 'block' : 'none';
+      document.getElementById('colorsList').style.display = isSet ? 'none' : 'block';
+      document.getElementById('addColorBtn').style.display = isSet ? 'none' : 'flex';
+      document.getElementById('addComboBtn').style.display = isSet ? 'flex' : 'none';
+      if (isSet && comboRows.length === 0) addCombo();
+      if (isSet) renderCombosRows();
+    }
+
+    function addCombo() {
+      comboRows.push({
+        name: `طقم ${comboRows.length + 1}`,
+        images: [''],
+        parts: [{ label: 'قميص', name: 'أحمر', hex: '#e74c3c' }],
+        availableAges: ageRows.filter(a => a && a.trim())
+      });
+      renderCombosRows();
+    }
+    function removeCombo(ci) {
+      if (!confirm('حذف هذا الطقم؟')) return;
+      comboRows.splice(ci, 1);
+      renderCombosRows();
+    }
+    function addPartToCombo(ci) {
+      if (!comboRows[ci]) return;
+      comboRows[ci].parts.push({ label: 'سروال', name: 'أسود', hex: '#000000' });
+      renderCombosRows();
+    }
+    function removePartFromCombo(ci, pi) {
+      if (comboRows[ci].parts.length <= 1) { showToast('كل طقم يحتاج قطعة واحدة على الأقل', 'error'); return; }
+      comboRows[ci].parts.splice(pi, 1);
+      renderCombosRows();
+    }
+    function updateComboName(ci, val) { comboRows[ci].name = val; }
+    function updatePartLabel(ci, pi, val) { comboRows[ci].parts[pi].label = val; }
+    function updatePartColorName(ci, pi, val) {
+      comboRows[ci].parts[pi].name = val;
+      filterPartColorOptions(ci, pi, val);
+    }
+    function updatePartHex(ci, pi, val) {
+      comboRows[ci].parts[pi].hex = val;
+      const card = document.querySelectorAll('.combo-card')[ci];
+      const part = card?.querySelectorAll('.part-card')[pi];
+      const lbl = part?.querySelector('.hex-label');
+      if (lbl) lbl.textContent = val.toUpperCase();
+    }
+    function addComboImage(ci) {
+      if (!comboRows[ci].images) comboRows[ci].images = [];
+      comboRows[ci].images.push('');
+      renderCombosRows();
+    }
+    function updateComboImage(ci, ii, val) { comboRows[ci].images[ii] = val; }
+    function removeComboImage(ci, ii) {
+      if (comboRows[ci].images.length <= 1) { showToast('الطقم يحتاج صورة واحدة على الأقل', 'error'); return; }
+      comboRows[ci].images.splice(ii, 1);
+      renderCombosRows();
+    }
+    function makeComboImageMain(ci, ii) {
+      if (ii === 0) return;
+      const arr = comboRows[ci].images;
+      const [img] = arr.splice(ii, 1);
+      arr.unshift(img);
+      renderCombosRows();
+    }
+    function toggleComboAge(ci, age, isChecked, labelEl) {
+      if (!comboRows[ci]) return;
+      if (!Array.isArray(comboRows[ci].availableAges)) comboRows[ci].availableAges = [];
+      if (isChecked) {
+        if (!comboRows[ci].availableAges.includes(age)) comboRows[ci].availableAges.push(age);
+      } else {
+        comboRows[ci].availableAges = comboRows[ci].availableAges.filter(a => a !== age);
+      }
+      if (labelEl) {
+        labelEl.style.background  = isChecked ? 'var(--card-bg)' : 'var(--bg)';
+        labelEl.style.borderColor = isChecked ? 'var(--success)' : 'var(--border)';
+        labelEl.style.opacity     = isChecked ? '1' : '0.65';
+        const span = labelEl.querySelector('span');
+        if (span) span.style.textDecoration = isChecked ? 'none' : 'line-through';
+        const card  = labelEl.closest('.combo-card');
+        const badge = card?.querySelector('.combo-age-count');
+        if (badge) {
+          const total = ageRows.filter(a => a && a.trim()).length;
+          badge.textContent = `${comboRows[ci].availableAges.filter(a => a && a.trim()).length} / ${total}`;
+        }
+      }
+    }
+    function renderCombosRows() {
+      const el = document.getElementById('combosList');
+      if (!comboRows.length) { el.innerHTML = ''; return; }
+      el.innerHTML = `
+        <div style="font-size:.82rem; color:var(--text); margin-bottom:12px; padding:12px; background:linear-gradient(135deg, rgba(108,92,231,0.08), rgba(255,107,129,0.08)); border-radius:10px; border-right:4px solid var(--secondary); line-height:1.8;">
+          <b style="color:var(--secondary);"><i class="fa-solid fa-lightbulb"></i> كيف أضيف طقماً؟</b><br>
+          <b>1.</b> اكتب اسم الطقم<br>
+          <b>2.</b> أضف <b style="color:var(--primary);">صورة واحدة (أو أكثر) للطقم كاملاً</b> (مثلاً صورة فيها القميص والسروال معاً)<br>
+          <b>3.</b> لكل قطعة: اختر نوعها (قميص، سروال...) ثم <b style="color:var(--primary);">ابحث عن لونها أو اختره من القائمة</b><br>
+          <b style="color:var(--success);">✓</b> لا حاجة لصورة لكل لون — صورة الطقم كافية.
+        </div>
+        ${comboRows.map((combo, ci) => `
+        <div class="combo-card">
+          <div class="combo-header">
+            <input type="text" value="${escapeAttr(combo.name)}" placeholder="اسم الطقم (مثال: طقم شتوي)" oninput="updateComboName(${ci}, this.value)">
+            <button class="remove-btn" onclick="removeCombo(${ci})" title="حذف الطقم"><i class="fa-solid fa-trash"></i></button>
+          </div>
+
+          <div class="color-images-header">
+            <span class="header-label"><i class="fa-solid fa-images"></i> صور الطقم كاملاً</span>
+            <span class="image-count-badge">${(combo.images || []).filter(i => i && i.trim()).length} صورة</span>
+          </div>
+          <div class="color-images-grid">
+            ${(combo.images || ['']).map((img, ii) => {
+              let prev = '<span class="placeholder">لا يوجد</span>';
+              if (img && img.trim()) {
+                if (isVideoUrl(img)) prev = `<video src="${escapeAttr(img)}" muted></video><span class="video-badge"><i class="fa-solid fa-video"></i></span>`;
+                else prev = `<img src="${escapeAttr(img)}" onerror="this.parentElement.innerHTML='<span class=\\'placeholder\\'>فشل التحميل</span>'">`;
+              }
+              return `<div class="color-image-item">
+                <span class="image-index-badge">${ii + 1}</span>
+                <div class="color-image-preview" style="height:110px;" data-media-url="${escapeAttr(img)}">${prev}</div>
+                <div class="color-image-actions">
+                  <input type="url" value="${escapeAttr(img)}" placeholder="URL أو ارفع" oninput="updateComboImage(${ci}, ${ii}, this.value); this.closest('.color-image-item').querySelector('.color-image-preview').setAttribute('data-media-url', this.value);">
+                  <button class="mini-btn mini-btn-upload" title="رفع" onclick="triggerImageUpload((d) => { comboRows[${ci}].images[${ii}] = d; renderCombosRows(); })"><i class="fa-solid fa-upload"></i></button>
+                  ${ii > 0 ? `<button class="mini-btn mini-btn-main" title="تعيين كرئيسية" onclick="makeComboImageMain(${ci}, ${ii})"><i class="fa-solid fa-star"></i></button>` : `<button class="mini-btn mini-btn-main is-main" disabled><i class="fa-solid fa-star"></i></button>`}
+                  <button class="mini-btn mini-btn-remove" title="حذف" onclick="removeComboImage(${ci}, ${ii})"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+              </div>`;
+            }).join('')}
+            <button type="button" class="add-image-card" onclick="addComboImage(${ci})" style="min-height:160px;">
+              <i class="fa-solid fa-plus-circle"></i>
+              <span>إضافة صورة للطقم</span>
+              <small>صورة الطقم كاملاً</small>
+            </button>
+          </div>
+
+          <div style="margin-top:16px;padding:12px;background:rgba(108,92,231,.05);border-radius:10px;border-right:3px solid var(--secondary);">
+            <div style="font-size:.82rem;font-weight:800;color:var(--secondary);margin-bottom:10px;"><i class="fa-solid fa-shirt"></i> قطع الطقم وألوانها</div>
+            ${combo.parts.map((part, pi) => `
+              <div class="part-card">
+                <div class="part-card-header">
+                  <span class="part-index">القطعة ${pi + 1}</span>
+                  <select class="part-label-select" onchange="updatePartLabel(${ci}, ${pi}, this.value)">
+                    ${PART_LABELS.map(l => `<option value="${l}" ${part.label===l?'selected':''}>${l}</option>`).join('')}
+                  </select>
+                  <button class="icon-btn icon-btn-del" onclick="removePartFromCombo(${ci}, ${pi})" title="حذف القطعة"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <div class="part-color-search-block">
+                  <label class="part-color-label"><i class="fa-solid fa-palette"></i> لون القطعة</label>
+                  <div class="color-search-wrap">
+                    <i class="fa-solid fa-magnifying-glass color-search-icon"></i>
+                    <input type="text" class="color-search" placeholder="ابحث باسم اللون..." autocomplete="off"
+                           value="${escapeAttr(part.name)}"
+                           oninput="updatePartColorName(${ci}, ${pi}, this.value)"
+                           onkeydown="handlePartColorSearchKeydown(event, ${ci}, ${pi})">
+                    <div class="color-suggestions" id="partColorSugg-${ci}-${pi}" onmousedown="event.preventDefault()"></div>
+                  </div>
+                  <select class="color-select" onchange="onPartColorSelectChange(${ci}, ${pi}, this.value)" style="margin-top:6px;">
+                    <option value="" ${!part.name?'selected':''} disabled>-- أو اختر من القائمة --</option>
+                    ${PREDEFINED_COLORS.map(pc => `<option value="${escapeAttr(pc.name)}" ${part.name===pc.name?'selected':''}>${escapeHtml(pc.name)}</option>`).join('')}
+                    ${part.name && !isPredefinedColor(part.name) ? `<option value="${escapeAttr(part.name)}" selected>${escapeHtml(part.name)} (مخصص)</option>` : ''}
+                  </select>
+                </div>
+
+                <div class="part-color-row">
+                  <input type="color" value="${part.hex}" oninput="updatePartHex(${ci}, ${pi}, this.value)" title="تعديل كود اللون">
+                  <span class="hex-label">${part.hex.toUpperCase()}</span>
+                  <span style="font-size:.78rem; color:var(--text-gray); font-weight:600;">اللون المختار</span>
+                </div>
               </div>
-              <select class="color-select" onchange="onPartColorSelectChange(${ci}, ${pi}, this.value)" style="margin-top:6px;">
-                <option value="" ${!part.name?'selected':''} disabled>-- أو اختر من القائمة --</option>
-                ${PREDEFINED_COLORS.map(pc => `<option value="${escapeAttr(pc.name)}" ${part.name===pc.name?'selected':''}>${escapeHtml(pc.name)}</option>`).join('')}
-                ${part.name && !isPredefinedColor(part.name) ? `<option value="${escapeAttr(part.name)}" selected>${escapeHtml(part.name)} (مخصص)</option>` : ''}
-              </select>
-            </div>
-
-            <div class="part-color-row">
-              <input type="color" value="${part.hex}" oninput="updatePartHex(${ci}, ${pi}, this.value)" title="تعديل كود اللون">
-              <span class="hex-label">${part.hex.toUpperCase()}</span>
-              <span style="font-size:.78rem; color:var(--text-gray); font-weight:600;">اللون المختار</span>
-            </div>
-          </div>
-        `).join('')}
-        <button type="button" class="add-part-btn" onclick="addPartToCombo(${ci})"><i class="fa-solid fa-plus"></i> إضافة قطعة أخرى لهذا الطقم</button>
+            `).join('')}
+            <button type="button" class="add-part-btn" onclick="addPartToCombo(${ci})"><i class="fa-solid fa-plus"></i> إضافة قطعة أخرى لهذا الطقم</button>
           </div>
 
-      <!-- ✅ الأعمار المتوفرة في هذا الطقم -->
-      <div style="margin-top:16px;padding:14px;background:linear-gradient(135deg, rgba(254,202,87,0.06), rgba(243,156,18,0.06));border-radius:10px;border-right:3px solid var(--warning);">
-        <div style="font-size:.85rem;font-weight:800;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px;">
-          <i class="fa-solid fa-child" style="color:var(--warning);"></i>
-          الأعمار المتوفرة في هذا الطقم
-          <span class="combo-age-count" style="margin-right:auto;font-size:.72rem;font-weight:700;color:var(--text-gray);background:var(--card-bg);padding:3px 10px;border-radius:50px;">
-            ${(combo.availableAges || []).filter(a => a && a.trim()).length} / ${ageRows.filter(a => a && a.trim()).length}
-          </span>
+          <div style="margin-top:16px;padding:14px;background:linear-gradient(135deg, rgba(254,202,87,0.06), rgba(243,156,18,0.06));border-radius:10px;border-right:3px solid var(--warning);">
+            <div style="font-size:.85rem;font-weight:800;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+              <i class="fa-solid fa-child" style="color:var(--warning);"></i>
+              الأعمار المتوفرة في هذا الطقم
+              <span class="combo-age-count" style="margin-right:auto;font-size:.72rem;font-weight:700;color:var(--text-gray);background:var(--card-bg);padding:3px 10px;border-radius:50px;">
+                ${(combo.availableAges || []).filter(a => a && a.trim()).length} / ${ageRows.filter(a => a && a.trim()).length}
+              </span>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+              ${ageRows.filter(a => a && a.trim()).map(age => {
+                const isAvailable = Array.isArray(combo.availableAges) && combo.availableAges.includes(age);
+                return `<label style="display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:24px;background:${isAvailable ? 'var(--card-bg)' : 'var(--bg)'};border:1.5px solid ${isAvailable ? 'var(--success)' : 'var(--border)'};cursor:pointer;font-size:.82rem;font-weight:700;opacity:${isAvailable ? 1 : 0.65};transition:all .2s;user-select:none;">
+                  <input type="checkbox" ${isAvailable ? 'checked' : ''}
+                         onchange="toggleComboAge(${ci}, '${escapeAttr(age)}', this.checked, this.closest('label'))"
+                         style="width:16px;height:16px;cursor:pointer;accent-color:var(--success);">
+                  <span style="${!isAvailable ? 'text-decoration:line-through;' : ''}">${escapeHtml(age)}</span>
+                </label>`;
+              }).join('') || '<span style="font-size:.8rem;color:var(--text-gray);">أضف أعماراً أولاً من القسم أعلاه</span>'}
+            </div>
+            <div style="font-size:.72rem;color:var(--text-gray);margin-top:10px;line-height:1.6;">
+              <i class="fa-solid fa-circle-info" style="color:var(--info);"></i>
+              المحدد = <b>متوفر</b> في هذا الطقم · غير المحدد = يظهر في صفحة المنتج <b>مشطوباً وباهتاً</b>.
+            </div>
+          </div>
         </div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;">
-          ${ageRows.filter(a => a && a.trim()).map(age => {
-            const isAvailable = Array.isArray(combo.availableAges) && combo.availableAges.includes(age);
-            return `<label style="display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:24px;background:${isAvailable ? 'var(--card-bg)' : 'var(--bg)'};border:1.5px solid ${isAvailable ? 'var(--success)' : 'var(--border)'};cursor:pointer;font-size:.82rem;font-weight:700;opacity:${isAvailable ? 1 : 0.65};transition:all .2s;user-select:none;">
-              <input type="checkbox" ${isAvailable ? 'checked' : ''}
-                     onchange="toggleComboAge(${ci}, '${escapeAttr(age)}', this.checked, this.closest('label'))"
-                     style="width:16px;height:16px;cursor:pointer;accent-color:var(--success);">
-              <span style="${!isAvailable ? 'text-decoration:line-through;' : ''}">${escapeHtml(age)}</span>
-            </label>`;
-          }).join('') || '<span style="font-size:.8rem;color:var(--text-gray);">أضف أعماراً أولاً من القسم أعلاه</span>'}
-        </div>
-        <div style="font-size:.72rem;color:var(--text-gray);margin-top:10px;line-height:1.6;">
-          <i class="fa-solid fa-circle-info" style="color:var(--info);"></i>
-          المحدد = <b>متوفر</b> في هذا الطقم · غير المحدد = يظهر في صفحة المنتج <b>مشطوباً وباهتاً</b>.
-        </div>
-      </div>
-    </div>
-  `).join('')}`;
-}
+      `).join('')}`;
+    }
 
-// ✅ اختيار لون القطعة من القائمة المنسدلة
-function onPartColorSelectChange(ci, pi, name) {
-  if (!comboRows[ci]?.parts?.[pi] || !name) return;
-  const p = getPredefinedColor(name);
-  if (p) {
-    comboRows[ci].parts[pi].name = p.name;
-    comboRows[ci].parts[pi].hex = p.hex;
-  } else {
-    comboRows[ci].parts[pi].name = name;
-  }
-  renderCombosRows();
-}
+    function onPartColorSelectChange(ci, pi, name) {
+      if (!comboRows[ci]?.parts?.[pi] || !name) return;
+      const p = getPredefinedColor(name);
+      if (p) {
+        comboRows[ci].parts[pi].name = p.name;
+        comboRows[ci].parts[pi].hex = p.hex;
+      } else {
+        comboRows[ci].parts[pi].name = name;
+      }
+      renderCombosRows();
+    }
 
-// دوال اقتراحات الألوان للقطع (تبقى كما هي)
-function filterPartColorOptions(ci, pi, query) {
-  const sugg = document.getElementById(`partColorSugg-${ci}-${pi}`);
-  if (!sugg) return;
-  const q = (query || '').trim();
-  if (!q) { sugg.classList.remove('open'); sugg.innerHTML = ''; return; }
-  const matches = PREDEFINED_COLORS.filter(pc => pc.name.includes(q));
-  let html = '';
-  if (matches.length === 0) {
-    html += '<div class="color-no-match"><i class="fa-solid fa-magnifying-glass"></i> لا توجد ألوان مطابقة</div>';
-  } else {
-    html += matches.slice(0, 40).map(pc => `
-      <button type="button" class="color-suggestion-chip" onclick="selectPartColorFromSuggestion(${ci}, ${pi}, '${escapeAttr(pc.name)}')">
-        <span class="chip-swatch" style="background:${pc.hex};"></span>
-        <span>${escapeHtml(pc.name)}</span>
-        <span class="chip-hex">${pc.hex.toUpperCase()}</span>
-      </button>
-    `).join('');
-  }
-  html += `<button type="button" class="color-suggestion-chip is-custom" onclick="selectCustomPartColor(${ci}, ${pi})"><span class="chip-swatch"><i class="fa-solid fa-pen"></i></span><span>لون مخصص...</span></button>`;
-  sugg.innerHTML = html;
-  sugg.classList.add('open');
-}
-function selectPartColorFromSuggestion(ci, pi, name) {
-  if (!comboRows[ci]?.parts?.[pi]) return;
-  const p = getPredefinedColor(name);
-  if (!p) return;
-  comboRows[ci].parts[pi].name = p.name;
-  comboRows[ci].parts[pi].hex = p.hex;
-  renderCombosRows();
-}
-function selectCustomPartColor(ci, pi) {
-  if (!comboRows[ci]?.parts?.[pi]) return;
-  comboRows[ci].parts[pi].name = '';
-  renderCombosRows();
-  setTimeout(() => {
-    const card = document.querySelectorAll('.combo-card')[ci];
-    if (!card) return;
-    const partCard = card.querySelectorAll('.part-card')[pi];
-    if (!partCard) return;
-    const input = partCard.querySelector('.color-search');
-    if (input) input.focus();
-  }, 60);
-}
-function handlePartColorSearchKeydown(event, ci, pi) {
-  if (event.key === 'Enter') {
-    event.preventDefault();
-    const sugg = document.getElementById(`partColorSugg-${ci}-${pi}`);
-    if (!sugg) return;
-    const firstChip = sugg.querySelector('.color-suggestion-chip');
-    if (firstChip) firstChip.click();
-  } else if (event.key === 'Escape') {
-    const sugg = document.getElementById(`partColorSugg-${ci}-${pi}`);
-    if (sugg) { sugg.classList.remove('open'); sugg.innerHTML = ''; }
-  }
-}
-function onPartColorSearchInput(ci, pi, val) {
-  updatePartColorName(ci, pi, val);
-}
+    function filterPartColorOptions(ci, pi, query) {
+      const sugg = document.getElementById(`partColorSugg-${ci}-${pi}`);
+      if (!sugg) return;
+      const q = (query || '').trim();
+      if (!q) { sugg.classList.remove('open'); sugg.innerHTML = ''; return; }
+      const matches = PREDEFINED_COLORS.filter(pc => pc.name.includes(q));
+      let html = '';
+      if (matches.length === 0) {
+        html += '<div class="color-no-match"><i class="fa-solid fa-magnifying-glass"></i> لا توجد ألوان مطابقة</div>';
+      } else {
+        html += matches.slice(0, 40).map(pc => `
+          <button type="button" class="color-suggestion-chip" onclick="selectPartColorFromSuggestion(${ci}, ${pi}, '${escapeAttr(pc.name)}')">
+            <span class="chip-swatch" style="background:${pc.hex};"></span>
+            <span>${escapeHtml(pc.name)}</span>
+            <span class="chip-hex">${pc.hex.toUpperCase()}</span>
+          </button>
+        `).join('');
+      }
+      html += `<button type="button" class="color-suggestion-chip is-custom" onclick="selectCustomPartColor(${ci}, ${pi})"><span class="chip-swatch"><i class="fa-solid fa-pen"></i></span><span>لون مخصص...</span></button>`;
+      sugg.innerHTML = html;
+      sugg.classList.add('open');
+    }
+    function selectPartColorFromSuggestion(ci, pi, name) {
+      if (!comboRows[ci]?.parts?.[pi]) return;
+      const p = getPredefinedColor(name);
+      if (!p) return;
+      comboRows[ci].parts[pi].name = p.name;
+      comboRows[ci].parts[pi].hex = p.hex;
+      renderCombosRows();
+    }
+    function selectCustomPartColor(ci, pi) {
+      if (!comboRows[ci]?.parts?.[pi]) return;
+      comboRows[ci].parts[pi].name = '';
+      renderCombosRows();
+      setTimeout(() => {
+        const card = document.querySelectorAll('.combo-card')[ci];
+        if (!card) return;
+        const partCard = card.querySelectorAll('.part-card')[pi];
+        if (!partCard) return;
+        const input = partCard.querySelector('.color-search');
+        if (input) input.focus();
+      }, 60);
+    }
+    function handlePartColorSearchKeydown(event, ci, pi) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        const sugg = document.getElementById(`partColorSugg-${ci}-${pi}`);
+        if (!sugg) return;
+        const firstChip = sugg.querySelector('.color-suggestion-chip');
+        if (firstChip) firstChip.click();
+      } else if (event.key === 'Escape') {
+        const sugg = document.getElementById(`partColorSugg-${ci}-${pi}`);
+        if (sugg) { sugg.classList.remove('open'); sugg.innerHTML = ''; }
+      }
+    }
+    function onPartColorSearchInput(ci, pi, val) {
+      updatePartColorName(ci, pi, val);
+    }
+
     async function initAdmin() {
       showLoading(true);
       try {
         if (!currentUser) {
           try { const me = await apiJSON('/api/auth/me'); currentUser = me.user; } catch(e) { throw e; }
         }
-                await loadAllData();
+        await loadAllData();
         applyPermissions();
         renderDashboard();
         renderProductsTable();
@@ -2938,7 +2991,6 @@ function onPartColorSearchInput(ci, pi, val) {
         loadSettingsForm();
         applyThemeToAdmin();
         applyLogoToSidebar();
-        // ✅ تحميل بيانات التوصيل والمستخدمين
         if (currentUser?.role === 'admin') loadUsers().catch(() => {});
         loadDeliveryAll().catch(() => {});
       } catch (err) {
