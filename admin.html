@@ -1712,13 +1712,12 @@ document.addEventListener('click', (e) => {
                   grouped[c.comboName].images.push(img);
               });
             });
-            comboRows = Object.values(grouped).map(g => ({
-              name: g.name,
-              images: g.images.length ? g.images : [''],
-              parts: g.parts
-                availableAges: [...(p.ages || [])]   // ← أضف هذا السطر
-
-            }));
+           comboRows = Object.values(grouped).map(g => ({
+  name: g.name,
+  images: g.images.length ? g.images : [''],
+  parts: g.parts,
+  availableAges: [...(p.ages || [])]
+}));
           } else {
             comboRows = [];
           }
