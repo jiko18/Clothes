@@ -1733,11 +1733,11 @@
             return cm ? [...cm.comboAvailableAges] : null;
           };
 
-          if (p.combos && p.combos.length) {
-            comboRows = p.combos.map(c => {
-              let availAges = (Array.isArray(c.availableAges) && c.availableAges.length > 0)
-                ? [...c.availableAges]
-                : null;
+      if (p.combos && p.combos.length) {
+              comboRows = p.combos.map(c => {
+                let availAges = Array.isArray(c.availableAges)
+                  ? [...c.availableAges]
+                  : null;
               if (availAges === null) {
                 const fromColors = getAgesFromColors(c.name);
                 if (fromColors) availAges = fromColors;
