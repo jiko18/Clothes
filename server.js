@@ -34,7 +34,6 @@ const db = createClient({
 async function initDB() {
   console.log('🔄 Initializing database...');
 
-  // ---------- حذف جدول قديم بمخطط خاطئ ----------
   try {
     const oldCheck = await db.execute(
       "SELECT sql FROM sqlite_master WHERE type='table' AND name='products'"
@@ -45,7 +44,6 @@ async function initDB() {
     }
   } catch (_) {}
 
-  // ---------- Migration 1: delivery_prices → إضافة express ----------
   try {
     const check = await db.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='delivery_prices'");
     if (check.rows.length > 0 && !check.rows[0].sql.includes("'express'")) {
@@ -67,7 +65,6 @@ async function initDB() {
     }
   } catch (e) { console.error('delivery_prices migration error:', e.message); }
 
-  // ---------- Migration 2: orders → إضافة express ----------
   try {
     const check = await db.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='orders'");
     if (check.rows.length > 0 && !check.rows[0].sql.includes("'express'")) {
@@ -109,7 +106,6 @@ async function initDB() {
     }
   } catch (e) { console.error('orders migration error:', e.message); }
 
-  // ---------- Migration 3: products → إضافة is_set, badge_color, badge_color_name ----------
   try {
     const cols = await db.execute("PRAGMA table_info(products)");
     if (cols.rows.length > 0) {
@@ -128,7 +124,6 @@ async function initDB() {
     }
   } catch (e) { console.error('products migration error:', e.message); }
 
-  // ---------- Migration 4: product_colors → combo_name, part_label, combo_available_ages ----------
   try {
     const cols = await db.execute("PRAGMA table_info(product_colors)");
     if (cols.rows.length > 0) {
@@ -140,7 +135,6 @@ async function initDB() {
         await db.execute("ALTER TABLE product_colors ADD COLUMN part_label TEXT");
         console.log('✅ Added part_label to product_colors');
       }
-      // ✅ جديد: الأعمار المتوفرة لكل طقم (JSON array)
       if (!cols.rows.some(r => r.name === 'combo_available_ages')) {
         await db.execute("ALTER TABLE product_colors ADD COLUMN combo_available_ages TEXT");
         console.log('✅ Added combo_available_ages to product_colors');
@@ -148,7 +142,6 @@ async function initDB() {
     }
   } catch (e) { console.error('product_colors migration error:', e.message); }
 
-  // ---------- إنشاء الجداول (المحدثة) ----------
   const tables = [
     `CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -389,6 +382,27 @@ async function initDB() {
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
       FOREIGN KEY (related_order_id) REFERENCES orders(id) ON DELETE SET NULL
     )`,
+    `CREATE TABLE IF NOT EXISTS deleted_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      item_type TEXT NOT NULL,
+      item_id TEXT NOT NULL,
+      item_name TEXT,
+      item_data TEXT NOT NULL,
+      deleted_by_user_id INTEGER,
+      deleted_by_username TEXT,
+      deleted_at TEXT NOT NULL DEFAULT (datetime('now'))
+    )`,
+    `CREATE TABLE IF NOT EXISTS backups (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT,
+      description TEXT,
+      data TEXT NOT NULL,
+      item_counts TEXT,
+      created_by_user_id INTEGER,
+      created_by_username TEXT,
+      is_auto INTEGER DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    )`,
   ];
 
   for (const sql of tables) {
@@ -396,7 +410,6 @@ async function initDB() {
     catch (err) { console.error('❌ Table creation error:', err.message); }
   }
 
-  // ---------- الفهارس ----------
   const indexes = [
     `CREATE INDEX IF NOT EXISTS idx_sessions_token         ON sessions(token)`,
     `CREATE INDEX IF NOT EXISTS idx_sessions_user          ON sessions(user_id)`,
@@ -419,12 +432,14 @@ async function initDB() {
     `CREATE INDEX IF NOT EXISTS idx_reviews_product        ON reviews(product_id)`,
     `CREATE INDEX IF NOT EXISTS idx_notifications_user     ON notifications(user_id)`,
     `CREATE INDEX IF NOT EXISTS idx_delivery_type_wilaya   ON delivery_prices(delivery_type, wilaya)`,
+    `CREATE INDEX IF NOT EXISTS idx_deleted_items_type     ON deleted_items(item_type)`,
+    `CREATE INDEX IF NOT EXISTS idx_deleted_items_date     ON deleted_items(deleted_at)`,
+    `CREATE INDEX IF NOT EXISTS idx_backups_date           ON backups(created_at)`,
   ];
   for (const sql of indexes) {
     try { await db.execute(sql); } catch (err) { console.error('Index err:', err.message); }
   }
 
-  // ---------- البيانات الأولية ----------
   const wilayasList = [
     [1,'أدرار'],[2,'الشلف'],[3,'الأغواط'],[4,'أم البواقي'],[5,'باتنة'],
     [6,'بجاية'],[7,'بسكرة'],[8,'بشار'],[9,'البليدة'],[10,'البويرة'],
@@ -448,7 +463,6 @@ async function initDB() {
     } catch (_) {}
   }
 
-  // ألوان الثيم
   for (const [name, value] of [
     ['primary', '#ff6b81'],
     ['primaryDark', '#e8556d'],
@@ -463,7 +477,6 @@ async function initDB() {
     } catch (_) {}
   }
 
-  // ✅ أسعار التوصيل الافتراضية الثلاثة (منزل / وكالة / سريع)
   for (const [type, price] of [['home', 600], ['agency', 400], ['express', 900]]) {
     try {
       await db.execute({
@@ -473,7 +486,6 @@ async function initDB() {
     } catch (_) {}
   }
 
-  // الإعدادات
   const settingsSeeds = [
     ['storeName', 'بيبي شوب'],
     ['phone', '0550 00 00 00'],
@@ -595,6 +607,122 @@ async function sendTelegramMessage(text) {
 }
 
 // ============================================================
+// 🗑️ TRASH & 💾 BACKUPS HELPERS
+// ============================================================
+async function saveToTrash(itemType, itemId, itemName, itemData, user) {
+  try {
+    await db.execute({
+      sql: `INSERT INTO deleted_items (item_type, item_id, item_name, item_data, deleted_by_user_id, deleted_by_username)
+            VALUES (?, ?, ?, ?, ?, ?)`,
+      args: [
+        itemType,
+        String(itemId),
+        itemName || '',
+        JSON.stringify(itemData),
+        user?.user_id || null,
+        user?.username || 'system'
+      ]
+    });
+  } catch (e) { console.error('❌ saveToTrash error:', e.message); }
+}
+
+async function createBackup(name, user, isAuto = false) {
+  const products = [];
+  const productRows = await db.execute('SELECT id FROM products ORDER BY id');
+  for (const row of productRows.rows) {
+    const p = await getProductWithRelations(row.id);
+    if (p) products.push(p);
+  }
+
+  const settingsRes = await db.execute('SELECT key, value FROM settings');
+  const settings = {};
+  for (const row of settingsRes.rows) settings[row.key] = row.value;
+
+  const themeRes = await db.execute('SELECT name, color_value FROM theme_colors');
+  const theme = {};
+  for (const row of themeRes.rows) theme[row.name] = row.color_value;
+
+  const deliveryRes = await db.execute('SELECT * FROM delivery_prices');
+  const delivery = deliveryRes.rows;
+
+  const usersRes = await db.execute(
+    'SELECT id, username, email, full_name, role, is_active, created_at FROM users'
+  );
+  const users = usersRes.rows;
+
+  const ordersRes = await db.execute({
+    sql: "SELECT * FROM orders ORDER BY created_at DESC LIMIT 1000",
+    args: []
+  });
+  const orders = [];
+  for (const o of ordersRes.rows) {
+    const itemsRes = await db.execute({
+      sql: 'SELECT * FROM order_items WHERE order_id = ?', args: [o.id]
+    });
+    orders.push({ ...o, items: itemsRes.rows });
+  }
+
+  const backupData = {
+    version: 1,
+    createdAt: new Date().toISOString(),
+    products, settings, theme, delivery, users, orders
+  };
+
+  const counts = {
+    products: products.length,
+    orders: orders.length,
+    users: users.length
+  };
+
+  const result = await db.execute({
+    sql: `INSERT INTO backups (name, description, data, item_counts, created_by_user_id, created_by_username, is_auto)
+          VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    args: [
+      name || `نسخة ${new Date().toLocaleString('ar-DZ')}`,
+      '',
+      JSON.stringify(backupData),
+      JSON.stringify(counts),
+      user?.user_id || null,
+      user?.username || 'system',
+      isAuto ? 1 : 0
+    ]
+  });
+
+  console.log('✅ Backup created, id =', result.lastInsertRowid);
+  return { id: Number(result.lastInsertRowid), counts };
+}
+
+async function maybeAutoBackup() {
+  try {
+    const lastRes = await db.execute({
+      sql: "SELECT id, created_at FROM backups WHERE is_auto = 1 ORDER BY created_at DESC LIMIT 1",
+      args: []
+    });
+    let shouldBackup = false;
+    if (lastRes.rows.length === 0) {
+      shouldBackup = true;
+    } else {
+      const lastDate = new Date(lastRes.rows[0].created_at);
+      const hoursSince = (Date.now() - lastDate.getTime()) / (1000 * 60 * 60);
+      if (hoursSince >= 24) shouldBackup = true;
+    }
+    if (shouldBackup) {
+      await createBackup('نسخة تلقائية', null, true);
+      console.log('✅ Auto backup created');
+      const autoBackups = await db.execute({
+        sql: "SELECT id FROM backups WHERE is_auto = 1 ORDER BY created_at DESC",
+        args: []
+      });
+      if (autoBackups.rows.length > 7) {
+        for (let i = 7; i < autoBackups.rows.length; i++) {
+          await db.execute({ sql: 'DELETE FROM backups WHERE id = ?', args: [autoBackups.rows[i].id] });
+        }
+      }
+    }
+  } catch (e) { console.error('Auto backup failed:', e.message); }
+}
+
+// ============================================================
 // 4) Health
 // ============================================================
 app.get('/api/health', async (req, res) => {
@@ -706,10 +834,16 @@ app.put('/api/users/:id', authMiddleware, adminMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ✅ DELETE: يحفظ المستخدم في السلة قبل الحذف
 app.delete('/api/users/:id', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     if (id === req.user.user_id) return res.status(400).json({ error: 'لا يمكنك حذف حسابك الخاص' });
+    const u = await db.execute({ sql: 'SELECT * FROM users WHERE id = ?', args: [id] });
+    if (u.rows.length > 0) {
+      const uData = u.rows[0];
+      await saveToTrash('user', id, uData.username, uData, req.user);
+    }
     await db.execute({ sql: 'DELETE FROM users WHERE id = ?', args: [id] });
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -773,7 +907,6 @@ async function getProductWithRelations(id) {
     const images = imgs.rows.map(r => r.media_url);
     const mainRow = imgs.rows.find(r => Number(r.is_main) === 1) || imgs.rows[0];
 
-    // ✅ فك تشفير الأعمار المتوفرة في هذا الطقم
     let comboAvailableAges = [];
     if (c.combo_available_ages) {
       try { comboAvailableAges = JSON.parse(c.combo_available_ages); } catch(e) { comboAvailableAges = []; }
@@ -785,13 +918,12 @@ async function getProductWithRelations(id) {
       hex: c.hex,
       comboName: c.combo_name || null,
       partLabel: c.part_label || null,
-      comboAvailableAges,            // ✅ جديد
+      comboAvailableAges,
       image: mainRow ? mainRow.media_url : '',
       images: images.length ? images : (mainRow ? [mainRow.media_url] : [''])
     });
   }
 
-  // ✅ بناء combos (الأطقم) ديناميكياً مع availableAges
   const isSet = !!Number(product.is_set);
   let combos = null;
   if (isSet) {
@@ -799,12 +931,11 @@ async function getProductWithRelations(id) {
     flatColors.forEach(c => {
       const key = c.comboName || 'المجموعة الأساسية';
       if (!comboMap.has(key)) {
-        // نأخذ صور الطقم من أول قطعة
         comboMap.set(key, {
           name: key,
           images: c.images,
           parts: [],
-          availableAges: Array.isArray(c.comboAvailableAges) ? [...c.comboAvailableAges] : []   // ✅ جديد
+          availableAges: Array.isArray(c.comboAvailableAges) ? [...c.comboAvailableAges] : []
         });
       }
       comboMap.get(key).parts.push({
@@ -832,7 +963,7 @@ async function getProductWithRelations(id) {
     description: product.description,
     stockQuantity: product.stock_quantity,
     isActive: !!Number(product.is_active),
-    hidden: !Number(product.is_active),      // ✅ جديد
+    hidden: !Number(product.is_active),
     isSet,
     combos,
     viewsCount: product.views_count,
@@ -845,7 +976,6 @@ async function getProductWithRelations(id) {
   };
 }
 
-// ✅ GET /api/products يدعم ?include_hidden=1 (للأدمن فقط)
 app.get('/api/products', async (req, res) => {
   try {
     const { category, gender, search, include_hidden } = req.query;
@@ -889,7 +1019,6 @@ async function saveProductRelations(productId, colors, ages, details) {
       const c = colors[ci];
       if (!c || !c.name) continue;
 
-      // ✅ تسلسل الأعمار المتوفرة في هذا الطقم
       const comboAgesJson = Array.isArray(c.comboAvailableAges) && c.comboAvailableAges.length
         ? JSON.stringify(c.comboAvailableAges)
         : null;
@@ -934,7 +1063,6 @@ async function saveProductRelations(productId, colors, ages, details) {
   }
 }
 
-// ✅ POST: يدعم hidden
 app.post('/api/products', authMiddleware, async (req, res) => {
   try {
     const {
@@ -964,7 +1092,7 @@ app.post('/api/products', authMiddleware, async (req, res) => {
         badgeColorName || 'أصفر فاتح',
         description || '',
         Number(stockQuantity) || 0,
-        effectiveActive,           // ✅ is_active
+        effectiveActive,
         isSet ? 1 : 0
       ]
     });
@@ -975,7 +1103,6 @@ app.post('/api/products', authMiddleware, async (req, res) => {
   } catch (err) { console.error('POST /products:', err); res.status(500).json({ error: err.message }); }
 });
 
-// ✅ PUT: يدعم hidden مع أسبقية منطقية
 app.put('/api/products/:id', authMiddleware, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
@@ -985,7 +1112,6 @@ app.put('/api/products/:id', authMiddleware, async (req, res) => {
       colors, ages, details, stockQuantity, isActive, isSet, hidden
     } = req.body;
 
-    // ✅ تحديد is_active مع أسبقية: hidden > isActive > القيمة الحالية
     const current = await db.execute({ sql: 'SELECT is_active FROM products WHERE id = ?', args: [id] });
     if (current.rows.length === 0) return res.status(404).json({ error: 'Product not found' });
 
@@ -1010,7 +1136,7 @@ app.put('/api/products/:id', authMiddleware, async (req, res) => {
         badgeColor || '#feca57', badgeColorName || 'أصفر فاتح',
         description || '',
         Number(stockQuantity) || 0,
-        effectiveActive,           // ✅ is_active (مُحسوب)
+        effectiveActive,
         isSet ? 1 : 0,
         id
       ]
@@ -1022,9 +1148,17 @@ app.put('/api/products/:id', authMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ✅ DELETE: يحفظ المنتج في السلة قبل الحذف
 app.delete('/api/products/:id', authMiddleware, async (req, res) => {
-  try { await db.execute({ sql: 'DELETE FROM products WHERE id = ?', args: [parseInt(req.params.id)] }); res.json({ success: true }); }
-  catch (err) { res.status(500).json({ error: err.message }); }
+  try {
+    const id = parseInt(req.params.id);
+    const product = await getProductWithRelations(id);
+    if (product) {
+      await saveToTrash('product', id, product.name, product, req.user);
+    }
+    await db.execute({ sql: 'DELETE FROM products WHERE id = ?', args: [id] });
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ============================================================
@@ -1208,24 +1342,26 @@ app.put('/api/orders/:id/status', authMiddleware, async (req, res) => {
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
-// ============================================================
-// ✅ حذف طلب (مع CASCADE لحذف عناصره وسجله)
-// ============================================================
+
+// ✅ DELETE: يحفظ الطلب كاملاً في السلة قبل الحذف
 app.delete('/api/orders/:id', authMiddleware, async (req, res) => {
   try {
     const key = req.params.id;
     const orderRes = await db.execute({
-      sql: 'SELECT id FROM orders WHERE order_number = ? OR id = ?',
+      sql: 'SELECT * FROM orders WHERE order_number = ? OR id = ?',
       args: [key, parseInt(key) || 0]
     });
     if (orderRes.rows.length === 0) return res.status(404).json({ error: 'الطلب غير موجود' });
-    const orderId = orderRes.rows[0].id;
-
-    // الـ CASCADE في قاعدة البيانات يتكفل بحذف order_items و order_status_history
-    await db.execute({ sql: 'DELETE FROM orders WHERE id = ?', args: [orderId] });
+    const o = orderRes.rows[0];
+    const itemsRes = await db.execute({ sql: 'SELECT * FROM order_items WHERE order_id = ?', args: [o.id] });
+    const historyRes = await db.execute({ sql: 'SELECT * FROM order_status_history WHERE order_id = ?', args: [o.id] });
+    const fullOrder = { ...o, items: itemsRes.rows, statusHistory: historyRes.rows };
+    await saveToTrash('order', o.order_number, `${o.first_name} ${o.last_name} — ${o.total} د.ج`, fullOrder, req.user);
+    await db.execute({ sql: 'DELETE FROM orders WHERE id = ?', args: [o.id] });
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
+
 // ============================================================
 // 8) SETTINGS (admin only)
 // ============================================================
@@ -1238,8 +1374,21 @@ app.get('/api/settings', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ✅ PUT: يحفظ الإعدادات القديمة في السلة قبل التعديل
 app.put('/api/settings', authMiddleware, adminMiddleware, async (req, res) => {
   try {
+    const currentRes = await db.execute('SELECT key, value FROM settings');
+    const currentSettings = {};
+    for (const row of currentRes.rows) currentSettings[row.key] = row.value;
+    if (Object.keys(currentSettings).length > 0) {
+      await saveToTrash(
+        'settings',
+        Date.now().toString(),
+        `إعدادات ${new Date().toLocaleString('ar-DZ')}`,
+        currentSettings,
+        req.user
+      );
+    }
     const settings = req.body || {};
     for (const [key, value] of Object.entries(settings)) {
       await db.execute({
@@ -1421,7 +1570,242 @@ app.get('/api/stats', authMiddleware, async (req, res) => {
 });
 
 // ============================================================
-// 14) SPA Fallback
+// 14) TRASH (سلة المحذوفات)
+// ============================================================
+app.get('/api/trash', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { type } = req.query;
+    let sql = 'SELECT id, item_type, item_id, item_name, deleted_by_username, deleted_at FROM deleted_items';
+    const args = [];
+    if (type && type !== 'all') { sql += ' WHERE item_type = ?'; args.push(type); }
+    sql += ' ORDER BY deleted_at DESC LIMIT 500';
+    const result = await db.execute({ sql, args });
+    res.json(result.rows);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.get('/api/trash/:id', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const result = await db.execute({
+      sql: 'SELECT * FROM deleted_items WHERE id = ?',
+      args: [parseInt(req.params.id)]
+    });
+    if (result.rows.length === 0) return res.status(404).json({ error: 'غير موجود' });
+    const row = result.rows[0];
+    const parsed = { ...row, item_data: JSON.parse(row.item_data) };
+    if (parsed.item_type === 'user' && parsed.item_data) {
+      delete parsed.item_data.password_hash;
+    }
+    res.json(parsed);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/trash/:id/restore', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const result = await db.execute({ sql: 'SELECT * FROM deleted_items WHERE id = ?', args: [id] });
+    if (result.rows.length === 0) return res.status(404).json({ error: 'غير موجود' });
+    const row = result.rows[0];
+    const data = JSON.parse(row.item_data);
+
+    if (row.item_type === 'product') {
+      const insertRes = await db.execute({
+        sql: `INSERT INTO products
+          (name, slug, category, category_label, gender, price, old_price, badge, badge_type, badge_color, badge_color_name, description, stock_quantity, is_active, is_set)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        args: [
+          data.name, (data.slug || `restored-${Date.now()}`) + '-' + Math.floor(Math.random()*1000),
+          data.category, data.categoryLabel, data.gender,
+          data.price, data.oldPrice, data.badge, data.badgeType,
+          data.badgeColor || '#feca57', data.badgeColorName || 'أصفر فاتح',
+          data.description || '', data.stockQuantity || 0,
+          data.isActive !== false ? 1 : 0,
+          data.isSet ? 1 : 0
+        ]
+      });
+      const newProductId = Number(insertRes.lastInsertRowid);
+      const colorsForSave = (data.colors || []).map(c => ({
+        name: c.name, hex: c.hex,
+        comboName: c.comboName || null,
+        partLabel: c.partLabel || null,
+        images: c.images || (c.image ? [c.image] : []),
+        comboAvailableAges: c.comboAvailableAges || []
+      }));
+      await saveProductRelations(newProductId, colorsForSave, data.ages || [], data.details || []);
+      await db.execute({ sql: 'DELETE FROM deleted_items WHERE id = ?', args: [id] });
+      return res.json({ success: true, newId: newProductId, message: 'تم استعادة المنتج ✓' });
+    }
+
+    if (row.item_type === 'order') {
+      let orderNumber = data.order_number || `ORD-${Date.now()}`;
+      const dupCheck = await db.execute({ sql: 'SELECT id FROM orders WHERE order_number = ?', args: [orderNumber] });
+      if (dupCheck.rows.length > 0) orderNumber = `ORD-${Date.now()}-R`;
+      const orderRes = await db.execute({
+        sql: `INSERT INTO orders
+          (order_number, customer_id, first_name, last_name, phone1, phone2, wilaya, municipality, address,
+           delivery_method, delivery_cost, subtotal, discount, coupon_code, total, status, notes, admin_notes, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        args: [
+          orderNumber, data.customer_id || null,
+          data.first_name, data.last_name, data.phone1, data.phone2,
+          data.wilaya, data.municipality, data.address,
+          data.delivery_method || 'home', data.delivery_cost || 0,
+          data.subtotal || 0, data.discount || 0, data.coupon_code,
+          data.total || 0, data.status || 'pending',
+          data.notes, data.admin_notes,
+          data.created_at || new Date().toISOString()
+        ]
+      });
+      const newOrderId = Number(orderRes.lastInsertRowid);
+      for (const item of (data.items || [])) {
+        await db.execute({
+          sql: `INSERT INTO order_items (order_id, product_id, product_name, color_name, color_hex, age_label, quantity, unit_price, total_price, product_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          args: [newOrderId, item.product_id, item.product_name, item.color_name, item.color_hex, item.age_label, item.quantity, item.unit_price, item.total_price, item.product_image]
+        });
+      }
+      await db.execute({ sql: 'DELETE FROM deleted_items WHERE id = ?', args: [id] });
+      return res.json({ success: true, newId: newOrderId, message: 'تم استعادة الطلب ✓' });
+    }
+
+    if (row.item_type === 'user') {
+      const existing = await db.execute({ sql: 'SELECT id FROM users WHERE username = ?', args: [data.username] });
+      if (existing.rows.length > 0) return res.status(400).json({ error: 'اسم المستخدم موجود بالفعل' });
+      await db.execute({
+        sql: `INSERT INTO users (username, email, password_hash, full_name, role, is_active) VALUES (?, ?, ?, ?, ?, ?)`,
+        args: [data.username, data.email, data.password_hash, data.full_name, data.role, data.is_active ? 1 : 0]
+      });
+      await db.execute({ sql: 'DELETE FROM deleted_items WHERE id = ?', args: [id] });
+      return res.json({ success: true, message: 'تم استعادة المستخدم ✓' });
+    }
+
+    if (row.item_type === 'settings') {
+      for (const [key, value] of Object.entries(data)) {
+        await db.execute({
+          sql: `INSERT INTO settings (key, value, updated_at) VALUES (?, ?, datetime('now'))
+                ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = datetime('now')`,
+          args: [key, String(value)]
+        });
+      }
+      await db.execute({ sql: 'DELETE FROM deleted_items WHERE id = ?', args: [id] });
+      return res.json({ success: true, message: 'تم استعادة الإعدادات القديمة ✓' });
+    }
+
+    res.status(400).json({ error: 'نوع غير مدعوم' });
+  } catch (err) {
+    console.error('restore error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/trash/:id', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    await db.execute({ sql: 'DELETE FROM deleted_items WHERE id = ?', args: [parseInt(req.params.id)] });
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/trash', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    await db.execute('DELETE FROM deleted_items');
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// ============================================================
+// 15) BACKUPS (النسخ الاحتياطية)
+// ============================================================
+app.get('/api/backups', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const result = await db.execute({
+      sql: 'SELECT id, name, description, item_counts, created_by_username, is_auto, created_at FROM backups ORDER BY created_at DESC',
+      args: []
+    });
+    const backups = result.rows.map(row => ({
+      ...row,
+      item_counts: row.item_counts ? JSON.parse(row.item_counts) : null
+    }));
+    res.json(backups);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/backups', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { name, description } = req.body || {};
+    const result = await createBackup(name, req.user, false);
+    res.json({ success: true, ...result });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.get('/api/backups/:id/download', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const result = await db.execute({ sql: 'SELECT * FROM backups WHERE id = ?', args: [parseInt(req.params.id)] });
+    if (result.rows.length === 0) return res.status(404).json({ error: 'غير موجود' });
+    const backup = result.rows[0];
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="babyshop-backup-${backup.id}-${new Date(backup.created_at).toISOString().slice(0,10)}.json"`);
+    res.send(backup.data);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/backups/:id/restore', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const result = await db.execute({ sql: 'SELECT * FROM backups WHERE id = ?', args: [id] });
+    if (result.rows.length === 0) return res.status(404).json({ error: 'غير موجود' });
+    const backup = result.rows[0];
+    const data = JSON.parse(backup.data);
+
+    // نسخة أمان قبل الاستعادة
+    await createBackup(`قبل استعادة "${backup.name}"`, req.user, true);
+
+    if (data.settings && typeof data.settings === 'object') {
+      for (const [key, value] of Object.entries(data.settings)) {
+        await db.execute({
+          sql: `INSERT INTO settings (key, value, updated_at) VALUES (?, ?, datetime('now'))
+                ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = datetime('now')`,
+          args: [key, String(value)]
+        });
+      }
+    }
+    if (data.theme && typeof data.theme === 'object') {
+      for (const [name, value] of Object.entries(data.theme)) {
+        await db.execute({
+          sql: `INSERT INTO theme_colors (name, color_value, updated_at) VALUES (?, ?, datetime('now'))
+                ON CONFLICT(name) DO UPDATE SET color_value = excluded.color_value, updated_at = datetime('now')`,
+          args: [name, String(value)]
+        });
+      }
+    }
+    if (Array.isArray(data.delivery)) {
+      for (const dp of data.delivery) {
+        await db.execute({
+          sql: `INSERT INTO delivery_prices (delivery_type, wilaya, price, is_default, updated_at)
+                VALUES (?, ?, ?, ?, datetime('now'))
+                ON CONFLICT(delivery_type, wilaya) DO UPDATE SET price = excluded.price, updated_at = datetime('now')`,
+          args: [dp.delivery_type, dp.wilaya, dp.price, dp.is_default]
+        });
+      }
+    }
+
+    res.json({
+      success: true,
+      message: 'تم استعادة الإعدادات والثيم والتوصيل ✓ — المنتجات والطلبات تُستعاد من سلة المحذوفات أو بالتحميل اليدوي'
+    });
+  } catch (err) {
+    console.error('restore backup error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/backups/:id', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    await db.execute({ sql: 'DELETE FROM backups WHERE id = ?', args: [parseInt(req.params.id)] });
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// ============================================================
+// 16) SPA Fallback
 // ============================================================
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api/')) return res.status(404).json({ error: 'API endpoint not found' });
@@ -1430,7 +1814,7 @@ app.get('*', (req, res) => {
 });
 
 // ============================================================
-// 15) Start
+// 17) Start
 // ============================================================
 initDB()
   .then(() => {
@@ -1438,5 +1822,9 @@ initDB()
       console.log(`🚀 Server running on http://localhost:${PORT}`);
       console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
     });
+    // ✅ نسخة احتياطية أولى بعد 30 ثانية من الإقلاع
+    setTimeout(() => { maybeAutoBackup().catch(e => console.error('auto backup:', e)); }, 30 * 1000);
+    // ✅ ثم كل ساعة تحقق إذا مر 24 ساعة
+    setInterval(() => { maybeAutoBackup().catch(e => console.error('auto backup:', e)); }, 60 * 60 * 1000);
   })
   .catch((err) => { console.error('❌ Failed to initialize DB:', err); process.exit(1); });
