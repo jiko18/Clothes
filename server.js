@@ -128,7 +128,7 @@ async function initDB() {
     }
   } catch (e) { console.error('products migration error:', e.message); }
 
-  // ---------- Migration 4: product_colors → combo_name, part_label ----------
+  // ---------- Migration 4: product_colors → combo_name, part_label, combo_available_ages ----------
   try {
     const cols = await db.execute("PRAGMA table_info(product_colors)");
     if (cols.rows.length > 0) {
@@ -139,6 +139,11 @@ async function initDB() {
       if (!cols.rows.some(r => r.name === 'part_label')) {
         await db.execute("ALTER TABLE product_colors ADD COLUMN part_label TEXT");
         console.log('✅ Added part_label to product_colors');
+      }
+      // ✅ جديد: الأعمار المتوفرة لكل طقم (JSON array)
+      if (!cols.rows.some(r => r.name === 'combo_available_ages')) {
+        await db.execute("ALTER TABLE product_colors ADD COLUMN combo_available_ages TEXT");
+        console.log('✅ Added combo_available_ages to product_colors');
       }
     }
   } catch (e) { console.error('product_colors migration error:', e.message); }
@@ -214,6 +219,7 @@ async function initDB() {
       hex TEXT NOT NULL DEFAULT '#cccccc',
       combo_name TEXT,
       part_label TEXT,
+      combo_available_ages TEXT,
       sort_order INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
@@ -766,18 +772,26 @@ async function getProductWithRelations(id) {
     });
     const images = imgs.rows.map(r => r.media_url);
     const mainRow = imgs.rows.find(r => Number(r.is_main) === 1) || imgs.rows[0];
+
+    // ✅ فك تشفير الأعمار المتوفرة في هذا الطقم
+    let comboAvailableAges = [];
+    if (c.combo_available_ages) {
+      try { comboAvailableAges = JSON.parse(c.combo_available_ages); } catch(e) { comboAvailableAges = []; }
+    }
+
     flatColors.push({
       id: c.id,
       name: c.name,
       hex: c.hex,
       comboName: c.combo_name || null,
       partLabel: c.part_label || null,
+      comboAvailableAges,            // ✅ جديد
       image: mainRow ? mainRow.media_url : '',
       images: images.length ? images : (mainRow ? [mainRow.media_url] : [''])
     });
   }
 
-  // ✅ بناء combos (الأطقم) ديناميكياً من الألوان المحفوظة
+  // ✅ بناء combos (الأطقم) ديناميكياً مع availableAges
   const isSet = !!Number(product.is_set);
   let combos = null;
   if (isSet) {
@@ -786,11 +800,16 @@ async function getProductWithRelations(id) {
       const key = c.comboName || 'المجموعة الأساسية';
       if (!comboMap.has(key)) {
         // نأخذ صور الطقم من أول قطعة
-        comboMap.set(key, { name: key, images: c.images, parts: [] });
+        comboMap.set(key, {
+          name: key,
+          images: c.images,
+          parts: [],
+          availableAges: Array.isArray(c.comboAvailableAges) ? [...c.comboAvailableAges] : []   // ✅ جديد
+        });
       }
       comboMap.get(key).parts.push({
         label: c.partLabel || 'قطعة',
-        name: c.name, 
+        name: c.name,
         hex: c.hex
       });
     });
@@ -813,6 +832,7 @@ async function getProductWithRelations(id) {
     description: product.description,
     stockQuantity: product.stock_quantity,
     isActive: !!Number(product.is_active),
+    hidden: !Number(product.is_active),      // ✅ جديد
     isSet,
     combos,
     viewsCount: product.views_count,
@@ -825,15 +845,21 @@ async function getProductWithRelations(id) {
   };
 }
 
+// ✅ GET /api/products يدعم ?include_hidden=1 (للأدمن فقط)
 app.get('/api/products', async (req, res) => {
   try {
-    const { category, gender, search } = req.query;
-    let sql = 'SELECT id FROM products WHERE is_active = 1';
+    const { category, gender, search, include_hidden } = req.query;
+    let sql = 'SELECT id FROM products WHERE 1=1';
     const args = [];
+
+    if (include_hidden !== '1') {
+      sql += ' AND is_active = 1';
+    }
     if (category && category !== 'all') { sql += ' AND category = ?'; args.push(category); }
     if (gender && gender !== 'all') { sql += " AND (gender = ? OR gender = 'both')"; args.push(gender); }
     if (search) { sql += ' AND (name LIKE ? OR category_label LIKE ?)'; args.push(`%${search}%`, `%${search}%`); }
     sql += ' ORDER BY created_at DESC';
+
     const result = await db.execute({ sql, args });
     const products = [];
     for (const row of result.rows) {
@@ -862,10 +888,15 @@ async function saveProductRelations(productId, colors, ages, details) {
     for (let ci = 0; ci < colors.length; ci++) {
       const c = colors[ci];
       if (!c || !c.name) continue;
-      // ✅ حفظ بيانات الأطقم (combo_name, part_label)
+
+      // ✅ تسلسل الأعمار المتوفرة في هذا الطقم
+      const comboAgesJson = Array.isArray(c.comboAvailableAges) && c.comboAvailableAges.length
+        ? JSON.stringify(c.comboAvailableAges)
+        : null;
+
       const colorRes = await db.execute({
-        sql: 'INSERT INTO product_colors (product_id, name, hex, combo_name, part_label, sort_order) VALUES (?, ?, ?, ?, ?, ?)',
-        args: [productId, c.name, c.hex || '#cccccc', c.comboName || null, c.partLabel || null, ci]
+        sql: 'INSERT INTO product_colors (product_id, name, hex, combo_name, part_label, combo_available_ages, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        args: [productId, c.name, c.hex || '#cccccc', c.comboName || null, c.partLabel || null, comboAgesJson, ci]
       });
       const colorId = Number(colorRes.lastInsertRowid);
       let imgs = [];
@@ -903,20 +934,23 @@ async function saveProductRelations(productId, colors, ages, details) {
   }
 }
 
+// ✅ POST: يدعم hidden
 app.post('/api/products', authMiddleware, async (req, res) => {
   try {
     const {
       name, category, categoryLabel, gender, price, oldPrice,
-      badge, badgeType, badgeColor, badgeColorName, description, colors, ages, details, stockQuantity, isSet
+      badge, badgeType, badgeColor, badgeColorName, description,
+      colors, ages, details, stockQuantity, isSet, hidden
     } = req.body;
     if (!name || price === undefined) return res.status(400).json({ error: 'name and price are required' });
 
     const slug = (name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\u0600-\u06FF-]/g, '') || 'product') + '-' + Date.now();
+    const effectiveActive = hidden ? 0 : 1;
 
     const result = await db.execute({
       sql: `INSERT INTO products
-        (name, slug, category, category_label, gender, price, old_price, badge, badge_type, badge_color, badge_color_name, description, stock_quantity, is_set)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (name, slug, category, category_label, gender, price, old_price, badge, badge_type, badge_color, badge_color_name, description, stock_quantity, is_active, is_set)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [
         name, slug,
         category || 'winter',
@@ -930,6 +964,7 @@ app.post('/api/products', authMiddleware, async (req, res) => {
         badgeColorName || 'أصفر فاتح',
         description || '',
         Number(stockQuantity) || 0,
+        effectiveActive,           // ✅ is_active
         isSet ? 1 : 0
       ]
     });
@@ -940,13 +975,28 @@ app.post('/api/products', authMiddleware, async (req, res) => {
   } catch (err) { console.error('POST /products:', err); res.status(500).json({ error: err.message }); }
 });
 
+// ✅ PUT: يدعم hidden مع أسبقية منطقية
 app.put('/api/products/:id', authMiddleware, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const {
       name, category, categoryLabel, gender, price, oldPrice,
-      badge, badgeType, badgeColor, badgeColorName, description, colors, ages, details, stockQuantity, isActive, isSet
+      badge, badgeType, badgeColor, badgeColorName, description,
+      colors, ages, details, stockQuantity, isActive, isSet, hidden
     } = req.body;
+
+    // ✅ تحديد is_active مع أسبقية: hidden > isActive > القيمة الحالية
+    const current = await db.execute({ sql: 'SELECT is_active FROM products WHERE id = ?', args: [id] });
+    if (current.rows.length === 0) return res.status(404).json({ error: 'Product not found' });
+
+    let effectiveActive;
+    if (hidden !== undefined) {
+      effectiveActive = hidden ? 0 : 1;
+    } else if (isActive !== undefined) {
+      effectiveActive = isActive ? 1 : 0;
+    } else {
+      effectiveActive = Number(current.rows[0].is_active);
+    }
 
     await db.execute({
       sql: `UPDATE products SET
@@ -960,7 +1010,7 @@ app.put('/api/products/:id', authMiddleware, async (req, res) => {
         badgeColor || '#feca57', badgeColorName || 'أصفر فاتح',
         description || '',
         Number(stockQuantity) || 0,
-        isActive === false ? 0 : 1,
+        effectiveActive,           // ✅ is_active (مُحسوب)
         isSet ? 1 : 0,
         id
       ]

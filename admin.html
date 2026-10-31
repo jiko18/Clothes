@@ -1182,7 +1182,7 @@
 
     async function loadAllData() {
       const [products, settings, theme, delivery, orders, stats] = await Promise.all([
-        apiJSON('/api/products').catch(() => []),
+        apiJSON('/api/products?include_hidden=1').catch(() => []),
         loadSettingsFromAPI(),
         apiJSON('/api/theme').catch(() => ({...DEFAULT_THEME})),
         apiJSON('/api/delivery').catch(() => ({...DEFAULT_DELIVERY})),
@@ -1649,7 +1649,7 @@
         showLoading(true);
         await apiJSON(`/api/products/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
 
-        const freshProducts = await apiJSON('/api/products');
+        const freshProducts = await apiJSON('/api/products?include_hidden=1');
         const savedProd = freshProducts.find(x => x.id === id);
         const actuallySaved = savedProd && (!!savedProd.hidden === newHidden);
 
@@ -2127,7 +2127,10 @@
 
     async function refreshProductsAndDashboard() {
       try {
-        const [products, stats] = await Promise.all([apiJSON('/api/products'), apiJSON('/api/stats').catch(() => null)]);
+        const [products, stats] = await Promise.all([
+          apiJSON('/api/products?include_hidden=1'),
+          apiJSON('/api/stats').catch(() => null)
+        ]);
         data.products = products;
         if (stats) data.stats = stats;
         renderProductsTable();
