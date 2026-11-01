@@ -29,7 +29,7 @@ const db = createClient({
 });
 
 // ============================================================
-// 2) Database Init (Tables + Migrations + Seeds)
+// 2) Database Init
 // ============================================================
 async function initDB() {
   console.log('🔄 Initializing database...');
@@ -44,7 +44,6 @@ async function initDB() {
     }
   } catch (_) {}
 
-  // ✅ إعادة بناء جدول التوصيل بدون express وبدون is_default
   try {
     const check = await db.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='delivery_prices'");
     if (check.rows.length > 0 && (check.rows[0].sql.includes("'express'") || check.rows[0].sql.includes("is_default") || !check.rows[0].sql.includes("wilaya TEXT NOT NULL"))) {
@@ -53,7 +52,6 @@ async function initDB() {
     }
   } catch (e) { console.error('delivery_prices migration error:', e.message); }
 
-  // ✅ إعادة بناء جدول المستخدمين لتقييد الأدوار (admin, staff فقط)
   try {
     const check = await db.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='users'");
     if (check.rows.length > 0 && check.rows[0].sql.includes("'manager'")) {
@@ -356,7 +354,6 @@ async function initDB() {
     catch (err) { console.error('❌ Table creation error:', err.message); }
   }
 
-  // تنظيف جدول التوصيل من البيانات القديمة إذا وجدت
   try {
     await db.execute("DELETE FROM delivery_prices WHERE delivery_type = 'express'");
   } catch(e) {}
@@ -529,7 +526,8 @@ function escapeTelegram(str) {
   return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-async function sendTelegramMessage(text) {
+// ✅ دالة إرسال تيليجرام محسّنة (مع fallback وsplit)
+async function sendTelegramMessage(text, options = {}) {
   try {
     const tokenRes = await db.execute({
       sql: "SELECT value FROM settings WHERE key = 'telegramBotToken'", args: []
@@ -545,20 +543,73 @@ async function sendTelegramMessage(text) {
       return false;
     }
 
-    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML', disable_web_page_preview: true })
-    });
-    const result = await res.json();
-    if (!result.ok) { console.error('❌ Telegram API error:', result.description); return false; }
-    console.log('✅ Telegram notification sent');
-    return true;
-  } catch (e) { console.error('❌ Telegram error:', e.message); return false; }
+    // ✅ تقسيم الرسائل الطويلة (تيليجرام: 4096 حرفاً كحد أقصى)
+    const MAX_LEN = 4000;
+    const chunks = [];
+    if (text.length <= MAX_LEN) {
+      chunks.push(text);
+    } else {
+      let remaining = text;
+      while (remaining.length > 0) {
+        let cut = Math.min(MAX_LEN, remaining.length);
+        if (cut < remaining.length) {
+          const lastNL = remaining.lastIndexOf('\n', cut);
+          if (lastNL > MAX_LEN * 0.4) cut = lastNL;
+        }
+        chunks.push(remaining.slice(0, cut));
+        remaining = remaining.slice(cut);
+      }
+    }
+    console.log(`📤 Sending Telegram message (${chunks.length} chunk(s), ${text.length} chars)`);
+
+    let allOk = true;
+    for (let i = 0; i < chunks.length; i++) {
+      const chunk = chunks[i];
+      const useHtml = options.parseMode !== false;
+      const payload = { chat_id: chatId, text: chunk, disable_web_page_preview: true };
+      if (useHtml) payload.parse_mode = 'HTML';
+      
+      const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await res.json();
+      
+      if (!result.ok) {
+        console.error(`❌ Telegram API error (chunk ${i+1}/${chunks.length}):`, result.description);
+        // ✅ محاولة إعادة الإرسال بدون HTML في حال رفض تيليجرام للـ HTML
+        if (useHtml) {
+          console.log('🔄 Retrying without HTML parse_mode...');
+          const plainText = chunk.replace(/<[^>]*>/g, '');
+          const retryRes = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: chatId, text: plainText, disable_web_page_preview: true })
+          });
+          const retryResult = await retryRes.json();
+          if (!retryResult.ok) {
+            console.error('❌ Retry without HTML also failed:', retryResult.description);
+            allOk = false;
+          } else {
+            console.log('✅ Telegram notification sent (plain text fallback)');
+          }
+        } else {
+          allOk = false;
+        }
+      } else {
+        console.log(`✅ Telegram notification sent (chunk ${i+1}/${chunks.length})`);
+      }
+    }
+    return allOk;
+  } catch (e) {
+    console.error('❌ Telegram exception:', e.message);
+    return false;
+  }
 }
 
 // ============================================================
-// 🗑️ TRASH & 💾 BACKUPS HELPERS
+// TRASH & BACKUPS HELPERS
 // ============================================================
 async function saveToTrash(itemType, itemId, itemName, itemData, user) {
   try {
@@ -1232,7 +1283,7 @@ app.post('/api/orders', async (req, res) => {
       }
     }
 
-    // ✅ إرسال إشعار تيليجرام (مع await لضمان الوصول)
+    // ✅ إرسال إشعار تيليجرام
     try {
       const itemsText = preparedItems.map((pi, i) =>
         `<b>${i + 1}.</b> ${escapeTelegram(pi.product_name)}\n` +
@@ -1256,9 +1307,12 @@ app.post('/api/orders', async (req, res) => {
         `🚚 <b>التوصيل:</b> ${deliveryLabel} — ${finalDeliveryCost.toLocaleString()} د.ج\n` +
         `💰 <b>الإجمالي المطلوب:</b> <b>${total.toLocaleString()} د.ج</b>`;
 
-      await sendTelegramMessage(telegramMessage);
+      const ok = await sendTelegramMessage(telegramMessage);
+      if (!ok) {
+        console.warn('⚠️ Telegram message not sent successfully — check logs above');
+      }
     } catch (tgErr) {
-      console.error('❌ Telegram prep failed:', tgErr.message);
+      console.error('❌ Telegram prep failed:', tgErr.message, tgErr.stack);
     }
 
     res.json({ success: true, orderId: orderNumber, id: orderId, total });
@@ -1305,7 +1359,6 @@ app.get('/api/orders/:id', authMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ✅ إصلاح مسار تحديث حالة الطلب مع تسجيل التعديل
 app.put('/api/orders/:id/status', authMiddleware, async (req, res) => {
   try {
     const { status } = req.body;
@@ -1353,7 +1406,7 @@ app.delete('/api/orders/:id', authMiddleware, async (req, res) => {
 });
 
 // ============================================================
-// 8) SETTINGS (admin only)
+// 8) SETTINGS
 // ============================================================
 app.get('/api/settings', async (req, res) => {
   try {
@@ -1392,7 +1445,7 @@ app.put('/api/settings', authMiddleware, adminMiddleware, async (req, res) => {
 });
 
 // ============================================================
-// 9) THEME (admin only for PUT)
+// 9) THEME
 // ============================================================
 app.get('/api/theme', async (req, res) => {
   try {
@@ -1419,7 +1472,7 @@ app.put('/api/theme', authMiddleware, adminMiddleware, async (req, res) => {
 });
 
 // ============================================================
-// 10) DELIVERY (بدون Express وبدون Defaults)
+// 10) DELIVERY
 // ============================================================
 app.get('/api/delivery/all', async (req, res) => {
   try {
@@ -1522,7 +1575,7 @@ app.get('/api/stats', authMiddleware, async (req, res) => {
 });
 
 // ============================================================
-// 14) TRASH (سلة المحذوفات)
+// 14) TRASH
 // ============================================================
 app.get('/api/trash', authMiddleware, adminMiddleware, async (req, res) => {
   try {
@@ -1664,7 +1717,7 @@ app.delete('/api/trash', authMiddleware, adminMiddleware, async (req, res) => {
 });
 
 // ============================================================
-// 15) BACKUPS (النسخ الاحتياطية)
+// 15) BACKUPS
 // ============================================================
 app.get('/api/backups', authMiddleware, adminMiddleware, async (req, res) => {
   try {
