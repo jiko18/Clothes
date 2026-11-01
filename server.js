@@ -34,6 +34,41 @@ const db = createClient({
 async function initDB() {
   console.log('🔄 Initializing database...');
 
+  // ==========================================================
+  // ✅ التنظيف الاستباقي: إزالة أي triggers/views تشير إلى _old
+  // (يمنع خطأ "no such table: main.orders_old")
+  // ==========================================================
+  try {
+    const stale = await db.execute(
+      "SELECT type, name FROM sqlite_master WHERE (type='trigger' OR type='view') AND sql LIKE '%_old%'"
+    );
+    for (const row of stale.rows) {
+      try {
+        if (row.type === 'trigger') {
+          await db.execute(`DROP TRIGGER IF EXISTS "${row.name}"`);
+          console.log(`🧹 Dropped stale trigger: ${row.name}`);
+        } else if (row.type === 'view') {
+          await db.execute(`DROP VIEW IF EXISTS "${row.name}"`);
+          console.log(`🧹 Dropped stale view: ${row.name}`);
+        }
+      } catch (e) { console.error(`cleanup ${row.type} ${row.name}:`, e.message); }
+    }
+  } catch (e) { console.error('cleanup stale objects error:', e.message); }
+
+  // ✅ إزالة جداول _old المتبقية (من migrations فاشلة سابقاً)
+  try {
+    const oldTables = await db.execute(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE '%\\_old' ESCAPE '\\'"
+    );
+    for (const row of oldTables.rows) {
+      try {
+        await db.execute(`DROP TABLE IF EXISTS "${row.name}"`);
+        console.log(`🧹 Dropped stale table: ${row.name}`);
+      } catch (e) { console.error(`drop table ${row.name}:`, e.message); }
+    }
+  } catch (e) { console.error('cleanup stale tables error:', e.message); }
+
+  // ---------- migrations القديمة ----------
   try {
     const oldCheck = await db.execute(
       "SELECT sql FROM sqlite_master WHERE type='table' AND name='products'"
@@ -57,6 +92,7 @@ async function initDB() {
     if (check.rows.length > 0 && check.rows[0].sql.includes("'manager'")) {
       console.log('🔄 Rebuilding users table (removing manager role)...');
       await db.execute('PRAGMA foreign_keys=off');
+      await db.execute('DROP TABLE IF EXISTS users_old');
       await db.execute('ALTER TABLE users RENAME TO users_old');
       await db.execute(`CREATE TABLE users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -526,7 +562,6 @@ function escapeTelegram(str) {
   return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-// ✅ دالة إرسال تيليجرام محسّنة (مع fallback وsplit)
 async function sendTelegramMessage(text, options = {}) {
   try {
     const tokenRes = await db.execute({
@@ -543,7 +578,6 @@ async function sendTelegramMessage(text, options = {}) {
       return false;
     }
 
-    // ✅ تقسيم الرسائل الطويلة (تيليجرام: 4096 حرفاً كحد أقصى)
     const MAX_LEN = 4000;
     const chunks = [];
     if (text.length <= MAX_LEN) {
@@ -578,7 +612,6 @@ async function sendTelegramMessage(text, options = {}) {
       
       if (!result.ok) {
         console.error(`❌ Telegram API error (chunk ${i+1}/${chunks.length}):`, result.description);
-        // ✅ محاولة إعادة الإرسال بدون HTML في حال رفض تيليجرام للـ HTML
         if (useHtml) {
           console.log('🔄 Retrying without HTML parse_mode...');
           const plainText = chunk.replace(/<[^>]*>/g, '');
@@ -1283,7 +1316,6 @@ app.post('/api/orders', async (req, res) => {
       }
     }
 
-    // ✅ إرسال إشعار تيليجرام
     try {
       const itemsText = preparedItems.map((pi, i) =>
         `<b>${i + 1}.</b> ${escapeTelegram(pi.product_name)}\n` +
@@ -1830,4 +1862,4 @@ initDB()
     setTimeout(() => { maybeAutoBackup().catch(e => console.error('auto backup:', e)); }, 30 * 1000);
     setInterval(() => { maybeAutoBackup().catch(e => console.error('auto backup:', e)); }, 60 * 60 * 1000);
   })
-  .catch((err) => { console.error('❌ Failed to initialize DB:', err); process.exit(1); });
+  .catch((err) => { console.error('❌ Failed to initialize DB:', err); process.exit(1); });s
