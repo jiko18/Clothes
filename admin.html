@@ -33,15 +33,16 @@
     .admin-layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
     .sidebar{background:linear-gradient(180deg,#1a1a2e 0%,#0f0f1e 100%);color:#fff;padding:24px 0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
     .sidebar-header{padding:0 24px 24px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:16px}
-    .sidebar-header h1{font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,#ff6b81,#6c5ce7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:flex;align-items:center;gap:8px}
-    .sidebar-header h1 i{-webkit-text-fill-color:#ff6b81;font-size:1.3rem}
+    /* ✅ إصلاح: لون واحد بدل التدرج النصي */
+    .sidebar-header h1{font-size:1.4rem;font-weight:800;color:var(--primary);display:flex;align-items:center;gap:8px}
+    .sidebar-header h1 i{color:var(--primary);font-size:1.3rem}
     .sidebar-header span{display:block;color:rgba(255,255,255,.5);font-size:.75rem;margin-top:4px}
     .sidebar-nav{flex:1;display:flex;flex-direction:column;gap:4px;padding:0 12px}
     .nav-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;color:rgba(255,255,255,.7);background:transparent;border:none;cursor:pointer;font-size:.9rem;font-weight:600;text-align:right;transition:all .2s;width:100%}
     .nav-item i{font-size:1rem;width:20px;text-align:center}
     .nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
-    .nav-item.active{background:linear-gradient(135deg,rgba(255,107,129,.2),rgba(108,92,231,.2));color:#fff;border-right:3px solid #ff6b81}
-    .nav-item .badge{margin-right:auto;background:#ff6b81;color:#fff;font-size:.7rem;padding:2px 8px;border-radius:50px;font-weight:700}
+    .nav-item.active{background:linear-gradient(135deg,rgba(255,107,129,.2),rgba(108,92,231,.2));color:#fff;border-right:3px solid var(--primary)}
+    .nav-item .badge{margin-right:auto;background:var(--primary);color:#fff;font-size:.7rem;padding:2px 8px;border-radius:50px;font-weight:700}
     .sidebar-footer{padding:16px 12px 0;border-top:1px solid rgba(255,255,255,.08);margin-top:16px}
     .logout-btn{display:flex;align-items:center;gap:10px;width:100%;padding:12px 16px;border-radius:10px;background:rgba(231,76,60,.15);color:#ff8a80;border:none;cursor:pointer;font-size:.9rem;font-weight:700;transition:all .2s}
     .logout-btn:hover{background:rgba(231,76,60,.25);color:#ff5252}
@@ -273,44 +274,44 @@
     .loading-overlay.show{display:flex}
     .spinner{width:52px;height:52px;border:5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
-    .color-search-wrap { position: relative; z-index: 1; }
-    .color-search-wrap:focus-within { z-index: 300; }
-    .color-search-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-gray); font-size: .8rem; pointer-events: none; z-index: 1; }
-    .color-search { width: 100%; padding: 8px 34px 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: .85rem; background: var(--card-bg); color: var(--text); outline: none; font-family: inherit; height: 38px; transition: border-color .2s, box-shadow .2s; }
-    .color-search:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255,107,129,.12); }
-    .color-suggestions { position: absolute; top: calc(100% + 4px); right: 0; left: 0; background: var(--card-bg); border: 1.5px solid var(--primary); border-radius: 10px; max-height: 260px; overflow-y: auto; z-index: 200; box-shadow: 0 10px 32px rgba(0,0,0,.18); padding: 6px; display: none; flex-direction: column; gap: 4px; }
-    .color-suggestions.open { display: flex; }
-    .color-suggestion-chip { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; border: none; background: var(--bg); color: var(--text); font-family: inherit; font-size: .85rem; font-weight: 600; cursor: pointer; text-align: right; transition: background .15s, color .15s; width: 100%; }
-    .color-suggestion-chip:hover, .color-suggestion-chip:focus { background: rgba(255,107,129,.12); color: var(--primary); outline: none; }
-    .color-suggestion-chip .chip-swatch { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,.1); display: flex; align-items: center; justify-content: center; font-size: .7rem; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
-    .color-suggestion-chip .chip-hex { margin-right: auto; font-size: .7rem; font-weight: 700; color: var(--text-gray); font-family: 'Courier New', monospace; direction: ltr; letter-spacing: .3px; }
-    .color-suggestion-chip.is-custom .chip-swatch { background: var(--bg); color: var(--primary); border-style: dashed; border-color: var(--primary); }
-    .color-no-match { padding: 14px 12px; text-align: center; color: var(--text-gray); font-size: .82rem; font-weight: 600; }
-    .color-no-match i { margin-left: 6px; opacity: .6; }
-    .theme-legend { background: linear-gradient(135deg, rgba(108,92,231,.06), rgba(255,107,129,.06)); border-radius: 14px; padding: 20px; margin-bottom: 24px; border: 1.5px solid rgba(255,107,129,.18); }
-    .theme-legend-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px dashed var(--border); }
-    .theme-legend-header i { font-size: 1.3rem; color: var(--primary); }
-    .theme-legend-header h4 { font-size: 1rem; font-weight: 800; color: var(--text); line-height: 1.5; }
-    .theme-legend-header h4 small { display: block; font-size: .75rem; font-weight: 600; color: var(--text-gray); margin-top: 2px; }
-    .theme-legend-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .theme-legend-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card-bg); padding: 14px; border-radius: 12px; border: 1px solid var(--border); transition: var(--transition); }
-    .theme-legend-item:hover { border-color: var(--primary); box-shadow: 0 4px 16px rgba(255,107,129,.08); transform: translateY(-2px); }
-    .legend-swatch { width: 48px; height: 48px; border-radius: 10px; flex-shrink: 0; border: 2px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,.1); transition: var(--transition); }
-    .legend-info { flex: 1; min-width: 0; }
-    .legend-info strong { display: block; font-size: .9rem; font-weight: 800; color: var(--text); margin-bottom: 6px; }
-    .legend-info p { font-size: .78rem; color: var(--text-gray); line-height: 1.8; margin: 0; }
-    .legend-info p b { color: var(--text); font-weight: 700; }
-    .legend-info p em { font-style: normal; color: var(--primary); font-weight: 700; }
-    .orders-filter-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; align-items: flex-end; }
-    .orders-search-input-wrap { flex: 1; min-width: 260px; position: relative; }
-    .orders-search-input-wrap i { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--text-gray); font-size: .9rem; pointer-events: none; }
-    .orders-search-input-wrap input { width: 100%; padding: 11px 42px 11px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-size: .9rem; background: var(--bg); color: var(--text); outline: none; transition: all .2s; font-family: inherit; }
-    .orders-search-input-wrap input:focus { border-color: var(--primary); background: var(--card-bg); box-shadow: 0 0 0 3px rgba(255,107,129,.12); }
-    .orders-status-filter { min-width: 200px; }
-    .orders-status-filter select { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: .9rem; background: var(--bg); color: var(--text); outline: none; cursor: pointer; font-family: inherit; }
-    .orders-status-filter select:focus { border-color: var(--primary); background: var(--card-bg); box-shadow: 0 0 0 3px rgba(255,107,129,.12); }
-    .orders-results-count { font-size: .82rem; color: var(--text-gray); font-weight: 600; margin-bottom: 12px; padding-right: 4px; }
-    .orders-results-count strong { color: var(--primary); }
+    .color-search-wrap{position:relative;z-index:1}
+    .color-search-wrap:focus-within{z-index:300}
+    .color-search-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-gray);font-size:.8rem;pointer-events:none;z-index:1}
+    .color-search{width:100%;padding:8px 34px 8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;background:var(--card-bg);color:var(--text);outline:none;font-family:inherit;height:38px;transition:border-color .2s,box-shadow .2s}
+    .color-search:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(255,107,129,.12)}
+    .color-suggestions{position:absolute;top:calc(100% + 4px);right:0;left:0;background:var(--card-bg);border:1.5px solid var(--primary);border-radius:10px;max-height:260px;overflow-y:auto;z-index:200;box-shadow:0 10px 32px rgba(0,0,0,.18);padding:6px;display:none;flex-direction:column;gap:4px}
+    .color-suggestions.open{display:flex}
+    .color-suggestion-chip{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;border:none;background:var(--bg);color:var(--text);font-family:inherit;font-size:.85rem;font-weight:600;cursor:pointer;text-align:right;transition:background .15s,color .15s;width:100%}
+    .color-suggestion-chip:hover,.color-suggestion-chip:focus{background:rgba(255,107,129,.12);color:var(--primary);outline:none}
+    .color-suggestion-chip .chip-swatch{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+    .color-suggestion-chip .chip-hex{margin-right:auto;font-size:.7rem;font-weight:700;color:var(--text-gray);font-family:'Courier New',monospace;direction:ltr;letter-spacing:.3px}
+    .color-suggestion-chip.is-custom .chip-swatch{background:var(--bg);color:var(--primary);border-style:dashed;border-color:var(--primary)}
+    .color-no-match{padding:14px 12px;text-align:center;color:var(--text-gray);font-size:.82rem;font-weight:600}
+    .color-no-match i{margin-left:6px;opacity:.6}
+    .theme-legend{background:linear-gradient(135deg,rgba(108,92,231,.06),rgba(255,107,129,.06));border-radius:14px;padding:20px;margin-bottom:24px;border:1.5px solid rgba(255,107,129,.18)}
+    .theme-legend-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px dashed var(--border)}
+    .theme-legend-header i{font-size:1.3rem;color:var(--primary)}
+    .theme-legend-header h4{font-size:1rem;font-weight:800;color:var(--text);line-height:1.5}
+    .theme-legend-header h4 small{display:block;font-size:.75rem;font-weight:600;color:var(--text-gray);margin-top:2px}
+    .theme-legend-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .theme-legend-item{display:flex;gap:14px;align-items:flex-start;background:var(--card-bg);padding:14px;border-radius:12px;border:1px solid var(--border);transition:var(--transition)}
+    .theme-legend-item:hover{border-color:var(--primary);box-shadow:0 4px 16px rgba(255,107,129,.08);transform:translateY(-2px)}
+    .legend-swatch{width:48px;height:48px;border-radius:10px;flex-shrink:0;border:2px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.1);transition:var(--transition)}
+    .legend-info{flex:1;min-width:0}
+    .legend-info strong{display:block;font-size:.9rem;font-weight:800;color:var(--text);margin-bottom:6px}
+    .legend-info p{font-size:.78rem;color:var(--text-gray);line-height:1.8;margin:0}
+    .legend-info p b{color:var(--text);font-weight:700}
+    .legend-info p em{font-style:normal;color:var(--primary);font-weight:700}
+    .orders-filter-bar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end}
+    .orders-search-input-wrap{flex:1;min-width:260px;position:relative}
+    .orders-search-input-wrap i{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-gray);font-size:.9rem;pointer-events:none}
+    .orders-search-input-wrap input{width:100%;padding:11px 42px 11px 16px;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;background:var(--bg);color:var(--text);outline:none;transition:all .2s;font-family:inherit}
+    .orders-search-input-wrap input:focus{border-color:var(--primary);background:var(--card-bg);box-shadow:0 0 0 3px rgba(255,107,129,.12)}
+    .orders-status-filter{min-width:200px}
+    .orders-status-filter select{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;background:var(--bg);color:var(--text);outline:none;cursor:pointer;font-family:inherit}
+    .orders-status-filter select:focus{border-color:var(--primary);background:var(--card-bg);box-shadow:0 0 0 3px rgba(255,107,129,.12)}
+    .orders-results-count{font-size:.82rem;color:var(--text-gray);font-weight:600;margin-bottom:12px;padding-right:4px}
+    .orders-results-count strong{color:var(--primary)}
     @media (max-width:992px){.dash-charts,.dash-bottom{grid-template-columns:1fr}}
     @media (max-width:900px){
       .admin-layout{grid-template-columns:1fr}
@@ -344,8 +345,7 @@
     .users-table th{background:var(--bg);font-size:.78rem;font-weight:800;color:var(--text-gray)}
     .user-role-badge{display:inline-block;padding:3px 10px;border-radius:50px;font-size:.72rem;font-weight:800}
     .role-admin{background:rgba(255,107,129,.15);color:var(--primary)}
-    .role-staff{background:rgba(9,132,227,.15);color:var(--info)}
-    .role-manager{background:rgba(108,92,231,.15);color:var(--secondary)}
+    .role-staff,.role-manager{background:rgba(9,132,227,.15);color:var(--info)}
     .set-toggle-banner{display:flex;align-items:center;gap:12px;padding:14px;background:linear-gradient(135deg,rgba(108,92,231,.08),rgba(255,107,129,.08));border:2px solid var(--secondary);border-radius:12px;margin-bottom:16px;cursor:pointer}
     .set-toggle-banner input{width:20px;height:20px;cursor:pointer;accent-color:var(--secondary)}
     .set-toggle-banner .set-icon{font-size:1.4rem;color:var(--secondary)}
@@ -363,8 +363,8 @@
     .add-part-btn:hover{border-color:var(--secondary);color:var(--secondary)}
     .part-card-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed var(--border);}
     .part-index{font-size:.78rem;font-weight:800;color:var(--secondary);background:rgba(108,92,231,.12);padding:3px 10px;border-radius:50px;}
-    .part-label-select{flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text);font-family:inherit;font-weight:700;font-size:.85rem;outline:none;cursor:pointer;}
-    .part-label-select:focus{border-color:var(--secondary);box-shadow:0 0 0 3px rgba(108,92,231,.15);}
+    .part-label-input{flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text);font-family:inherit;font-weight:700;font-size:.85rem;outline:none;}
+    .part-label-input:focus{border-color:var(--secondary);box-shadow:0 0 0 3px rgba(108,92,231,.15);}
     .part-color-search-block{margin-bottom:10px;}
     .part-color-label{display:block;font-size:.8rem;font-weight:700;color:var(--text-gray);margin-bottom:6px;}
     .part-color-label i{color:var(--secondary);margin-left:4px;}
@@ -374,23 +374,16 @@
     .order-item-img:hover{transform:scale(1.08)}
     .mobile-toggle{display:none;width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;align-items:center;justify-content:center;font-size:1.1rem}
     .table-img, .color-image-preview, .order-prod-thumb, .order-item-img,
-    .top-product-img, .img-preview-card { cursor: zoom-in !important; }
-    .color-image-preview { position: relative; }
-    .color-image-preview::after {
-      content: '\f00e';
-      font-family: 'Font Awesome 6 Free';
-      font-weight: 900;
-      position: absolute; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      background: rgba(0,0,0,0);
-      color: #fff; font-size: 1.4rem;
-      opacity: 0; transition: all .25s ease;
-      pointer-events: none;
-    }
-    .color-image-preview:hover::after { opacity: 1; background: rgba(0,0,0,.45); }
-    .table-img:hover { transform: scale(1.25); box-shadow: 0 6px 18px rgba(0,0,0,.2); }
-    #pBadge, #pBadgeColorSearch { font-family: 'Cairo', sans-serif; }
-    #badgeColorSuggestions { z-index: 400; }
+    .top-product-img, .img-preview-card{cursor:zoom-in !important}
+    .color-image-preview{position:relative}
+    .color-image-preview::after{content:'\f00e';font-family:'Font Awesome 6 Free';font-weight:900;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0);color:#fff;font-size:1.4rem;opacity:0;transition:all .25s ease;pointer-events:none}
+    .color-image-preview:hover::after{opacity:1;background:rgba(0,0,0,.45)}
+    .table-img:hover{transform:scale(1.25);box-shadow:0 6px 18px rgba(0,0,0,.2)}
+    #pBadge,#pBadgeColorSearch{font-family:'Cairo',sans-serif}
+    #badgeColorSuggestions{z-index:400}
+    .activity-item{padding:12px;background:var(--bg);border-radius:10px;border-right:3px solid var(--primary);margin-bottom:8px}
+    .activity-item .action{font-weight:700;color:var(--text);font-size:.9rem;margin-bottom:4px}
+    .activity-item .meta{font-size:.78rem;color:var(--text-gray)}
   </style>
 </head>
 <body>
@@ -404,8 +397,7 @@
         <div class="login-field"><label>اسم المستخدم (اتركه فارغاً لاستخدام "admin")</label><input type="text" id="setupUsername" placeholder="admin" autocomplete="off"></div>
         <div class="login-field"><label>كلمة المرور</label><input type="password" id="setupPassword" placeholder="4 أحرف على الأقل" autocomplete="new-password"></div>
         <div class="login-field"><label>تأكيد كلمة المرور</label><input type="password" id="setupConfirm" placeholder="أعد إدخال كلمة المرور" autocomplete="new-password"></div>
-        <div class="login-error" id="setupError"></div>
-        <button type="submit" class="login-btn" id="setupBtn"><i class="fa-solid fa-user-plus"></i> إنشاء حساب الأدمن</button>
+        <div class="login-error" id="setupError"></div>        <button type="submit" class="login-btn" id="setupBtn"><i class="fa-solid fa-user-plus"></i> إنشاء حساب الأدمن</button>
       </form>
       <form id="loginForm" style="display:none;">
         <div class="login-field"><label>اسم المستخدم</label><input type="text" id="loginUsername" placeholder="admin" autocomplete="username"></div>
@@ -524,6 +516,7 @@
           </div>
         </section>
 
+        <!-- ✅ التوصيل: بدون جداول افتراضية، بدون سريع -->
         <section class="view" id="view-delivery">
           <div class="panel">
             <div class="panel-header">
@@ -532,13 +525,7 @@
             </div>
             <div class="panel-body">
               <div style="padding:14px; background:rgba(108,92,231,.06); border-radius:10px; margin-bottom:16px; border-right:4px solid var(--secondary); font-size:.85rem; line-height:1.8; color:var(--text-gray);">
-                <b style="color:var(--secondary);">💡 ملاحظة:</b> اترك الحقل فارغاً لاستخدام السعر الافتراضي.
-                <div style="margin-top:8px;"><b>الافتراضي:</b> المنزل: <b id="defHome">600</b> د.ج · الوكالة: <b id="defAgency">400</b> د.ج · السريع: <b id="defExpress">900</b> د.ج</div>
-              </div>
-              <div class="form-grid" style="margin-bottom:16px; max-width:700px;">
-                <div class="fg"><label>المنزل الافتراضي (د.ج)</label><input type="number" id="defHomeInput" min="0"></div>
-                <div class="fg"><label>الوكالة الافتراضية (د.ج)</label><input type="number" id="defAgencyInput" min="0"></div>
-                <div class="fg"><label>السريع الافتراضي (د.ج)</label><input type="number" id="defExpressInput" min="0"></div>
+                <b style="color:var(--secondary);">💡 ملاحظة:</b> اترك الحقل فارغاً (أو ضع 0) لتعطيل طريقة توصيل معينة لهذه الولاية. الطرق المتاحة فقط: <b>المنزل</b> و <b>الوكالة</b>.
               </div>
               <div class="delivery-search-wrap">
                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -546,7 +533,7 @@
               </div>
               <div class="table-wrap">
                 <table class="delivery-wilaya-table">
-                  <thead><tr><th style="width:60px;">الرمز</th><th>الولاية</th><th>المنزل (د.ج)</th><th>الوكالة (د.ج)</th><th>السريع (د.ج)</th></tr></thead>
+                  <thead><tr><th style="width:60px;">الرمز</th><th>الولاية</th><th>المنزل (د.ج)</th><th>الوكالة (د.ج)</th></tr></thead>
                   <tbody id="deliveryTableBody"></tbody>
                 </table>
               </div>
@@ -554,45 +541,39 @@
           </div>
         </section>
 
+        <!-- ✅ الألوان مبسطة: لونان فقط -->
         <section class="view" id="view-theme">
           <div class="panel">
             <div class="panel-header"><h3><i class="fa-solid fa-palette"></i> ألوان الموقع</h3></div>
             <div class="panel-body">
-              <div class="theme-legend">
-                <div class="theme-legend-header">
-                  <i class="fa-solid fa-circle-info"></i>
-                  <h4>دليل الألوان — أين يظهر كل لون في الموقع؟<small>اقرأ هذا الدليل قبل تعديل الألوان لتفهم بالضبط ماذا ستغيّر</small></h4>
-                </div>
-                <div class="theme-legend-grid">
-                  <div class="theme-legend-item">
-                    <span class="legend-swatch" id="legendPrimary" style="background:#ff6b81;"></span>
-                    <div class="legend-info"><strong>اللون الأساسي (Primary)</strong><p>اللون الرئيسي لهوية المتجر. يظهر في:<br>• <b>شارة عدد السلة</b> أعلى الصفحة<br>• <b>أزرار الشراء الرئيسية</b><br>• <b>خطوط فاصلة</b> تحت عناوين الأقسام<br>• <b>أيقونات العناوين</b> في لوحة التحكم<br>• <b>إطار الحقول</b> عند التركيز</p></div>
-                  </div>
-                  <div class="theme-legend-item">
-                    <span class="legend-swatch" id="legendPrimaryDark" style="background:#e8556d;"></span>
-                    <div class="legend-info"><strong>الأساسي الداكن (Primary Dark)</strong><p>• <b>أسعار المنتجات</b> في البطاقات<br>• <b>أسعار المنتجات</b> في صفحة التفاصيل<br>• <b>نهاية التدرجات اللونية</b></p></div>
-                  </div>
-                  <div class="theme-legend-item">
-                    <span class="legend-swatch" id="legendSecondary" style="background:#6c5ce7;"></span>
-                    <div class="legend-info"><strong>اللون الثانوي (Secondary)</strong><p>• <b>خلفية الشريط العلوي</b><br>• <b>شارات الفئات</b><br>• <b>إطار زر "أضف إلى السلة"</b><br>• <b>العمر المحدد</b></p></div>
-                  </div>
-                  <div class="theme-legend-item">
-                    <span class="legend-swatch" id="legendAccent" style="background:#feca57;"></span>
-                    <div class="legend-info"><strong>اللون المميز (Accent)</strong><p>• <b>شارة "جديد"</b> على بطاقات المنتجات<br>• <b>نجوم التقييمات</b> (★★★★★)<br>• <b>اللمسات الذهبية</b></p></div>
-                  </div>
-                </div>
+              <div style="padding:14px; background:linear-gradient(135deg, rgba(108,92,231,.08), rgba(255,107,129,.08)); border-radius:12px; margin-bottom:20px; border-right:4px solid var(--primary); font-size:.85rem; line-height:1.9; color:var(--text);">
+                <b style="color:var(--primary);"><i class="fa-solid fa-lightbulb"></i> بسيط جداً:</b> اختر <b>لوناً أساسياً</b> و <b>لوناً ثانوياً</b> فقط — والموقع سيطبقهما تلقائياً على كل العناصر (الأزرار، الشارات، الأيقونات، الأسعار، إلخ).
               </div>
               <div class="form-grid">
-                <div class="fg"><label>اللون الأساسي (Primary)</label><div style="display:flex; align-items:center; gap:12px;"><input type="color" id="colorPrimary" oninput="updateThemePreview()" style="width:50px;height:44px;border:2px solid var(--border);border-radius:10px;cursor:pointer;padding:2px;background:var(--bg);"><input type="text" id="colorPrimaryText" oninput="syncColorFromText('primary')" style="flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;background:var(--bg);color:var(--text);direction:ltr;text-align:right;"></div></div>
-                <div class="fg"><label>اللون الأساسي الداكن (Primary Dark)</label><div style="display:flex; align-items:center; gap:12px;"><input type="color" id="colorPrimaryDark" oninput="updateThemePreview()" style="width:50px;height:44px;border:2px solid var(--border);border-radius:10px;cursor:pointer;padding:2px;background:var(--bg);"><input type="text" id="colorPrimaryDarkText" oninput="syncColorFromText('primaryDark')" style="flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;background:var(--bg);color:var(--text);direction:ltr;text-align:right;"></div></div>
-                <div class="fg"><label>اللون الثانوي (Secondary)</label><div style="display:flex; align-items:center; gap:12px;"><input type="color" id="colorSecondary" oninput="updateThemePreview()" style="width:50px;height:44px;border:2px solid var(--border);border-radius:10px;cursor:pointer;padding:2px;background:var(--bg);"><input type="text" id="colorSecondaryText" oninput="syncColorFromText('secondary')" style="flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;background:var(--bg);color:var(--text);direction:ltr;text-align:right;"></div></div>
-                <div class="fg"><label>اللون المميز (Accent)</label><div style="display:flex; align-items:center; gap:12px;"><input type="color" id="colorAccent" oninput="updateThemePreview()" style="width:50px;height:44px;border:2px solid var(--border);border-radius:10px;cursor:pointer;padding:2px;background:var(--bg);"><input type="text" id="colorAccentText" oninput="syncColorFromText('accent')" style="flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;background:var(--bg);color:var(--text);direction:ltr;text-align:right;"></div></div>
+                <div class="fg">
+                  <label><i class="fa-solid fa-circle" style="color:var(--primary);"></i> اللون الأساسي (Primary)</label>
+                  <div style="display:flex; align-items:center; gap:12px;">
+                    <input type="color" id="colorPrimary" oninput="updateThemePreview()" style="width:64px;height:56px;border:2px solid var(--border);border-radius:12px;cursor:pointer;padding:3px;background:var(--bg);">
+                    <div style="flex:1;">
+                      <input type="text" id="colorPrimaryText" oninput="syncColorFromText('primary')" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;background:var(--bg);color:var(--text);direction:ltr;text-align:right;font-family:monospace;">
+                      <div style="font-size:.72rem;color:var(--text-gray);margin-top:6px;">الأزرار الرئيسية، الشارات، الأسعار، الإطارات</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="fg">
+                  <label><i class="fa-solid fa-circle" style="color:var(--secondary);"></i> اللون الثانوي (Secondary)</label>
+                  <div style="display:flex; align-items:center; gap:12px;">
+                    <input type="color" id="colorSecondary" oninput="updateThemePreview()" style="width:64px;height:56px;border:2px solid var(--border);border-radius:12px;cursor:pointer;padding:3px;background:var(--bg);">
+                    <div style="flex:1;">
+                      <input type="text" id="colorSecondaryText" oninput="syncColorFromText('secondary')" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;background:var(--bg);color:var(--text);direction:ltr;text-align:right;font-family:monospace;">
+                      <div style="font-size:.72rem;color:var(--text-gray);margin-top:6px;">الشارات، الفئات، الأزرار الثانوية</div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div style="display:flex; gap:10px; margin-top:16px; padding:16px; background:var(--bg); border-radius:12px; flex-wrap:wrap;">
-                <div id="previewPrimary" style="flex:1; min-width:100px; padding:16px; border-radius:10px; color:#fff; text-align:center; font-weight:700; font-size:0.85rem; text-shadow:0 1px 3px rgba(0,0,0,0.3); background:#ff6b81;">Primary</div>
-                <div id="previewPrimaryDark" style="flex:1; min-width:100px; padding:16px; border-radius:10px; color:#fff; text-align:center; font-weight:700; font-size:0.85rem; text-shadow:0 1px 3px rgba(0,0,0,0.3); background:#e8556d;">Primary Dark</div>
-                <div id="previewSecondary" style="flex:1; min-width:100px; padding:16px; border-radius:10px; color:#fff; text-align:center; font-weight:700; font-size:0.85rem; text-shadow:0 1px 3px rgba(0,0,0,0.3); background:#6c5ce7;">Secondary</div>
-                <div id="previewAccent" style="flex:1; min-width:100px; padding:16px; border-radius:10px; color:#2d3436; text-align:center; font-weight:700; font-size:0.85rem; background:#feca57;">Accent</div>
+              <div style="display:flex; gap:10px; margin-top:24px; padding:20px; background:var(--bg); border-radius:12px; flex-wrap:wrap;">
+                <div id="previewPrimary" style="flex:1; min-width:120px; padding:20px; border-radius:10px; color:#fff; text-align:center; font-weight:700; background:#ff6b81;">اللون الأساسي</div>
+                <div id="previewSecondary" style="flex:1; min-width:120px; padding:20px; border-radius:10px; color:#fff; text-align:center; font-weight:700; background:#6c5ce7;">اللون الثانوي</div>
               </div>
               <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;">
                 <button class="btn btn-primary" onclick="saveTheme()"><i class="fa-solid fa-check"></i> حفظ الألوان</button>
@@ -715,7 +696,7 @@
                   <li>يجب أن تبدأ محادثة مع البوت مرة واحدة على الأقل قبل الاختبار (أرسل له <b>/start</b>)</li>
                   <li>إذا كنت تستخدم مجموعة، أضف البوت للمجموعة واستخدم Chat ID الخاص بالمجموعة (يبدأ بـ <b>-100...</b>)</li>
                   <li>التوكن سري، لا تشاركه مع أحد</li>
-                  <li>بعد حفظ الإعدادات، ستصلك الإشعارات تلقائياً مع كل طلب جديد — لا تحتاج لأي إجراء إضافي</li>
+                  <li><b style="color:var(--danger);">مهم:</b> إشعار الطلب تلقائي في السيرفر — إذا وصلت الرسالة التجريبية ولم يصل إشعار الطلب، فالمشكلة في <b>دالة إنشاء الطلب في السيرفر</b> (يجب استدعاء إرسال التيليجرام عند POST /api/orders)</li>
                 </ul>
               </div>
             </div>
@@ -735,6 +716,7 @@
           </div>
         </section>
 
+        <!-- ✅ المستخدمون: أدمن + موظف فقط -->
         <section class="view" id="view-users">
           <div class="panel">
             <div class="panel-header">
@@ -743,11 +725,10 @@
             </div>
             <div class="panel-body">
               <div style="padding:14px; background:rgba(9,132,227,.06); border-radius:10px; margin-bottom:16px; border-right:4px solid var(--info); font-size:.82rem; line-height:1.9; color:var(--text-gray);">
-                <b style="color:var(--info);">الصلاحيات:</b>
+                <b style="color:var(--info);">الأدوار:</b>
                 <ul style="padding-right:20px; margin-top:6px;">
-                  <li><span class="user-role-badge role-admin">أدمن</span> — صلاحيات كاملة</li>
-                  <li><span class="user-role-badge role-manager">مدير</span> — المنتجات + الطلبات + التوصيل</li>
-                  <li><span class="user-role-badge role-staff">موظف</span> — الطلبات فقط</li>
+                  <li><span class="user-role-badge role-admin">أدمن</span> — صلاحيات كاملة (بما فيها المستخدمون والسلة والنسخ)</li>
+                  <li><span class="user-role-badge role-staff">موظف</span> — لوحة القيادة + المنتجات + الطلبات + التوصيل + الألوان + الإعدادات</li>
                 </ul>
               </div>
               <div class="table-wrap" id="usersTableWrap"></div>
@@ -771,10 +752,6 @@
               </div>
             </div>
             <div class="panel-body">
-              <div style="padding:14px; background:rgba(9,132,227,.06); border-radius:10px; margin-bottom:16px; border-right:4px solid var(--info); font-size:.82rem; line-height:1.9; color:var(--text-gray);">
-                <b style="color:var(--info);"><i class="fa-solid fa-circle-info"></i> كيف تعمل؟</b><br>
-                كل عنصر يُحذف من المنتجات أو الطلبات أو المستخدمين أو كل تعديل على الإعدادات → يُحفظ هنا تلقائياً قبل الحذف. اضغط "استعادة" لإرجاعه كما كان.
-              </div>
               <div class="table-wrap" id="trashTableWrap"></div>
             </div>
           </div>
@@ -787,11 +764,6 @@
               <button class="btn btn-primary" onclick="createBackupManual()"><i class="fa-solid fa-plus"></i> إنشاء نسخة جديدة الآن</button>
             </div>
             <div class="panel-body">
-              <div style="padding:14px; background:rgba(0,184,148,.06); border-radius:10px; margin-bottom:16px; border-right:4px solid var(--success); font-size:.82rem; line-height:1.9; color:var(--text-gray);">
-                <b style="color:var(--success);"><i class="fa-solid fa-shield-halved"></i> الحماية التلقائية مفعّلة</b><br>
-                يتم إنشاء نسخة تلقائية كل 24 ساعة. يُحتفظ بآخر 7 نسخ تلقائية + كل النسخ اليدوية.<br>
-                <b>الاستعادة الآمنة</b> ترجع الإعدادات والألوان وأسعار التوصيل فقط. المنتجات والطلبات تُستعاد بشكل فردي من <b>سلة المحذوفات</b>.
-              </div>
               <div class="table-wrap" id="backupsTableWrap"></div>
             </div>
           </div>
@@ -800,6 +772,7 @@
     </div>
   </div>
 
+  <!-- ✅ مودال المنتج: أعمار بقائمة منسدلة، لون الشارة بقائمة + بحث ذكي، اسم القطعة حر -->
   <div class="modal-overlay" id="productModal">
     <div class="modal">
       <div class="modal-header"><h3 id="productModalTitle"><i class="fa-solid fa-plus"></i> إضافة منتج جديد</h3><button class="modal-close" onclick="closeProductModal()"><i class="fa-solid fa-xmark"></i></button></div>
@@ -828,32 +801,45 @@
             <label><i class="fa-solid fa-palette"></i> لون الشارة</label>
             <div class="color-search-wrap">
               <i class="fa-solid fa-magnifying-glass color-search-icon"></i>
-              <input type="text" class="color-search" id="pBadgeColorSearch" placeholder="ابحث باسم اللون..." oninput="filterBadgeColorOptions(this.value)" onkeydown="handleBadgeColorKeydown(event)">
+              <input type="text" class="color-search" id="pBadgeColorSearch" placeholder="ابحث باسم اللون (يتسامح مع الهمزات والأخطاء)..." oninput="filterBadgeColorOptions(this.value)" onkeydown="handleBadgeColorKeydown(event)">
               <div class="color-suggestions" id="badgeColorSuggestions"></div>
             </div>
+            <select id="pBadgeColorSelect" onchange="onBadgeColorSelectChange(this.value)" style="width:100%;margin-top:8px;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);font-family:inherit;font-size:.88rem;cursor:pointer;">
+              <option value="">-- اختر اللون من القائمة --</option>
+            </select>
             <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
-              <input type="color" id="pBadgeColorPicker" value="#feca57" oninput="onBadgeColorChange(this.value)" style="width:50px;height:42px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;padding:2px;background:var(--bg);">
+              <span id="pBadgeColorSwatch" style="width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);background:#feca57;"></span>
               <span class="hex-label" id="pBadgeColorLabel">#FECA57</span>
               <span id="pBadgeColorName" style="font-size:.82rem;color:var(--text-gray);font-weight:700;">أصفر فاتح</span>
             </div>
           </div>
         </div>
         <div class="fg" style="margin-top:8px;"><label>الوصف</label><textarea id="pDescription" placeholder="وصف قصير وجذاب للمنتج..."></textarea></div>
+
+        <!-- ✅ الأعمار: قائمة منسدلة + إضافة عمر مخصص -->
         <div class="fg" style="margin-top:16px;">
           <label><i class="fa-solid fa-child"></i> الأعمار المتاحة</label>
+          <div style="font-size:.78rem;color:var(--text-gray);margin-bottom:10px;padding:10px 12px;background:rgba(9,132,227,.06);border-radius:8px;border-right:3px solid var(--info);">
+            <i class="fa-solid fa-circle-info" style="color:var(--info);"></i> اختر الأعمار من القائمة المنسدلة، أو أضف عمراً مخصصاً.
+          </div>
           <div class="dynamic-list" id="agesList"></div>
-          <button type="button" class="add-btn" onclick="addAgeRow('')"><i class="fa-solid fa-plus"></i> إضافة عمر</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+            <button type="button" class="add-btn" onclick="addAgeRow('')"><i class="fa-solid fa-plus"></i> إضافة عمر</button>
+            <button type="button" class="add-btn" onclick="addAllStandardAges()" style="border-color:var(--secondary);color:var(--secondary);"><i class="fa-solid fa-layer-group"></i> إضافة كل الأعمار القياسية</button>
+          </div>
         </div>
+
         <div class="fg" style="margin-top:16px;">
           <label><i class="fa-solid fa-list-check"></i> تفاصيل المنتج</label>
           <div class="dynamic-list" id="detailsList"></div>
           <button type="button" class="add-btn" onclick="addDetailRow('')"><i class="fa-solid fa-plus"></i> إضافة تفصيل</button>
         </div>
+
         <div class="fg" style="margin-top:20px;">
           <label style="font-size:1rem; color:var(--primary); margin-bottom:10px;"><i class="fa-solid fa-palette"></i> الألوان والصور والفيديوهات</label>
           <div style="font-size:0.82rem; color:var(--text); margin-bottom:14px; padding:14px; background:linear-gradient(135deg, rgba(108,92,231,0.08), rgba(255,107,129,0.08)); border-radius:10px; border-right:4px solid var(--primary); line-height:1.9;">
             <b style="color:var(--primary); font-size:0.9rem;"><i class="fa-solid fa-lightbulb"></i> خطوات إضافة المنتج:</b><br>
-            <b>1.</b> <b style="color:var(--primary);">اكتب اسم اللون</b> في شريط البحث<br>
+            <b>1.</b> <b style="color:var(--primary);">اكتب اسم اللون</b> في شريط البحث (يتسامح مع الهمزات والأخطاء الإملائية)<br>
             <b>2.</b> <b style="color:var(--primary);">اختر اللون</b> من الاقتراحات<br>
             <b>3.</b> اضغط على <b style="color:var(--primary);">✚ إضافة صورة</b><br>
             <b>4.</b> أضف لوناً آخر بالضغط على <b style="color:var(--secondary);">"إضافة لون جديد"</b><br>
@@ -872,7 +858,7 @@
           <button type="button" class="add-color-btn" id="addColorBtn" onclick="addColorRow()">
             <i class="fa-solid fa-plus-circle"></i> إضافة لون جديد للمنتج
           </button>
-          <button type="button" class="add-combo-btn" id="addComboBtn" onclick="addCombo()" style="display:none;">
+          <button type="button" class="add-color-btn" id="addComboBtn" onclick="addCombo()" style="display:none;">
             <i class="fa-solid fa-plus"></i> إضافة طقم/تركيبة جديدة
           </button>
         </div>
@@ -883,6 +869,23 @@
       </div>
     </div>
   </div>
+
+  <!-- datalist لأسماء القطع (مع الحرية في الكتابة) -->
+  <datalist id="partLabelsList">
+    <option value="قميص">
+    <option value="سروال">
+    <option value="جاكيت">
+    <option value="بنطلون">
+    <option value="حذاء">
+    <option value="قبعة">
+    <option value="فستان">
+    <option value="تنورة">
+    <option value="وشاح">
+    <option value="جوارب">
+    <option value="قفازات">
+    <option value="حزام">
+    <option value="قطعة">
+  </datalist>
 
   <div class="modal-overlay" id="orderDetailsModal">
     <div class="modal" style="max-width: 720px;">
@@ -896,6 +899,8 @@
       </div>
     </div>
   </div>
+
+  <!-- ✅ مودال المستخدم: أدمن + موظف فقط -->
   <div class="modal-overlay" id="userModal">
     <div class="modal" style="max-width:520px;">
       <div class="modal-header">
@@ -909,7 +914,10 @@
         <div class="fg"><label>البريد الإلكتروني</label><input type="email" id="uEmail"></div>
         <div class="fg"><label id="uPasswordLabel">كلمة المرور *</label><input type="password" id="uPassword" autocomplete="new-password"></div>
         <div class="fg"><label>الدور</label>
-          <select id="uRole"><option value="staff">موظف</option><option value="manager">مدير</option><option value="admin">أدمن</option></select>
+          <select id="uRole">
+            <option value="staff">موظف</option>
+            <option value="admin">أدمن</option>
+          </select>
         </div>
         <div class="fg" style="display:flex; align-items:center; gap:10px;">
           <input type="checkbox" id="uIsActive" checked style="width:18px;height:18px;cursor:pointer;">
@@ -922,6 +930,22 @@
       </div>
     </div>
   </div>
+
+  <!-- ✅ مودال سجل النشاط -->
+  <div class="modal-overlay" id="activityModal">
+    <div class="modal" style="max-width:760px;">
+      <div class="modal-header">
+        <h3 id="activityModalTitle"><i class="fa-solid fa-clock-rotate-left"></i> سجل النشاط</h3>
+        <button class="modal-close" onclick="closeActivityModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="activityModalBody" style="max-height:70vh;overflow-y:auto;"></div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeActivityModal()">إغلاق</button>
+        <button class="btn btn-primary" onclick="refreshActivityLog()"><i class="fa-solid fa-rotate"></i> تحديث</button>
+      </div>
+    </div>
+  </div>
+
   <div class="image-viewer" id="imageViewer">
     <button class="image-viewer-close" onclick="closeImageViewer()"><i class="fa-solid fa-xmark"></i></button>
     <div id="imageViewerContent"></div>
@@ -938,8 +962,8 @@
     // ============================================================
     const API_BASE = '';
     const TOKEN_KEY = 'babyshop_admin_token';
-    const DEFAULT_THEME = { primary: '#ff6b81', primaryDark: '#e8556d', secondary: '#6c5ce7', accent: '#feca57' };
-    const DEFAULT_DELIVERY = { home: 600, agency: 400, express: 900 };
+    const DEFAULT_THEME = { primary: '#ff6b81', secondary: '#6c5ce7' };
+    const DEFAULT_DELIVERY = { home: 600, agency: 400 };
     const DEFAULT_SETTINGS = {
       logo: '',
       storeName: 'بيبي شوب', phone: '0550 00 00 00', email: 'contact@babyshop.dz', address: 'الجزائر العاصمة، الجزائر',
@@ -960,6 +984,9 @@
       }
     };
 
+    // ✅ الأعمار القياسية (للقائمة المنسدلة)
+    const STANDARD_AGES = ['سنة واحدة','سنتان','3 سنوات','4 سنوات','5 سنوات','6 سنوات','7 سنوات','8 سنوات','9 سنوات','10 سنوات','11 سنة','12 سنة','13 سنة','14 سنة','15 سنة','16 سنة','17 سنة','18 سنة'];
+
     const PREDEFINED_COLORS = [
       { name: 'أحمر', hex: '#e74c3c' },{ name: 'أحمر داكن', hex: '#c0392b' },{ name: 'أحمر فاتح', hex: '#ff7979' },{ name: 'قرمزي', hex: '#dc143c' },{ name: 'عنابي', hex: '#800000' },
       { name: 'وردي', hex: '#fd79a8' },{ name: 'وردي فاتح', hex: '#ffb8d0' },{ name: 'وردي داكن', hex: '#e84393' },{ name: 'زهري', hex: '#ff69b4' },{ name: 'كورال', hex: '#ff7f50' },
@@ -976,86 +1003,62 @@
 
     const BADGE_PRESETS = ['جديد', 'الأكثر مبيعاً', 'خصم', 'عرض خاص', 'حصري', 'تخفيض', 'هدية', 'لفترة محدودة'];
     const CUSTOM_BADGES_KEY = 'babyshop_custom_badges';
-    function getCustomBadges() {
-      try { return JSON.parse(localStorage.getItem(CUSTOM_BADGES_KEY) || '[]'); } catch(e) { return []; }
+
+    // ============================================================
+    // ✅ تطبيع عربي + Levenshtein للبحث الذكي عن الألوان
+    // ============================================================
+    function normalizeArabic(str) {
+      return (str || '')
+        .toString()
+        .replace(/[أإآٱ]/g, 'ا')
+        .replace(/ة/g, 'ه')
+        .replace(/ى/g, 'ي')
+        .replace(/ؤ/g, 'و')
+        .replace(/ئ/g, 'ي')
+        .replace(/[\u064B-\u065F\u0610-\u061A\u06D6-\u06ED]/g, '')
+        .replace(/[^\u0621-\u064A0-9\s]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase();
     }
-    function saveCustomBadge(name) {
-      name = (name || '').trim();
-      if (!name) return;
-      const list = getCustomBadges();
-      if (!list.includes(name) && !BADGE_PRESETS.includes(name)) {
-        list.push(name);
-        localStorage.setItem(CUSTOM_BADGES_KEY, JSON.stringify(list));
+    function levenshtein(a, b) {
+      a = normalizeArabic(a); b = normalizeArabic(b);
+      if (!a) return b.length; if (!b) return a.length;
+      const m = a.length, n = b.length;
+      let prev = new Array(n + 1);
+      let curr = new Array(n + 1);
+      for (let j = 0; j <= n; j++) prev[j] = j;
+      for (let i = 1; i <= m; i++) {
+        curr[0] = i;
+        for (let j = 1; j <= n; j++) {
+          const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+          curr[j] = Math.min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost);
+        }
+        [prev, curr] = [curr, prev];
       }
+      return prev[n];
     }
-    function populateBadgeSelect(selected = '') {
-      const sel = document.getElementById('pBadge');
-      if (!sel) return;
-      const custom = getCustomBadges();
-      const all = [...BADGE_PRESETS, ...custom];
-      let html = '<option value="">بدون شارة</option>';
-      all.forEach(b => { html += `<option value="${escapeAttr(b)}" ${selected === b ? 'selected' : ''}>${escapeHtml(b)}</option>`; });
-      html += '<option value="__custom__">➕ إضافة شارة جديدة...</option>';
-      sel.innerHTML = html;
-      if (selected && !all.includes(selected)) {
-        const opt = document.createElement('option');
-        opt.value = selected; opt.textContent = selected + ' (حالية)'; opt.selected = true;
-        sel.insertBefore(opt, sel.lastChild);
-      }
+    function fuzzyColorMatch(query, colorName) {
+      const q = normalizeArabic(query);
+      const n = normalizeArabic(colorName);
+      if (!q) return false;
+      if (n.includes(q) || q.includes(n)) return true;
+      const dist = levenshtein(q, n);
+      const maxDist = Math.max(1, Math.floor(q.length / 3));
+      return dist <= maxDist;
     }
-    function onBadgeSelectChange() {
-      const sel = document.getElementById('pBadge');
-      const wrap = document.getElementById('customBadgeWrap');
-      if (sel.value === '__custom__') {
-        wrap.style.display = 'block';
-        document.getElementById('pCustomBadge').value = '';
-        document.getElementById('pCustomBadge').focus();
-      } else { wrap.style.display = 'none'; }
-    }
-    function addCustomBadge() {
-      const name = document.getElementById('pCustomBadge').value.trim();
-      if (!name) { showToast('اكتب اسم الشارة', 'error'); return; }
-      saveCustomBadge(name);
-      populateBadgeSelect(name);
-      document.getElementById('customBadgeWrap').style.display = 'none';
-      showToast('تم حفظ الشارة ✓ ستظهر في القائمة لاحقاً');
-    }
-    function onBadgeColorChange(hex) {
-      document.getElementById('pBadgeColorPicker').value = hex;
-      document.getElementById('pBadgeColorLabel').textContent = hex.toUpperCase();
-      const predefined = PREDEFINED_COLORS.find(pc => pc.hex.toLowerCase() === hex.toLowerCase());
-      document.getElementById('pBadgeColorName').textContent = predefined ? predefined.name : 'مخصص';
-      document.getElementById('pBadgeColorSearch').value = predefined ? predefined.name : '';
-    }
-    function filterBadgeColorOptions(query) {
-      const sugg = document.getElementById('badgeColorSuggestions');
-      const q = (query || '').trim();
-      if (!q) { sugg.classList.remove('open'); sugg.innerHTML = ''; return; }
-      const matches = PREDEFINED_COLORS.filter(pc => pc.name.includes(q));
-      let html = matches.length === 0
-        ? '<div class="color-no-match"><i class="fa-solid fa-magnifying-glass"></i> لا توجد ألوان مطابقة</div>'
-        : matches.slice(0, 40).map(pc => `
-          <button type="button" class="color-suggestion-chip" onclick="selectBadgeColor('${escapeAttr(pc.name)}', '${pc.hex}')">
-            <span class="chip-swatch" style="background:${pc.hex};"></span>
-            <span>${escapeHtml(pc.name)}</span>
-            <span class="chip-hex">${pc.hex.toUpperCase()}</span>
-          </button>`).join('');
-      sugg.innerHTML = html;
-      sugg.classList.add('open');
-    }
-    function selectBadgeColor(name, hex) {
-      onBadgeColorChange(hex);
-      document.getElementById('pBadgeColorSearch').value = name;
-      document.getElementById('badgeColorSuggestions').classList.remove('open');
-    }
-    function handleBadgeColorKeydown(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const first = document.querySelector('#badgeColorSuggestions .color-suggestion-chip');
-        if (first) first.click();
-      } else if (e.key === 'Escape') {
-        document.getElementById('badgeColorSuggestions').classList.remove('open');
-      }
+    function scoreColorMatch(query, colorName) {
+      const q = normalizeArabic(query);
+      const n = normalizeArabic(colorName);
+      if (!q) return -1;
+      if (n === q) return 100;
+      if (n.startsWith(q)) return 90;
+      if (n.includes(q)) return 80;
+      const dist = levenshtein(q, n);
+      const maxLen = Math.max(q.length, n.length);
+      const similarity = 1 - (dist / maxLen);
+      if (similarity >= 0.6) return Math.round(similarity * 70);
+      return -1;
     }
 
     let authToken = localStorage.getItem(TOKEN_KEY) || '';
@@ -1064,8 +1067,9 @@
     let currentViewingOrderId = null;
     let ageRows = [], detailRows = [], colorRows = [], comboRows = [];
     let usersCache = [];
-    let deliveryAllCache = { defaults: {}, byWilaya: {} };
+    let deliveryAllCache = { byWilaya: {} };
     let wilayasCache = [];
+    let activityUserCache = null;
 
     function showToast(msg, type = 'success') {
       const t = document.getElementById('toast');
@@ -1074,7 +1078,7 @@
       t.innerHTML = `<i class="fa-solid fa-${icon}"></i> ${msg}`;
       requestAnimationFrame(() => t.classList.add('show'));
       clearTimeout(t._timer);
-      t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+      t._timer = setTimeout(() => t.classList.remove('show'), 3500);
     }
     function showLoading(show) { document.getElementById('loadingOverlay').classList.toggle('show', show); }
     function escapeAttr(str) { return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
@@ -1107,6 +1111,19 @@
       if (Array.isArray(c.images) && c.images.length > 0) return c.images.find(u => u && u.trim()) || c.image || '';
       return c.image || '';
     }
+    // ✅ حساب اللون الداكن تلقائياً من الأساسي
+    function darkenHex(hex, percent = 15) {
+      try {
+        let h = hex.replace('#','');
+        if (h.length === 3) h = h.split('').map(c => c+c).join('');
+        const num = parseInt(h, 16);
+        const amt = Math.round(2.55 * percent);
+        const r = Math.max(0, ((num >> 16) & 0xff) - amt);
+        const g = Math.max(0, ((num >> 8) & 0xff) - amt);
+        const b = Math.max(0, (num & 0xff) - amt);
+        return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+      } catch(e) { return hex; }
+    }
 
     async function apiFetch(path, options = {}) {
       const headers = { ...(options.headers || {}) };
@@ -1125,7 +1142,7 @@
       const text = await res.text();
       let json = {};
       try { json = text ? JSON.parse(text) : {}; } catch(e) { throw new Error('استجابة غير صالحة من السيرفر'); }
-      if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
+      if (!res.ok) throw new Error(json.error || `HTTP ${res.status}: ${text.slice(0,200)}`);
       return json;
     }
     function clearAuth() { authToken = ''; currentUser = null; localStorage.removeItem(TOKEN_KEY); }
@@ -1159,25 +1176,21 @@
         });
         const json = await res.json().catch(() => ({}));
         return json.error === 'Setup already done' ? false : true;
-      } catch (e) {
-        return false;
-      }
+      } catch (e) { return false; }
     }
 
     document.getElementById('setupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const errEl = document.getElementById('setupError');
-      errEl.textContent = '';
+      const errEl = document.getElementById('setupError'); errEl.textContent = '';
       const username = document.getElementById('setupUsername').value.trim() || 'admin';
       const password = document.getElementById('setupPassword').value;
       const confirm = document.getElementById('setupConfirm').value;
       if (password.length < 4) { errEl.textContent = 'كلمة المرور قصيرة (4 أحرف على الأقل).'; return; }
       if (password !== confirm) { errEl.textContent = 'كلمتا المرور غير متطابقتين.'; return; }
-      const btn = document.getElementById('setupBtn');
-      btn.disabled = true;
+      const btn = document.getElementById('setupBtn'); btn.disabled = true;
       try {
         await apiJSON('/api/auth/setup', { method: 'POST', body: JSON.stringify({ username, password }) });
-        showToast('تم إنشاء الحساب ✓، جارٍ تسجيل الدخول...');
+        showToast('تم إنشاء الحساب ✓');
         const loginRes = await apiJSON('/api/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) });
         authToken = loginRes.token;
         localStorage.setItem(TOKEN_KEY, authToken);
@@ -1186,19 +1199,15 @@
         await initAdmin();
       } catch (err) {
         errEl.textContent = err.message || 'فشل إنشاء الحساب';
-      } finally {
-        btn.disabled = false;
-      }
+      } finally { btn.disabled = false; }
     });
 
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const errEl = document.getElementById('loginError');
-      errEl.textContent = '';
+      const errEl = document.getElementById('loginError'); errEl.textContent = '';
       const username = document.getElementById('loginUsername').value.trim();
       const password = document.getElementById('loginPassword').value;
-      const btn = document.getElementById('loginBtn');
-      btn.disabled = true;
+      const btn = document.getElementById('loginBtn'); btn.disabled = true;
       try {
         const res = await apiJSON('/api/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) });
         authToken = res.token;
@@ -1209,9 +1218,7 @@
         showToast('مرحباً بك!');
       } catch (err) {
         errEl.textContent = err.message || 'بيانات الدخول غير صحيحة';
-      } finally {
-        btn.disabled = false;
-      }
+      } finally { btn.disabled = false; }
     });
 
     async function logout() {
@@ -1224,9 +1231,7 @@
     async function loadSettingsFromAPI() {
       const s = await apiJSON('/api/settings').catch(() => ({}));
       ['girlsCard', 'boysCard', 'categoryCards'].forEach(key => {
-        if (typeof s[key] === 'string') {
-          try { s[key] = JSON.parse(s[key]); } catch(e) { delete s[key]; }
-        }
+        if (typeof s[key] === 'string') { try { s[key] = JSON.parse(s[key]); } catch(e) { delete s[key]; } }
       });
       return deepMerge(JSON.parse(JSON.stringify(DEFAULT_SETTINGS)), s);
     }
@@ -1241,6 +1246,11 @@
         apiJSON('/api/stats').catch(() => null)
       ]);
       data = { products, settings, theme, delivery, orders, stats };
+      // ✅ ضمان وجود الحقول الأساسية
+      if (!data.theme.primary) data.theme.primary = DEFAULT_THEME.primary;
+      if (!data.theme.secondary) data.theme.secondary = DEFAULT_THEME.secondary;
+      data.theme.primaryDark = darkenHex(data.theme.primary, 15);
+      data.theme.accent = data.theme.accent || '#feca57';
     }
 
     const viewTitles = {
@@ -1284,9 +1294,7 @@
     });
 
     function getDeliveredRevenue() {
-      return data.orders
-        .filter(o => o.status === 'delivered')
-        .reduce((sum, o) => sum + (Number(o.total) || 0), 0);
+      return data.orders.filter(o => o.status === 'delivered').reduce((sum, o) => sum + (Number(o.total) || 0), 0);
     }
 
     function renderDashboard() {
@@ -1295,19 +1303,11 @@
       document.getElementById('statRevenue').textContent = getDeliveredRevenue().toLocaleString();
       const pending = data.orders.filter(o => !o.status || o.status === 'pending').length;
       document.getElementById('statPending').textContent = pending;
-
       const badge = document.getElementById('ordersBadge');
-      if (pending > 0) { badge.textContent = pending; badge.style.display = 'inline-block'; }
-      else badge.style.display = 'none';
-
+      if (pending > 0) { badge.textContent = pending; badge.style.display = 'inline-block'; } else badge.style.display = 'none';
       document.getElementById('welcomeTitle').textContent = 'مرحباً بك في لوحة التحكم 👋';
       document.getElementById('welcomeSubtitle').textContent = pending > 0 ? `لديك ${pending} طلب قيد الانتظار` : 'لا توجد طلبات معلقة حالياً';
-
-      renderSalesChart();
-      renderStatusChart();
-      renderTopProducts();
-      renderPendingNotifications();
-      renderRecentOrders();
+      renderSalesChart(); renderStatusChart(); renderTopProducts(); renderPendingNotifications(); renderRecentOrders();
     }
     function renderSalesChart() {
       const chartEl = document.getElementById('salesChart');
@@ -1324,20 +1324,17 @@
         if (days[key]) days[key].total += (Number(o.total) || 0);
       });
       Object.values(days).forEach(d => { if (d.total > maxTotal) maxTotal = d.total; });
-          const grandTotal = Object.values(days).reduce((s, d) => s + d.total, 0);
+      const grandTotal = Object.values(days).reduce((s, d) => s + d.total, 0);
       document.getElementById('salesTotal').textContent = `الإجمالي: ${grandTotal.toLocaleString()} د.ج`;
-
       if (maxTotal === 0) {
         chartEl.innerHTML = '<p style="text-align:center;color:var(--text-gray);padding:40px 20px;width:100%;font-size:.85rem;"><i class="fa-solid fa-chart-simple" style="font-size:2rem;opacity:.3;display:block;margin-bottom:8px;"></i> لا توجد مبيعات مُسلَّمة في آخر 7 أيام<br><small style="font-size:.72rem;">(تُحتسب فقط الطلبات التي تم توصيلها)</small></p>';
         return;
       }
-
       chartEl.innerHTML = Object.values(days).map(d => {
         const h = Math.max(4, (d.total / maxTotal) * 100);
         return `<div class="vbar-wrapper"><span class="vbar-value">${d.total > 0 ? d.total.toLocaleString() : ''}</span><div class="vbar" style="height:${h}%;"></div><span class="vbar-label">${d.label}</span></div>`;
       }).join('');
     }
-
     function renderStatusChart() {
       const el = document.getElementById('statusChart');
       const statuses = [
@@ -1352,29 +1349,23 @@
       if (data.orders.length === 0) { el.innerHTML = '<p style="text-align:center;color:var(--text-gray);padding:40px 20px;">لا توجد طلبات بعد</p>'; return; }
       el.innerHTML = counts.map(c => `<div class="status-bar-item"><div class="status-bar-label"><span class="dot" style="background:${c.color};"></span>${c.label}</div><div class="status-bar-track"><div class="status-bar-fill" style="width:${(c.count / max) * 100}%; background:${c.color};"></div></div><span class="status-bar-count">${c.count}</span></div>`).join('');
     }
-
     function renderTopProducts() {
       const el = document.getElementById('topProductsList');
       const deliveredOrders = data.orders.filter(o => o.status === 'delivered');
       const productMap = new Map();
-
       deliveredOrders.forEach(order => {
         (order.items || []).forEach(it => {
           const productId = it.productId;
           const productName = (it.productName || '').trim();
           const key = productId ? `id_${productId}` : `name_${productName}`;
-          if (!productMap.has(key)) {
-            productMap.set(key, { productId, productName: productName || 'منتج', qty: 0, total: 0, image: it.image || '' });
-          }
+          if (!productMap.has(key)) productMap.set(key, { productId, productName: productName || 'منتج', qty: 0, total: 0, image: it.image || '' });
           const entry = productMap.get(key);
           entry.qty += Number(it.qty) || 0;
           entry.total += (Number(it.qty) || 0) * (Number(it.price) || 0);
           if (!entry.image && it.image) entry.image = it.image;
         });
       });
-
       const top = Array.from(productMap.values()).filter(t => t.qty > 0).sort((a, b) => b.qty - a.qty).slice(0, 5);
-
       top.forEach(t => {
         if (!t.image && t.productId) {
           const prod = data.products.find(p => p.id === t.productId);
@@ -1387,26 +1378,18 @@
           }
         }
       });
-
       if (!top.length) {
         el.innerHTML = '<p style="text-align:center;color:var(--text-gray);padding:30px 20px;font-size:.85rem;"><i class="fa-solid fa-trophy" style="font-size:2rem;opacity:0.3;display:block;margin-bottom:8px;"></i> لا توجد مبيعات مُسلَّمة بعد<br><small style="font-size:.72rem;">(تُحتسب فقط الطلبات التي تم توصيلها)</small></p>';
         return;
       }
-
       el.innerHTML = top.map((item, idx) => {
         const rankClass = idx === 0 ? 'gold' : idx === 1 ? 'silver' : idx === 2 ? 'bronze' : '';
         const imgHtml = item.image && !isVideoUrl(item.image)
           ? `<img src="${escapeAttr(item.image)}" alt="${escapeAttr(item.productName)}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">`
           : `<i class="fa-solid fa-box"></i>`;
-        return `<div class="top-product-item">
-          <div class="top-product-rank ${rankClass}">${idx + 1}</div>
-          <div class="top-product-img">${imgHtml}</div>
-          <div class="top-product-info"><strong>${escapeHtml(item.productName)}</strong><span>${item.qty} قطعة مباعة</span></div>
-          <div class="top-product-total">${Number(item.total || 0).toLocaleString()} د.ج</div>
-        </div>`;
+        return `<div class="top-product-item"><div class="top-product-rank ${rankClass}">${idx + 1}</div><div class="top-product-img">${imgHtml}</div><div class="top-product-info"><strong>${escapeHtml(item.productName)}</strong><span>${item.qty} قطعة مباعة</span></div><div class="top-product-total">${Number(item.total || 0).toLocaleString()} د.ج</div></div>`;
       }).join('');
     }
-
     function renderPendingNotifications() {
       const el = document.getElementById('notificationsList');
       const pending = data.orders.filter(o => !o.status || o.status === 'pending').slice(0, 5);
@@ -1414,31 +1397,19 @@
       if (!pending.length) { el.innerHTML = '<p style="text-align:center;color:var(--text-gray);padding:40px 20px;"><i class="fa-solid fa-check-circle" style="font-size:2rem;opacity:0.3;display:block;margin-bottom:8px;"></i> لا توجد طلبات معلقة</p>'; return; }
       el.innerHTML = pending.map(o => `<div class="notification-item"><div class="notification-icon"><i class="fa-solid fa-clock"></i></div><div class="notification-info"><strong>${escapeHtml((o.firstName||'') + ' ' + (o.lastName||''))}</strong><span>${(o.total || 0).toLocaleString()} د.ج · ${formatDate(o.createdAt)}</span></div><button class="notification-action" onclick="viewOrder('${o.orderId}')">عرض</button></div>`).join('');
     }
-
     function renderRecentOrders() {
       const wrap = document.getElementById('recentOrdersWrap');
       const recent = [...data.orders].slice(0, 5);
       if (!recent.length) { wrap.innerHTML = `<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>لا توجد طلبات بعد</p></div>`; return; }
       wrap.innerHTML = renderOrdersTable(recent);
     }
-
     function statusBadge(status) {
-      const map = {
-        pending: { label: 'قيد الانتظار', cls: 'status-pending' },
-        confirmed: { label: 'مؤكد', cls: 'status-confirmed' },
-        out_for_delivery: { label: 'قيد التوصيل', cls: 'status-out' },
-        delivered: { label: 'تم التوصيل', cls: 'status-delivered' },
-        cancelled: { label: 'ملغى', cls: 'status-cancelled' }
-      };
+      const map = { pending: { label: 'قيد الانتظار', cls: 'status-pending' }, confirmed: { label: 'مؤكد', cls: 'status-confirmed' }, out_for_delivery: { label: 'قيد التوصيل', cls: 'status-out' }, delivered: { label: 'تم التوصيل', cls: 'status-delivered' }, cancelled: { label: 'ملغى', cls: 'status-cancelled' } };
       const s = map[status] || map.pending;
       return `<span class="status-badge ${s.cls}">${s.label}</span>`;
     }
-    function statusLabel(status) {
-      return { pending: 'قيد الانتظار', confirmed: 'مؤكد', out_for_delivery: 'قيد التوصيل', delivered: 'تم التوصيل', cancelled: 'ملغى' }[status] || 'قيد الانتظار';
-    }
-    function deliveryLabel(m) {
-      return { home: 'المنزل', agency: 'الوكالة', express: 'سريع' }[m] || 'المنزل';
-    }
+    function statusLabel(status) { return { pending: 'قيد الانتظار', confirmed: 'مؤكد', out_for_delivery: 'قيد التوصيل', delivered: 'تم التوصيل', cancelled: 'ملغى' }[status] || 'قيد الانتظار'; }
+    function deliveryLabel(m) { return { home: 'المنزل', agency: 'الوكالة' }[m] || 'المنزل'; }
     function formatDate(iso) {
       if (!iso) return '-';
       try { const d = new Date(iso); return d.toLocaleDateString('ar-DZ') + ' ' + d.toLocaleTimeString('ar-DZ', { hour: '2-digit', minute: '2-digit' }); } catch(e) { return '-'; }
@@ -1490,7 +1461,16 @@
         renderOrdersView();
         showToast('تم تحديث حالة الطلب ✓');
       } catch (err) {
-        showToast(err.message || 'فشل تحديث الحالة', 'error');
+        // ✅ رسالة خطأ مفصلة (بدل "فشل تحديث الحالة" فقط)
+        const msg = err.message || 'خطأ غير معروف';
+        showToast(`فشل تحديث الحالة: ${msg}`, 'error');
+        console.error('[updateOrderStatus] orderId=', orderId, 'status=', status, 'error=', err);
+        // ✅ إعادة تحميل الطلبات لكي تعود القائمة المنسدلة للحالة الصحيحة
+        try {
+          const freshOrders = await apiJSON('/api/orders');
+          data.orders = freshOrders;
+          renderOrdersView();
+        } catch(e) {}
       }
     }
 
@@ -1501,15 +1481,10 @@
       try {
         await apiJSON(`/api/orders/${encodeURIComponent(orderId)}`, { method: 'DELETE' });
         data.orders = data.orders.filter(o => o.orderId !== orderId);
-        renderDashboard();
-        renderOrdersView();
-        closeOrderDetails();
+        renderDashboard(); renderOrdersView(); closeOrderDetails();
         showToast('تم حذف الطلب ✓', 'info');
-      } catch (err) {
-        showToast(err.message || 'فشل حذف الطلب', 'error');
-      } finally {
-        showLoading(false);
-      }
+      } catch (err) { showToast(err.message || 'فشل حذف الطلب', 'error'); }
+      finally { showLoading(false); }
     }
 
     async function deleteOldDeliveredOrders() {
@@ -1518,28 +1493,16 @@
         if (o.status !== 'delivered') return false;
         try { return new Date(o.createdAt).getTime() < cutoff; } catch { return false; }
       });
-
-      if (oldDelivered.length === 0) {
-        showToast('لا توجد طلبات مُسلَّمة قديمة (أكثر من 30 يوماً) لحذفها', 'info');
-        return;
-      }
+      if (oldDelivered.length === 0) { showToast('لا توجد طلبات مُسلَّمة قديمة (أكثر من 30 يوماً) لحذفها', 'info'); return; }
       if (!confirm(`هل تريد حذف ${oldDelivered.length} طلب مُسلَّم قديم (أكثر من 30 يوماً)؟\nلا يمكن التراجع!`)) return;
-
       showLoading(true);
       let successCount = 0, failCount = 0;
       for (const o of oldDelivered) {
-        try {
-          await apiJSON(`/api/orders/${encodeURIComponent(o.orderId)}`, { method: 'DELETE' });
-          successCount++;
-        } catch (err) {
-          failCount++;
-          console.warn('فشل حذف الطلب', o.orderId, err);
-        }
+        try { await apiJSON(`/api/orders/${encodeURIComponent(o.orderId)}`, { method: 'DELETE' }); successCount++; }
+        catch (err) { failCount++; console.warn('فشل حذف الطلب', o.orderId, err); }
       }
       await loadAllData();
-      renderDashboard();
-      renderOrdersView();
-      renderProductsTable();
+      renderDashboard(); renderOrdersView(); renderProductsTable();
       showLoading(false);
       showToast(`تم حذف ${successCount} طلب${failCount > 0 ? ` (فشل ${failCount})` : ''} ✓`, 'success');
     }
@@ -1549,7 +1512,6 @@
       const countEl = document.getElementById('ordersResultsCount');
       const filter = (document.getElementById('orderStatusFilter')?.value) || 'all';
       const search = (document.getElementById('orderSearchInput')?.value || '').trim().toLowerCase();
-
       let filtered = data.orders;
       if (filter !== 'all') filtered = filtered.filter(o => (o.status || 'pending') === filter);
       if (search) {
@@ -1563,12 +1525,10 @@
               || (o.municipality || '').toLowerCase().includes(search);
         });
       }
-
       if (countEl) {
         const total = data.orders.length;
         countEl.innerHTML = `عرض <strong>${filtered.length}</strong> من إجمالي <strong>${total}</strong> طلب${search ? ' — نتائج البحث عن "' + escapeHtml(search) + '"' : ''}`;
       }
-
       if (!filtered.length) {
         wrap.innerHTML = `<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>${search ? 'لا توجد طلبات مطابقة لبحثك' : 'لا توجد طلبات'}</p></div>`;
         return;
@@ -1611,7 +1571,6 @@
         </div>`;
       document.getElementById('orderDetailsModal').classList.add('show');
     }
-
     function closeOrderDetails() { document.getElementById('orderDetailsModal').classList.remove('show'); currentViewingOrderId = null; }
 
     function printOrderDetails() {
@@ -1634,8 +1593,7 @@
         `<tr><td style="text-align:center;font-weight:700;">${idx + 1}</td><td>${escapeHtml(it.productName || '-')}</td><td style="text-align:center;">${escapeHtml(it.colorName || '-')}</td><td style="text-align:center;">${escapeHtml(it.age || '-')}</td><td style="text-align:center;font-weight:700;">${it.qty || 0}</td><td style="text-align:center;">${(it.price || 0).toLocaleString()} د.ج</td></tr>`
       ).join('');
       const sc = '<' + '/script>';
-      const winDoc = `<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><title>وصل التوصيل — ${escapeHtml(order.orderId)}</title>
-<style>@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Cairo',sans-serif;padding:20px;background:#fff;color:#1a1a1a}.slip{max-width:800px;margin:0 auto;border:3px solid #222;border-radius:12px;padding:20px}.slip-header{text-align:center;border-bottom:3px double #222;padding-bottom:12px;margin-bottom:16px}.slip-header h1{font-size:1.7rem;margin-bottom:8px;color:#ff6b81}.slip-header .order-num{font-size:1.2rem;font-weight:800;background:#feca57;color:#1a1a1a;display:inline-block;padding:6px 22px;border-radius:24px;margin-top:6px;letter-spacing:.5px}.slip-header .store-name{font-size:0.88rem;color:#666;margin-top:8px;font-weight:600}.section{margin-bottom:16px}.section-title{font-size:0.95rem;font-weight:800;background:#f5f5f5;padding:8px 14px;border-right:5px solid #ff6b81;margin-bottom:12px;border-radius:4px}.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px}.field{font-size:0.92rem;padding:8px 0;border-bottom:1px dashed #ccc}.field strong{display:inline-block;min-width:100px;color:#555;font-weight:700}.field span{font-weight:800;color:#1a1a1a}.full-row{grid-column:1/-1}table{width:100%;border-collapse:collapse;margin-top:8px;font-size:0.85rem}th,td{border:1.5px solid #555;padding:8px 6px;text-align:right}th{background:#f0f0f0;font-weight:800;text-align:center}.total-box{margin-top:18px;text-align:center;font-size:1.25rem;font-weight:800;padding:14px;background:#fde8ec;border:2px solid #ff6b81;border-radius:10px}.total-box small{display:block;font-size:0.78rem;font-weight:600;margin-top:6px;color:#666}.delivery-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}.delivery-box{border:2px dashed #888;padding:14px;border-radius:10px;min-height:120px}.delivery-box-title{font-weight:800;margin-bottom:10px;color:#333;font-size:0.95rem;border-bottom:1px solid #ddd;padding-bottom:6px}.delivery-box .line{border-bottom:1px dotted #666;height:28px;margin-top:10px}.delivery-box .line-label{font-size:0.8rem;color:#666;font-weight:600;margin-top:8px}.footer{text-align:center;margin-top:22px;font-size:0.82rem;color:#777;padding-top:14px;border-top:1px solid #eee}@media print{body{padding:0}.slip{border-width:2px;padding:14px}.no-print{display:none !important}}.print-btn{display:block;margin:20px auto 0;padding:12px 32px;background:linear-gradient(135deg,#00b894,#00a085);color:#fff;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(0,184,148,.4)}</style></head><body>
+      const winDoc = `<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><title>وصل التوصيل — ${escapeHtml(order.orderId)}</title><style>@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Cairo',sans-serif;padding:20px;background:#fff;color:#1a1a1a}.slip{max-width:800px;margin:0 auto;border:3px solid #222;border-radius:12px;padding:20px}.slip-header{text-align:center;border-bottom:3px double #222;padding-bottom:12px;margin-bottom:16px}.slip-header h1{font-size:1.7rem;margin-bottom:8px;color:#ff6b81}.slip-header .order-num{font-size:1.2rem;font-weight:800;background:#feca57;color:#1a1a1a;display:inline-block;padding:6px 22px;border-radius:24px;margin-top:6px}.slip-header .store-name{font-size:0.88rem;color:#666;margin-top:8px;font-weight:600}.section{margin-bottom:16px}.section-title{font-size:0.95rem;font-weight:800;background:#f5f5f5;padding:8px 14px;border-right:5px solid #ff6b81;margin-bottom:12px;border-radius:4px}.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px}.field{font-size:0.92rem;padding:8px 0;border-bottom:1px dashed #ccc}.field strong{display:inline-block;min-width:100px;color:#555;font-weight:700}.field span{font-weight:800;color:#1a1a1a}.full-row{grid-column:1/-1}table{width:100%;border-collapse:collapse;margin-top:8px;font-size:0.85rem}th,td{border:1.5px solid #555;padding:8px 6px;text-align:right}th{background:#f0f0f0;font-weight:800;text-align:center}.total-box{margin-top:18px;text-align:center;font-size:1.25rem;font-weight:800;padding:14px;background:#fde8ec;border:2px solid #ff6b81;border-radius:10px}.total-box small{display:block;font-size:0.78rem;font-weight:600;margin-top:6px;color:#666}.delivery-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}.delivery-box{border:2px dashed #888;padding:14px;border-radius:10px;min-height:120px}.delivery-box-title{font-weight:800;margin-bottom:10px;color:#333;font-size:0.95rem;border-bottom:1px solid #ddd;padding-bottom:6px}.delivery-box .line{border-bottom:1px dotted #666;height:28px;margin-top:10px}.delivery-box .line-label{font-size:0.8rem;color:#666;font-weight:600;margin-top:8px}.footer{text-align:center;margin-top:22px;font-size:0.82rem;color:#777;padding-top:14px;border-top:1px solid #eee}@media print{body{padding:0}.slip{border-width:2px;padding:14px}.no-print{display:none !important}}.print-btn{display:block;margin:20px auto 0;padding:12px 32px;background:linear-gradient(135deg,#00b894,#00a085);color:#fff;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:800;cursor:pointer}</style></head><body>
 <div class="slip"><div class="slip-header"><h1>${escapeHtml(data.settings.storeName || 'بيبي شوب')}</h1><div class="order-num">طلب رقم: ${escapeHtml(order.orderId)}</div><div class="store-name">تاريخ الطباعة: ${today}</div></div>
 <div class="section"><div class="section-title">📋 بيانات الزبون</div><div class="grid-2"><div class="field"><strong>الاسم:</strong> <span>${escapeHtml((order.firstName||'') + ' ' + (order.lastName||''))}</span></div><div class="field"><strong>الهاتف 1:</strong> <span>${escapeHtml(order.phone1 || '-')}</span></div><div class="field"><strong>الهاتف 2:</strong> <span>${escapeHtml(order.phone2 || '-')}</span></div><div class="field"><strong>طريقة الدفع:</strong> <span>الدفع عند الاستلام</span></div><div class="field"><strong>الولاية:</strong> <span>${escapeHtml(order.wilaya || '-')}</span></div><div class="field"><strong>البلدية:</strong> <span>${escapeHtml(order.municipality || '-')}</span></div><div class="field full-row"><strong>العنوان:</strong> <span>${escapeHtml(order.address || '-')}</span></div></div></div>
 <div class="section"><div class="section-title">📦 تفاصيل الطلب</div><div class="grid-2" style="margin-bottom:10px;"><div class="field"><strong>تاريخ الطلب:</strong> <span>${formatDate(order.createdAt)}</span></div><div class="field"><strong>طريقة التوصيل:</strong> <span>${deliveryLabel(order.deliveryMethod)}</span></div></div>
@@ -1659,10 +1617,13 @@
         return `<tr><td>${escapeHtml(o.orderId)}</td><td>${formatDate(o.createdAt)}</td><td>${escapeHtml((o.firstName||'')+' '+(o.lastName||''))}</td><td>${escapeHtml(o.phone1||'')}${o.phone2 ? '<br>' + escapeHtml(o.phone2) : ''}</td><td>${escapeHtml(o.wilaya||'')}</td><td>${escapeHtml(o.municipality||'')}</td><td>${escapeHtml(o.address||'')}</td><td style="font-size:0.8rem;">${items}</td><td>${(o.subtotal||0).toLocaleString()}</td><td>${(o.deliveryCost||0).toLocaleString()}</td><td style="font-weight:bold;">${(o.total||0).toLocaleString()}</td><td>${statusLabel(o.status)}</td></tr>`;
       }).join('');
       const sc = '<' + '/script>';
-      win.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><title>تقرير الطلبات - ${escapeHtml(data.settings.storeName)}</title><style>body{font-family:'Cairo',Arial,sans-serif;padding:20px}h1{color:#ff6b81;text-align:center;margin-bottom:10px}.meta{display:flex;justify-content:space-between;margin-bottom:20px;font-size:.9rem;background:#f5f6fa;padding:12px;border-radius:8px}table{width:100%;border-collapse:collapse;font-size:.8rem}th,td{border:1px solid #ddd;padding:8px;text-align:right;vertical-align:top}th{background:#6c5ce7;color:#fff}tr:nth-child(even){background:#f9f9f9}@media print{body{padding:10px}}</style></head><body><h1>تقرير الطلبات - ${escapeHtml(data.settings.storeName)}</h1><div class="meta"><span><strong>تاريخ التصدير:</strong> ${new Date().toLocaleString('ar-DZ')}</span><span><strong>عدد الطلبات:</strong> ${data.orders.length}</span><span><strong>إجمالي الإيرادات المُسلَّمة:</strong> ${totalRevenue.toLocaleString()} د.ج</span></div><table><thead><tr><th>رقم الطلب</th><th>التاريخ</th><th>العميل</th><th>الهاتف</th><th>الولاية</th><th>البلدية</th><th>العنوان</th><th>المنتجات</th><th>المجموع الفرعي</th><th>التوصيل</th><th>الإجمالي</th><th>الحالة</th></tr></thead><tbody>${rows}</tbody></table><script>window.onload=()=>window.print();${sc}</body></html>`);
+      win.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><title>تقرير الطلبات - ${escapeHtml(data.settings.storeName)}</title><style>body{font-family:'Cairo',Arial,sans-serif;padding:20px}h1{color:#ff6b81;text-align:center;margin-bottom:10px}.meta{display:flex;justify-content:space-between;margin-bottom:20px;font-size:.9rem;background:#f5f6fa;padding:12px;border-radius:8px;flex-wrap:wrap;gap:10px}table{width:100%;border-collapse:collapse;font-size:.8rem}th,td{border:1px solid #ddd;padding:8px;text-align:right;vertical-align:top}th{background:#6c5ce7;color:#fff}tr:nth-child(even){background:#f9f9f9}@media print{body{padding:10px}}</style></head><body><h1>تقرير الطلبات - ${escapeHtml(data.settings.storeName)}</h1><div class="meta"><span><strong>تاريخ التصدير:</strong> ${new Date().toLocaleString('ar-DZ')}</span><span><strong>عدد الطلبات:</strong> ${data.orders.length}</span><span><strong>إجمالي الإيرادات المُسلَّمة:</strong> ${totalRevenue.toLocaleString()} د.ج</span></div><table><thead><tr><th>رقم الطلب</th><th>التاريخ</th><th>العميل</th><th>الهاتف</th><th>الولاية</th><th>البلدية</th><th>العنوان</th><th>المنتجات</th><th>المجموع الفرعي</th><th>التوصيل</th><th>الإجمالي</th><th>الحالة</th></tr></thead><tbody>${rows}</tbody></table><script>window.onload=()=>window.print();${sc}</body></html>`);
       win.document.close();
     }
 
+    // ============================================================
+    // PRODUCTS TABLE
+    // ============================================================
     function renderProductsTable() {
       const query = (document.getElementById('productSearch').value || '').toLowerCase().trim();
       let products = data.products;
@@ -1699,6 +1660,7 @@
         }).join('')}
       </tbody></table>`;
     }
+
     function viewMedia(url) {
       if (!url) return;
       const content = document.getElementById('imageViewerContent');
@@ -1713,12 +1675,7 @@
       const mediaEl = e.target.closest('[data-media-url]');
       if (mediaEl) {
         const url = mediaEl.dataset.mediaUrl;
-        if (url && url.trim()) {
-          e.preventDefault();
-          e.stopPropagation();
-          viewMedia(url);
-          return;
-        }
+        if (url && url.trim()) { e.preventDefault(); e.stopPropagation(); viewMedia(url); return; }
       }
       if (!e.target.closest('.color-search-wrap')) {
         document.querySelectorAll('.color-suggestions.open').forEach(el => el.classList.remove('open'));
@@ -1729,49 +1686,23 @@
       const prod = data.products.find(x => x.id === id);
       if (!prod) return;
       const newHidden = !prod.hidden;
-
       const payload = {
-        name: prod.name,
-        category: prod.category,
-        categoryLabel: prod.categoryLabel,
-        gender: prod.gender,
-        price: prod.price,
-        oldPrice: prod.oldPrice,
-        hidden: newHidden,
-        badge: prod.badge || null,
-        badgeColor: prod.badgeColor,
-        badgeColorName: prod.badgeColorName,
-        badgeType: prod.badgeType,
-        description: prod.description,
-        isSet: prod.isSet,
-        details: prod.details || [],
-        ages: prod.ages || [],
-        colors: prod.colors || [],
-        combos: prod.combos || []
+        name: prod.name, category: prod.category, categoryLabel: prod.categoryLabel, gender: prod.gender,
+        price: prod.price, oldPrice: prod.oldPrice, hidden: newHidden,
+        badge: prod.badge || null, badgeColor: prod.badgeColor, badgeColorName: prod.badgeColorName,
+        badgeType: prod.badgeType, description: prod.description, isSet: prod.isSet,
+        details: prod.details || [], ages: prod.ages || [], colors: prod.colors || [], combos: prod.combos || []
       };
-
       try {
         showLoading(true);
         await apiJSON(`/api/products/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
-
         const freshProducts = await apiJSON('/api/products?include_hidden=1');
-        const savedProd = freshProducts.find(x => x.id === id);
-        const actuallySaved = savedProd && (!!savedProd.hidden === newHidden);
-
-        if (actuallySaved) {
-          data.products = freshProducts;
-          renderProductsTable();
-          showToast(newHidden ? '✓ تم إخفاء المنتج من المتجر' : '✓ تم إظهار المنتج في المتجر', newHidden ? 'info' : 'success');
-        } else {
-          prod.hidden = newHidden;
-          renderProductsTable();
-          showToast(newHidden ? '✓ تم إخفاء المنتج محلياً' : '✓ تم إظهار المنتج محلياً', 'info');
-        }
+        data.products = freshProducts;
+        renderProductsTable();
+        showToast(newHidden ? '✓ تم إخفاء المنتج من المتجر' : '✓ تم إظهار المنتج في المتجر', newHidden ? 'info' : 'success');
       } catch (err) {
         showToast(err.message || 'فشل تحديث حالة المنتج', 'error');
-      } finally {
-        showLoading(false);
-      }
+      } finally { showLoading(false); }
     }
 
     async function deleteProduct(id) {
@@ -1783,141 +1714,167 @@
         showToast('تم حذف المنتج', 'info');
       } catch(err) { showToast(err.message || 'فشل الحذف', 'error'); }
     }
+
     function autoFillCategoryLabel() {
       const cat = document.getElementById('pCategory').value;
       const labels = { winter: 'شتوي', summer: 'صيفي', light: 'خفيف', heavy: 'ثقيل', shoes: 'أحذية', accessories: 'إكسسوارات', babies: 'مواليد' };
       document.getElementById('pCategoryLabel').value = labels[cat] || cat;
     }
 
-    function openProductModal(id = null) {
-      document.getElementById('productModal').classList.add('show');
-      populateBadgeSelect('');
-      comboRows = [];
-      document.getElementById('pIsSet').checked = false;
-      document.getElementById('combosList').style.display = 'none';
-      document.getElementById('colorsList').style.display = 'block';
-      document.getElementById('addColorBtn').style.display = 'flex';
-      document.getElementById('addComboBtn').style.display = 'none';
-      if (id) {
-        const p = data.products.find(pr => pr.id === id);
-        if (!p) return;
-        document.getElementById('productModalTitle').innerHTML = '<i class="fa-solid fa-pen"></i> تعديل المنتج';
-        document.getElementById('pId').value = p.id;
-        document.getElementById('pName').value = p.name;
-        document.getElementById('pCategory').value = p.category;
-        document.getElementById('pCategoryLabel').value = p.categoryLabel;
-        document.getElementById('pGender').value = p.gender;
-        document.getElementById('pPrice').value = p.price;
-        document.getElementById('pOldPrice').value = p.oldPrice || '';
-        populateBadgeSelect(p.badge || '');
-        const _bc = p.badgeColor || (p.badgeType === 'sale' ? '#ff6b81' : '#feca57');
-        const _bn = p.badgeColorName || (p.badgeType === 'sale' ? 'وردي' : 'أصفر فاتح');
-        document.getElementById('pBadgeColorPicker').value = _bc;
-        document.getElementById('pBadgeColorLabel').textContent = _bc.toUpperCase();
-        document.getElementById('pBadgeColorName').textContent = _bn;
-        document.getElementById('pBadgeColorSearch').value = isPredefinedColor(_bn) ? _bn : '';
-        document.getElementById('pDescription').value = p.description || '';
-        ageRows = [...(p.ages || [])];
-        detailRows = [...(p.details || [])];
-        colorRows = (p.colors || []).map(c => ({
-          name: c.name || '', hex: c.hex || '#cccccc',
-          images: (c.images && c.images.length) ? [...c.images] : (c.image ? [c.image] : [''])
-        }));
-
-        if (p.isSet) {
-          document.getElementById('pIsSet').checked = true;
-
-          const getAgesFromColors = (comboName) => {
-            if (!p.colors || !p.colors.length) return null;
-            const cm = p.colors.find(cl =>
-              cl.comboName === comboName &&
-              Array.isArray(cl.comboAvailableAges) &&
-              cl.comboAvailableAges.length > 0
-            );
-            return cm ? [...cm.comboAvailableAges] : null;
-          };
-
-          if (p.combos && p.combos.length) {
-            comboRows = p.combos.map(c => {
-              let availAges = Array.isArray(c.availableAges)
-                ? [...c.availableAges]
-                : null;
-              if (availAges === null) {
-                const fromColors = getAgesFromColors(c.name);
-                if (fromColors) availAges = fromColors;
-              }
-              if (availAges === null) availAges = [...(p.ages || [])];
-              return {
-                name: c.name || '',
-                images: (c.images && c.images.length) ? [...c.images] : [''],
-                availableAges: availAges,
-                parts: (c.parts || []).map(pt => ({
-                  label: pt.label || 'قطعة',
-                  name: pt.name || '',
-                  hex: pt.hex || '#cccccc'
-                }))
-              };
-            });
-          } else if (p.colors && p.colors.length && p.colors[0] && p.colors[0].comboName) {
-            const grouped = {};
-            p.colors.forEach(c => {
-              if (!c.comboName) return;
-              if (!grouped[c.comboName]) grouped[c.comboName] = {
-                name: c.comboName, images: [], parts: [], availableAges: null
-              };
-              grouped[c.comboName].parts.push({ label: c.partLabel || 'قطعة', name: c.name, hex: c.hex });
-              if (grouped[c.comboName].availableAges === null &&
-                  Array.isArray(c.comboAvailableAges) &&
-                  c.comboAvailableAges.length > 0) {
-                grouped[c.comboName].availableAges = [...c.comboAvailableAges];
-              }
-              (c.images || []).forEach(img => {
-                if (img && img.trim() && !grouped[c.comboName].images.includes(img))
-                  grouped[c.comboName].images.push(img);
-              });
-            });
-            comboRows = Object.values(grouped).map(g => ({
-              name: g.name,
-              images: g.images.length ? g.images : [''],
-              parts: g.parts,
-              availableAges: g.availableAges !== null ? g.availableAges : [...(p.ages || [])]
-            }));
-          } else {
-            comboRows = [];
-          }
-          toggleSetMode();
-        }
-      } else {
-        document.getElementById('productModalTitle').innerHTML = '<i class="fa-solid fa-plus"></i> إضافة منتج جديد';
-        document.getElementById('pId').value = '';
-        document.getElementById('pName').value = '';
-        document.getElementById('pCategory').value = 'winter';
-        document.getElementById('pCategoryLabel').value = 'شتوي';
-        document.getElementById('pGender').value = 'both';
-        document.getElementById('pPrice').value = '';
-        document.getElementById('pOldPrice').value = '';
-        populateBadgeSelect('');
-        document.getElementById('pBadgeColorPicker').value = '#feca57';
-        document.getElementById('pBadgeColorLabel').textContent = '#FECA57';
-        document.getElementById('pBadgeColorName').textContent = 'أصفر فاتح';
-        document.getElementById('pBadgeColorSearch').value = '';
-        document.getElementById('customBadgeWrap').style.display = 'none';
-        document.getElementById('pDescription').value = '';
-        ageRows = ['10 سنوات', '8 سنوات'];
-        detailRows = [''];
-        colorRows = [{ name: 'أحمر', hex: '#e74c3c', images: [''] }];
-      }
-      renderAgesRows(); renderDetailsRows(); renderColorsRows();
+    // ============================================================
+    // BADGES
+    // ============================================================
+    function getCustomBadges() {
+      try { return JSON.parse(localStorage.getItem(CUSTOM_BADGES_KEY) || '[]'); } catch(e) { return []; }
     }
-    function closeProductModal() { document.getElementById('productModal').classList.remove('show'); }
+    function saveCustomBadge(name) {
+      name = (name || '').trim();
+      if (!name) return;
+      const list = getCustomBadges();
+      if (!list.includes(name) && !BADGE_PRESETS.includes(name)) {
+        list.push(name);
+        localStorage.setItem(CUSTOM_BADGES_KEY, JSON.stringify(list));
+      }
+    }
+    function populateBadgeSelect(selected = '') {
+      const sel = document.getElementById('pBadge');
+      if (!sel) return;
+      const custom = getCustomBadges();
+      const all = [...BADGE_PRESETS, ...custom];
+      let html = '<option value="">بدون شارة</option>';
+      all.forEach(b => { html += `<option value="${escapeAttr(b)}" ${selected === b ? 'selected' : ''}>${escapeHtml(b)}</option>`; });
+      html += '<option value="__custom__">➕ إضافة شارة جديدة...</option>';
+      sel.innerHTML = html;
+      if (selected && !all.includes(selected)) {
+        const opt = document.createElement('option');
+        opt.value = selected; opt.textContent = selected + ' (حالية)'; opt.selected = true;
+        sel.insertBefore(opt, sel.lastChild);
+      }
+    }
+    function onBadgeSelectChange() {
+      const sel = document.getElementById('pBadge');
+      const wrap = document.getElementById('customBadgeWrap');
+      if (sel.value === '__custom__') {
+        wrap.style.display = 'block';
+        document.getElementById('pCustomBadge').value = '';
+        document.getElementById('pCustomBadge').focus();
+      } else { wrap.style.display = 'none'; }
+    }
+    function addCustomBadge() {
+      const name = document.getElementById('pCustomBadge').value.trim();
+      if (!name) { showToast('اكتب اسم الشارة', 'error'); return; }
+      saveCustomBadge(name);
+      populateBadgeSelect(name);
+      document.getElementById('pBadgeColorSearch').value = '';
+      showToast('تم حفظ الشارة ✓ ستظهر في القائمة لاحقاً');
+    }
 
+    // ✅ لون الشارة: قائمة منسدلة + بحث ذكي
+    function populateBadgeColorSelect(selectedHex) {
+      const sel = document.getElementById('pBadgeColorSelect');
+      if (!sel) return;
+      sel.innerHTML = '<option value="">-- اختر اللون من القائمة --</option>' +
+        PREDEFINED_COLORS.map(pc => `<option value="${pc.hex}" ${selectedHex && selectedHex.toLowerCase() === pc.hex.toLowerCase() ? 'selected' : ''}>${escapeHtml(pc.name)} — ${pc.hex.toUpperCase()}</option>`).join('');
+    }
+    function applyBadgeColor(hex, name) {
+      document.getElementById('pBadgeColorSwatch').style.background = hex;
+      document.getElementById('pBadgeColorLabel').textContent = hex.toUpperCase();
+      const found = PREDEFINED_COLORS.find(pc => pc.hex.toLowerCase() === hex.toLowerCase());
+      document.getElementById('pBadgeColorName').textContent = name || (found ? found.name : 'مخصص');
+      // مزامنة القائمة المنسدلة
+      const sel = document.getElementById('pBadgeColorSelect');
+      if (sel) {
+        let matched = false;
+        for (const opt of sel.options) {
+          if (opt.value.toLowerCase() === hex.toLowerCase()) { opt.selected = true; matched = true; break; }
+        }
+        if (!matched) sel.value = '';
+      }
+    }
+    function onBadgeColorSelectChange(hex) {
+      if (!hex) return;
+      const p = PREDEFINED_COLORS.find(pc => pc.hex.toLowerCase() === hex.toLowerCase());
+      applyBadgeColor(hex, p ? p.name : '');
+      document.getElementById('pBadgeColorSearch').value = p ? p.name : '';
+    }
+    function filterBadgeColorOptions(query) {
+      const sugg = document.getElementById('badgeColorSuggestions');
+      const q = (query || '').trim();
+      if (!q) { sugg.classList.remove('open'); sugg.innerHTML = ''; return; }
+      const scored = PREDEFINED_COLORS.map(pc => ({ pc, score: scoreColorMatch(q, pc.name) })).filter(x => x.score >= 0).sort((a, b) => b.score - a.score).slice(0, 40);
+      let html = scored.length === 0
+        ? '<div class="color-no-match"><i class="fa-solid fa-magnifying-glass"></i> لا توجد ألوان مطابقة (جرّب كتابة مختلفة)</div>'
+        : scored.map(({pc}) => `
+          <button type="button" class="color-suggestion-chip" onclick="selectBadgeColor('${escapeAttr(pc.name)}', '${pc.hex}')">
+            <span class="chip-swatch" style="background:${pc.hex};"></span>
+            <span>${escapeHtml(pc.name)}</span>
+            <span class="chip-hex">${pc.hex.toUpperCase()}</span>
+          </button>`).join('');
+      sugg.innerHTML = html;
+      sugg.classList.add('open');
+    }
+    function selectBadgeColor(name, hex) {
+      applyBadgeColor(hex, name);
+      document.getElementById('pBadgeColorSearch').value = name;
+      document.getElementById('badgeColorSuggestions').classList.remove('open');
+    }
+    function handleBadgeColorKeydown(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const first = document.querySelector('#badgeColorSuggestions .color-suggestion-chip');
+        if (first) first.click();
+      } else if (e.key === 'Escape') {
+        document.getElementById('badgeColorSuggestions').classList.remove('open');
+      }
+    }
+
+    // ============================================================
+    // ✅ AGES (قائمة منسدلة + مخصص)
+    // ============================================================
+    function onAgeSelectChange(i, val) {
+      if (val === '__custom__') {
+        ageRows[i] = '';
+        renderAgesRows();
+        setTimeout(() => {
+          const list = document.getElementById('agesList');
+          const item = list?.children[i];
+          const input = item?.querySelector('.custom-age-input');
+          if (input) input.focus();
+        }, 60);
+        return;
+      }
+      ageRows[i] = val;
+      if (document.getElementById('pIsSet')?.checked) renderCombosRows();
+      renderAgesRows();
+    }
     function renderAgesRows() {
-      document.getElementById('agesList').innerHTML = ageRows.map((a, i) => `<div class="dynamic-item"><input type="text" value="${escapeAttr(a)}" placeholder="مثال: 8 سنوات" oninput="ageRows[${i}] = this.value"><button class="remove-btn" onclick="removeAgeRow(${i})"><i class="fa-solid fa-xmark"></i></button></div>`).join('');
+      document.getElementById('agesList').innerHTML = ageRows.map((a, i) => {
+        const isStd = STANDARD_AGES.includes(a);
+        const showCustomInput = !isStd;
+        const selectOpts = STANDARD_AGES.map(s => `<option value="${s}" ${a===s?'selected':''}>${s}</option>`).join('');
+        return `<div class="dynamic-item">
+          <select onchange="onAgeSelectChange(${i}, this.value)" style="flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;background:var(--card-bg);color:var(--text);font-family:inherit;cursor:pointer;">
+            <option value="" ${!a?'selected':''} disabled>-- اختر العمر --</option>
+            ${selectOpts}
+            <option value="__custom__" ${showCustomInput?'selected':''}>✎ عمر مخصص...</option>
+          </select>
+          ${showCustomInput ? `<input type="text" class="custom-age-input" value="${escapeAttr(a)}" placeholder="اكتب العمر المخصص" oninput="ageRows[${i}] = this.value" style="flex:1;padding:8px 12px;border:1.5px solid var(--primary);border-radius:8px;font-size:.85rem;background:var(--card-bg);color:var(--text);font-family:inherit;">` : ''}
+          <button class="remove-btn" onclick="removeAgeRow(${i})" title="حذف"><i class="fa-solid fa-xmark"></i></button>
+        </div>`;
+      }).join('');
     }
     function addAgeRow(val) {
       ageRows.push(val);
       renderAgesRows();
       if (document.getElementById('pIsSet')?.checked) renderCombosRows();
+    }
+    function addAllStandardAges() {
+      const existing = new Set(ageRows);
+      let added = 0;
+      STANDARD_AGES.forEach(a => { if (!existing.has(a)) { ageRows.push(a); added++; } });
+      renderAgesRows();
+      if (document.getElementById('pIsSet')?.checked) renderCombosRows();
+      showToast(added > 0 ? `تمت إضافة ${added} عمر` : 'كل الأعمار القياسية موجودة بالفعل', added > 0 ? 'success' : 'info');
     }
     function removeAgeRow(i) {
       ageRows.splice(i, 1);
@@ -1925,12 +1882,18 @@
       if (document.getElementById('pIsSet')?.checked) renderCombosRows();
     }
 
+    // ============================================================
+    // DETAILS
+    // ============================================================
     function renderDetailsRows() {
       document.getElementById('detailsList').innerHTML = detailRows.map((d, i) => `<div class="dynamic-item"><input type="text" value="${escapeAttr(d)}" placeholder="مثال: قطن 100%" oninput="detailRows[${i}] = this.value"><button class="remove-btn" onclick="removeDetailRow(${i})"><i class="fa-solid fa-xmark"></i></button></div>`).join('');
     }
     function addDetailRow(val) { detailRows.push(val); renderDetailsRows(); }
     function removeDetailRow(i) { detailRows.splice(i, 1); renderDetailsRows(); }
 
+    // ============================================================
+    // COLOR ROWS (منتج عادي)
+    // ============================================================
     function onColorSelectChange(ci, value) {
       if (!colorRows[ci]) return;
       if (value === '__custom__') {
@@ -1959,12 +1922,12 @@
       if (!sugg) return;
       const q = (query || '').trim();
       if (!q) { sugg.classList.remove('open'); sugg.innerHTML = ''; return; }
-      const matches = PREDEFINED_COLORS.filter(pc => pc.name.includes(q));
+      const scored = PREDEFINED_COLORS.map(pc => ({ pc, score: scoreColorMatch(q, pc.name) })).filter(x => x.score >= 0).sort((a, b) => b.score - a.score).slice(0, 40);
       let html = '';
-      if (matches.length === 0) {
-        html += '<div class="color-no-match"><i class="fa-solid fa-magnifying-glass"></i> لا توجد ألوان مطابقة</div>';
+      if (scored.length === 0) {
+        html += '<div class="color-no-match"><i class="fa-solid fa-magnifying-glass"></i> لا توجد ألوان مطابقة — جرّب كتابة مختلفة</div>';
       } else {
-        html += matches.slice(0, 40).map(pc => `
+        html += scored.map(({pc}) => `
           <button type="button" class="color-suggestion-chip" onclick="selectColorFromSuggestion(${ci}, '${escapeAttr(pc.name)}')">
             <span class="chip-swatch" style="background:${pc.hex};"></span>
             <span>${escapeHtml(pc.name)}</span>
@@ -1976,7 +1939,6 @@
       sugg.innerHTML = html;
       sugg.classList.add('open');
     }
-
     function selectColorFromSuggestion(ci, name) {
       const p = getPredefinedColor(name);
       if (!p || !colorRows[ci]) return;
@@ -1984,7 +1946,6 @@
       colorRows[ci].hex = p.hex;
       renderColorsRows();
     }
-
     function selectCustomFromSuggestion(ci) {
       if (!colorRows[ci]) return;
       colorRows[ci].name = '';
@@ -1995,7 +1956,6 @@
         if (input) input.focus();
       }, 60);
     }
-
     function handleColorSearchKeydown(event, ci) {
       if (event.key === 'Enter') {
         event.preventDefault();
@@ -2022,7 +1982,7 @@
             <div class="color-name-wrap">
               <div class="color-search-wrap">
                 <i class="fa-solid fa-magnifying-glass color-search-icon"></i>
-                <input type="text" class="color-search" placeholder="ابحث عن لون..." autocomplete="off" oninput="filterColorOptions(${ci}, this.value)" onkeydown="handleColorSearchKeydown(event, ${ci})">
+                <input type="text" class="color-search" placeholder="ابحث عن لون (يتسامح مع الأخطاء)..." autocomplete="off" oninput="filterColorOptions(${ci}, this.value)" onkeydown="handleColorSearchKeydown(event, ${ci})">
                 <div class="color-suggestions" id="colorSuggestions-${ci}" onmousedown="event.preventDefault()"></div>
               </div>
               <select class="color-select" onchange="onColorSelectChange(${ci}, this.value)">
@@ -2079,6 +2039,7 @@
       if (!item) return;
       const preview = item.querySelector('.color-image-preview');
       if (!preview) return;
+      preview.setAttribute('data-media-url', url || '');
       if (url && url.trim()) {
         if (isVideoUrl(url)) preview.innerHTML = `<video src="${escapeAttr(url)}" muted></video><span class="video-badge"><i class="fa-solid fa-video"></i></span>`;
         else preview.innerHTML = `<img src="${escapeAttr(url)}" onerror="this.parentElement.innerHTML='<span class=\\'placeholder\\'>فشل التحميل</span>'">`;
@@ -2116,6 +2077,105 @@
       renderColorsRows();
     }
 
+    // ============================================================
+    // PRODUCT MODAL
+    // ============================================================
+    function openProductModal(id = null) {
+      document.getElementById('productModal').classList.add('show');
+      populateBadgeSelect('');
+      populateBadgeColorSelect('#feca57');
+      comboRows = [];
+      document.getElementById('pIsSet').checked = false;
+      document.getElementById('combosList').style.display = 'none';
+      document.getElementById('colorsList').style.display = 'block';
+      document.getElementById('addColorBtn').style.display = 'flex';
+      document.getElementById('addComboBtn').style.display = 'none';
+      document.getElementById('pBadgeColorSearch').value = '';
+      if (id) {
+        const p = data.products.find(pr => pr.id === id);
+        if (!p) return;
+        document.getElementById('productModalTitle').innerHTML = '<i class="fa-solid fa-pen"></i> تعديل المنتج';
+        document.getElementById('pId').value = p.id;
+        document.getElementById('pName').value = p.name;
+        document.getElementById('pCategory').value = p.category;
+        document.getElementById('pCategoryLabel').value = p.categoryLabel;
+        document.getElementById('pGender').value = p.gender;
+        document.getElementById('pPrice').value = p.price;
+        document.getElementById('pOldPrice').value = p.oldPrice || '';
+        populateBadgeSelect(p.badge || '');
+        const _bc = p.badgeColor || (p.badgeType === 'sale' ? '#ff6b81' : '#feca57');
+        const _bn = p.badgeColorName || (p.badgeType === 'sale' ? 'وردي' : 'أصفر فاتح');
+        populateBadgeColorSelect(_bc);
+        applyBadgeColor(_bc, _bn);
+        document.getElementById('pBadgeColorSearch').value = isPredefinedColor(_bn) ? _bn : '';
+        document.getElementById('pDescription').value = p.description || '';
+        ageRows = [...(p.ages || [])];
+        detailRows = [...(p.details || [])];
+        colorRows = (p.colors || []).map(c => ({
+          name: c.name || '', hex: c.hex || '#cccccc',
+          images: (c.images && c.images.length) ? [...c.images] : (c.image ? [c.image] : [''])
+        }));
+        if (p.isSet) {
+          document.getElementById('pIsSet').checked = true;
+          const getAgesFromColors = (comboName) => {
+            if (!p.colors || !p.colors.length) return null;
+            const cm = p.colors.find(cl => cl.comboName === comboName && Array.isArray(cl.comboAvailableAges) && cl.comboAvailableAges.length > 0);
+            return cm ? [...cm.comboAvailableAges] : null;
+          };
+          if (p.combos && p.combos.length) {
+            comboRows = p.combos.map(c => {
+              let availAges = Array.isArray(c.availableAges) ? [...c.availableAges] : null;
+              if (availAges === null) { const fromColors = getAgesFromColors(c.name); if (fromColors) availAges = fromColors; }
+              if (availAges === null) availAges = [...(p.ages || [])];
+              return {
+                name: c.name || '',
+                images: (c.images && c.images.length) ? [...c.images] : [''],
+                availableAges: availAges,
+                parts: (c.parts || []).map(pt => ({ label: pt.label || 'قطعة', name: pt.name || '', hex: pt.hex || '#cccccc' }))
+              };
+            });
+          } else if (p.colors && p.colors.length && p.colors[0] && p.colors[0].comboName) {
+            const grouped = {};
+            p.colors.forEach(c => {
+              if (!c.comboName) return;
+              if (!grouped[c.comboName]) grouped[c.comboName] = { name: c.comboName, images: [], parts: [], availableAges: null };
+              grouped[c.comboName].parts.push({ label: c.partLabel || 'قطعة', name: c.name, hex: c.hex });
+              if (grouped[c.comboName].availableAges === null && Array.isArray(c.comboAvailableAges) && c.comboAvailableAges.length > 0) {
+                grouped[c.comboName].availableAges = [...c.comboAvailableAges];
+              }
+              (c.images || []).forEach(img => {
+                if (img && img.trim() && !grouped[c.comboName].images.includes(img)) grouped[c.comboName].images.push(img);
+              });
+            });
+            comboRows = Object.values(grouped).map(g => ({
+              name: g.name, images: g.images.length ? g.images : [''],
+              parts: g.parts, availableAges: g.availableAges !== null ? g.availableAges : [...(p.ages || [])]
+            }));
+          } else { comboRows = []; }
+          toggleSetMode();
+        }
+      } else {
+        document.getElementById('productModalTitle').innerHTML = '<i class="fa-solid fa-plus"></i> إضافة منتج جديد';
+        document.getElementById('pId').value = '';
+        document.getElementById('pName').value = '';
+        document.getElementById('pCategory').value = 'winter';
+        document.getElementById('pCategoryLabel').value = 'شتوي';
+        document.getElementById('pGender').value = 'both';
+        document.getElementById('pPrice').value = '';
+        document.getElementById('pOldPrice').value = '';
+        populateBadgeSelect('');
+        populateBadgeColorSelect('#feca57');
+        applyBadgeColor('#feca57', 'أصفر فاتح');
+        document.getElementById('pBadgeColorSearch').value = '';
+        document.getElementById('pDescription').value = '';
+        ageRows = ['سنتان', '3 سنوات'];
+        detailRows = [''];
+        colorRows = [{ name: 'أحمر', hex: '#e74c3c', images: [''] }];
+      }
+      renderAgesRows(); renderDetailsRows(); renderColorsRows();
+    }
+    function closeProductModal() { document.getElementById('productModal').classList.remove('show'); }
+
     async function saveProduct() {
       const idVal = document.getElementById('pId').value;
       const name = document.getElementById('pName').value.trim();
@@ -2130,7 +2190,7 @@
         badge = document.getElementById('pCustomBadge').value.trim();
         if (badge) saveCustomBadge(badge);
       }
-      const badgeColor = document.getElementById('pBadgeColorPicker').value;
+      const badgeColor = document.getElementById('pBadgeColorSelect').value || '#feca57';
       const badgeColorName = document.getElementById('pBadgeColorName').textContent || '';
       const description = document.getElementById('pDescription').value.trim();
 
@@ -2145,17 +2205,13 @@
         if (!comboRows.length) return showToast('أضف طقماً واحداً على الأقل', 'error');
         for (let ci = 0; ci < comboRows.length; ci++) {
           const combo = comboRows[ci];
-          if (!(combo.images || []).some(img => img && img.trim()))
-            return showToast(`الطقم "${combo.name || ci+1}": يحتاج صورة واحدة على الأقل للطقم كاملاً`, 'error');
-          if (!combo.parts || !combo.parts.length)
-            return showToast(`الطقم "${combo.name || ci+1}": يجب أن يحتوي على قطعة واحدة على الأقل`, 'error');
+          if (!(combo.images || []).some(img => img && img.trim())) return showToast(`الطقم "${combo.name || ci+1}": يحتاج صورة واحدة على الأقل`, 'error');
+          if (!combo.parts || !combo.parts.length) return showToast(`الطقم "${combo.name || ci+1}": يجب أن يحتوي على قطعة واحدة على الأقل`, 'error');
           for (let pi = 0; pi < combo.parts.length; pi++) {
             const part = combo.parts[pi];
-            if (!part.name?.trim())
-              return showToast(`الطقم "${combo.name || ci+1}": القطعة "${part.label || pi+1}" تحتاج لوناً`, 'error');
+            if (!part.name?.trim()) return showToast(`الطقم "${combo.name || ci+1}": القطعة "${part.label || pi+1}" تحتاج لوناً`, 'error');
           }
-          if (!(combo.availableAges || []).filter(a => cleanAges.includes(a)).length)
-            return showToast(`الطقم "${combo.name || ci+1}": يجب اختيار عمر واحد على الأقل`, 'error');
+          if (!(combo.availableAges || []).filter(a => cleanAges.includes(a)).length) return showToast(`الطقم "${combo.name || ci+1}": يجب اختيار عمر واحد على الأقل`, 'error');
         }
       } else {
         for (let i = 0; i < colorRows.length; i++) {
@@ -2164,6 +2220,7 @@
           if (!(c.images || []).filter(img => img && img.trim()).length) return showToast(`اللون "${c.name}": يحتاج صورة واحدة على الأقل`, 'error');
         }
       }
+
       let colorsForSave = [];
       if (isSet) {
         comboRows.forEach(combo => {
@@ -2171,12 +2228,8 @@
           const comboAges = (combo.availableAges || []).filter(a => cleanAges.includes(a));
           (combo.parts || []).forEach(part => {
             colorsForSave.push({
-              name: part.name,
-              hex: part.hex,
-              comboName: combo.name,
-              partLabel: part.label,
-              images: comboImgs.slice(),
-              comboAvailableAges: [...comboAges]
+              name: part.name, hex: part.hex, comboName: combo.name, partLabel: part.label,
+              images: comboImgs.slice(), comboAvailableAges: [...comboAges]
             });
           });
         });
@@ -2188,11 +2241,8 @@
       const _currentHidden = _editingProduct ? !!_editingProduct.hidden : false;
 
       const productPayload = {
-        name, category, categoryLabel, gender, price, oldPrice,
-        hidden: _currentHidden,
-        badge: badge || null,
-        badgeColor: badgeColor,
-        badgeColorName: badgeColorName,
+        name, category, categoryLabel, gender, price, oldPrice, hidden: _currentHidden,
+        badge: badge || null, badgeColor, badgeColorName,
         badgeType: (badgeColor === '#ff6b81' ? 'sale' : 'new'),
         description, isSet,
         details: detailRows.filter(d => d.trim()),
@@ -2201,11 +2251,7 @@
         combos: isSet ? comboRows.map(c => ({
           name: (c.name || '').trim(),
           images: (c.images || []).filter(img => img && img.trim()),
-          parts: (c.parts || []).map(pt => ({
-            label: pt.label || 'قطعة',
-            name: (pt.name || '').trim(),
-            hex: pt.hex || '#cccccc'
-          })),
+          parts: (c.parts || []).map(pt => ({ label: pt.label || 'قطعة', name: (pt.name || '').trim(), hex: pt.hex || '#cccccc' })),
           availableAges: (c.availableAges || []).filter(a => cleanAges.includes(a))
         })) : []
       };
@@ -2214,9 +2260,8 @@
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جارٍ الحفظ ورفع الصور...';
       showLoading(true);
       try {
-        let result;
-        if (idVal) { productPayload.id = parseInt(idVal); result = await apiJSON(`/api/products/${idVal}`, { method: 'PUT', body: JSON.stringify(productPayload) }); }
-        else { result = await apiJSON('/api/products', { method: 'POST', body: JSON.stringify(productPayload) }); }
+        if (idVal) { productPayload.id = parseInt(idVal); await apiJSON(`/api/products/${idVal}`, { method: 'PUT', body: JSON.stringify(productPayload) }); }
+        else { await apiJSON('/api/products', { method: 'POST', body: JSON.stringify(productPayload) }); }
         await refreshProductsAndDashboard();
         closeProductModal();
         showToast(idVal ? 'تم تحديث المنتج ✓' : 'تمت إضافة المنتج ✓');
@@ -2237,11 +2282,13 @@
         ]);
         data.products = products;
         if (stats) data.stats = stats;
-        renderProductsTable();
-        renderDashboard();
+        renderProductsTable(); renderDashboard();
       } catch (e) { console.warn('refresh failed', e); }
     }
 
+    // ============================================================
+    // IMAGE UPLOADER
+    // ============================================================
     let uploadCallback = null;
     const imageUploader = document.getElementById('imageUploader');
     function triggerImageUpload(cb) { uploadCallback = cb; imageUploader.value = ''; imageUploader.click(); }
@@ -2275,38 +2322,24 @@
       reader.readAsDataURL(file);
     });
 
+    // ============================================================
+    // THEME (مبسط: لونان فقط)
+    // ============================================================
     function loadThemeForm() {
       const t = data.theme;
-      ['primary', 'primaryDark', 'secondary', 'accent'].forEach(key => {
-        document.getElementById(`color${capitalize(key)}`).value = t[key];
-        document.getElementById(`color${capitalize(key)}Text`).value = t[key];
-      });
+      document.getElementById('colorPrimary').value = t.primary;
+      document.getElementById('colorPrimaryText').value = t.primary;
+      document.getElementById('colorSecondary').value = t.secondary;
+      document.getElementById('colorSecondaryText').value = t.secondary;
       updateThemePreview();
     }
     function updateThemePreview() {
       const p = document.getElementById('colorPrimary').value;
-      const pd = document.getElementById('colorPrimaryDark').value;
       const s = document.getElementById('colorSecondary').value;
-      const a = document.getElementById('colorAccent').value;
       document.getElementById('previewPrimary').style.background = p;
-      document.getElementById('previewPrimaryDark').style.background = pd;
       document.getElementById('previewSecondary').style.background = s;
-      document.getElementById('previewAccent').style.background = a;
       document.getElementById('colorPrimaryText').value = p;
-      document.getElementById('colorPrimaryDarkText').value = pd;
       document.getElementById('colorSecondaryText').value = s;
-      document.getElementById('colorAccentText').value = a;
-      updateThemeLegendFromInputs();
-    }
-    function updateThemeLegendFromInputs() {
-      const p = document.getElementById('colorPrimary').value;
-      const pd = document.getElementById('colorPrimaryDark').value;
-      const s = document.getElementById('colorSecondary').value;
-      const a = document.getElementById('colorAccent').value;
-      const el1 = document.getElementById('legendPrimary'); if (el1) el1.style.background = p;
-      const el2 = document.getElementById('legendPrimaryDark'); if (el2) el2.style.background = pd;
-      const el3 = document.getElementById('legendSecondary'); if (el3) el3.style.background = s;
-      const el4 = document.getElementById('legendAccent'); if (el4) el4.style.background = a;
     }
     function syncColorFromText(key) {
       const input = document.getElementById(`color${capitalize(key)}`);
@@ -2317,13 +2350,11 @@
     async function saveTheme() {
       const theme = {
         primary: document.getElementById('colorPrimary').value,
-        primaryDark: document.getElementById('colorPrimaryDark').value,
-        secondary: document.getElementById('colorSecondary').value,
-        accent: document.getElementById('colorAccent').value
+        secondary: document.getElementById('colorSecondary').value
       };
       try {
         await apiJSON('/api/theme', { method: 'PUT', body: JSON.stringify(theme) });
-        data.theme = theme;
+        data.theme = { ...theme, primaryDark: darkenHex(theme.primary, 15), accent: data.theme.accent || '#feca57' };
         applyThemeToAdmin();
         showToast('تم حفظ الألوان ✓');
       } catch(err) { showToast(err.message || 'فشل الحفظ', 'error'); }
@@ -2331,26 +2362,25 @@
     function resetTheme() {
       if (!confirm('استعادة الألوان الافتراضية؟')) return;
       document.getElementById('colorPrimary').value = DEFAULT_THEME.primary;
-      document.getElementById('colorPrimaryDark').value = DEFAULT_THEME.primaryDark;
       document.getElementById('colorSecondary').value = DEFAULT_THEME.secondary;
-      document.getElementById('colorAccent').value = DEFAULT_THEME.accent;
       updateThemePreview();
     }
     function applyThemeToAdmin() {
       const r = document.documentElement.style;
+      const dark = data.theme.primaryDark || darkenHex(data.theme.primary, 15);
       r.setProperty('--primary', data.theme.primary);
-      r.setProperty('--primary-dark', data.theme.primaryDark);
+      r.setProperty('--primary-dark', dark);
       r.setProperty('--secondary', data.theme.secondary);
-      r.setProperty('--accent', data.theme.accent);
+      r.setProperty('--accent', data.theme.accent || '#feca57');
     }
 
+    // ============================================================
+    // SETTINGS
+    // ============================================================
     function updateLogoPreview(url) {
       const el = document.getElementById('logoPreviewCard');
       if (!el) return;
-      if (!url || !url.trim()) {
-        el.innerHTML = '<div class="placeholder">لا يوجد شعار</div>';
-        return;
-      }
+      if (!url || !url.trim()) { el.innerHTML = '<div class="placeholder">لا يوجد شعار</div>'; return; }
       if (isVideoUrl(url)) el.innerHTML = `<video src="${escapeAttr(url)}" muted></video>`;
       else el.innerHTML = `<img src="${escapeAttr(url)}" onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'>فشل التحميل</div>'">`;
     }
@@ -2400,10 +2430,7 @@
       data.settings.email = document.getElementById('setEmail').value.trim();
       data.settings.address = document.getElementById('setAddress').value.trim();
       data.settings.logo = document.getElementById('setLogo').value.trim();
-      if (await persistSettings()) {
-        applyLogoToSidebar();
-        showToast('تم حفظ المعلومات ✓');
-      }
+      if (await persistSettings()) { applyLogoToSidebar(); showToast('تم حفظ المعلومات ✓'); }
     }
     async function saveHeroSettings() {
       data.settings.searchPlaceholder = document.getElementById('setSearchPlaceholder').value.trim();
@@ -2421,20 +2448,15 @@
       data.settings.footerCopyright = document.getElementById('setFooterCopyright').value.trim();
       if (await persistSettings()) showToast('تم الحفظ ✓');
     }
-
     async function saveTelegramSettings() {
       data.settings.telegramBotToken = document.getElementById('setTelegramBotToken').value.trim();
       data.settings.telegramChatId = document.getElementById('setTelegramChatId').value.trim();
       if (await persistSettings()) showToast('تم حفظ إعدادات تيليجرام ✓');
     }
-
     async function testTelegramConnection() {
       const token = document.getElementById('setTelegramBotToken').value.trim();
       const chatId = document.getElementById('setTelegramChatId').value.trim();
-      if (!token || !chatId) {
-        showToast('يرجى إدخال Bot Token و Chat ID أولاً', 'error');
-        return;
-      }
+      if (!token || !chatId) { showToast('يرجى إدخال Bot Token و Chat ID أولاً', 'error'); return; }
       data.settings.telegramBotToken = token;
       data.settings.telegramChatId = chatId;
       const saved = await persistSettings();
@@ -2445,9 +2467,7 @@
         showToast('تم إرسال الرسالة التجريبية بنجاح ✓ راجع تيليجرام', 'success');
       } catch (err) {
         showToast('فشل الاختبار: ' + (err.message || 'خطأ غير معروف'), 'error');
-      } finally {
-        showLoading(false);
-      }
+      } finally { showLoading(false); }
     }
 
     function openTelegramHelp() {
@@ -2472,7 +2492,6 @@
 </head>
 <body>
 <h1>🤖 كيف تُعد بوت تيليجرام</h1>
-
 <h2>1️⃣ إنشاء البوت والحصول على Bot Token</h2>
 <ol>
   <li>افتح تيليجرام وابحث عن <span class="highlight">@BotFather</span></li>
@@ -2480,53 +2499,22 @@
   <li>سيطلب منك اسماً للبوت (مثلاً: <code>Baby Shop Orders</code>)</li>
   <li>سيطلب اسم مستخدم فريد ينتهي بـ <code>bot</code> (مثلاً: <code>BabyShopOrdersBot</code>)</li>
   <li>سيعطيك رسالة تحتوي على <b>Token</b> مثل: <code>123456789:ABCdefGHIjklMNOpqrsTUVwxyz</code></li>
-  <li>انسخ هذا التوكن والصقه في حقل <b>Bot Token</b> في صفحة الأدمن</li>
 </ol>
-
 <h2>2️⃣ الحصول على Chat ID الخاص بك</h2>
 <ol>
-  <li>افتح البوت الذي أنشأته (اضغط على رابطه من رسالة BotFather)</li>
-  <li>اضغط <b>Start</b> أو أرسل له <code>/start</code> (مهم جداً - يجب أن تبدأ محادثة أولاً)</li>
+  <li>افتح البوت الذي أنشأته واضغط <b>Start</b> أو أرسل له <code>/start</code></li>
   <li>ابحث في تيليجرام عن <span class="highlight">@userinfobot</span></li>
-  <li>أرسل له <code>/start</code> أو أي رسالة</li>
-  <li>سيرد عليك بمعلومات حسابك، منها <b>Your ID</b> (رقم مثل: <code>123456789</code>)</li>
-  <li>انسخ هذا الرقم والصقه في حقل <b>Chat ID</b> في صفحة الأدمن</li>
+  <li>أرسل له <code>/start</code></li>
+  <li>سيرد عليك بـ <b>Your ID</b></li>
 </ol>
-
-<h2>💡 بديل: استخدام مجموعة (لإشعارات متعددة)</h2>
-<ol>
-  <li>أنشئ مجموعة على تيليجرام</li>
-  <li>أضف البوت الذي أنشأته إلى المجموعة كعضو</li>
-  <li>أضف <span class="highlight">@userinfobot</span> للمجموعة أيضاً</li>
-  <li>سيظهر Chat ID الخاص بالمجموعة في رسالة userinfobot (يبدأ بـ <code>-100</code>)</li>
-  <li>استخدم هذا Chat ID في الإعدادات</li>
-</ol>
-
-<h2>3️⃣ اختبار الإعدادات</h2>
-<ol>
-  <li>بعد إدخال Bot Token و Chat ID، اضغط <b>حفظ الإعدادات</b></li>
-  <li>اضغط <b>إرسال رسالة تجريبية</b></li>
-  <li>إذا وصلتك الرسالة على تيليجرام فكل شيء يعمل ✓</li>
-  <li>إذا لم تصل، تأكد من:
-    <ul>
-      <li>أنك أرسلت /start للبوت أول مرة</li>
-      <li>أن التوكن صحيح (كامل بدون مسافات)</li>
-      <li>أن Chat ID صحيح</li>
-    </ul>
-  </li>
-</ol>
-
 <div class="warn">
   <h2 style="color:#e74c3c; border-color:#e74c3c;">⚠️ ملاحظات أمنية</h2>
   <ul>
     <li>لا تشارك الـ <b>Bot Token</b> مع أي شخص</li>
     <li>إذا تسرب التوكن، أرسل لـ BotFather <code>/revoke</code> ثم اختر البوت</li>
-    <li>إذا أردت إيقاف الإشعارات مؤقتاً، احذف Chat ID واحفظ</li>
   </ul>
 </div>
-
-</body>
-</html>`);
+</body></html>`);
       win.document.close();
     }
 
@@ -2627,28 +2615,32 @@
     }
 
     // ============================================================
-    // PERMISSIONS
+    // ✅ PERMISSIONS (أدمن + موظف)
     // ============================================================
     function canAccess(view) {
       if (!currentUser) return false;
       const role = currentUser.role;
       if (role === 'admin') return true;
-      if (role === 'manager') return ['dashboard', 'products', 'orders', 'delivery'].includes(view);
-      if (role === 'staff') return ['dashboard', 'orders'].includes(view);
+      if (role === 'staff' || role === 'manager') {
+        return ['dashboard', 'products', 'orders', 'delivery', 'theme', 'settings'].includes(view);
+      }
       return false;
     }
     function applyPermissions() {
       const role = currentUser?.role;
+      const isAdmin = role === 'admin';
       document.querySelectorAll('.nav-item').forEach(btn => {
         const view = btn.dataset.view;
-        if (view === 'users') { btn.style.display = role === 'admin' ? 'flex' : 'none'; return; }
-        if (view === 'trash' || view === 'backups') { btn.style.display = role === 'admin' ? 'flex' : 'none'; return; }
+        if (view === 'users' || view === 'trash' || view === 'backups') {
+          btn.style.display = isAdmin ? 'flex' : 'none';
+          return;
+        }
         btn.style.display = canAccess(view) ? 'flex' : 'none';
       });
     }
 
     // ============================================================
-    // USERS
+    // ✅ USERS (أدمن + موظف + سجل النشاط)
     // ============================================================
     async function loadUsers() {
       try {
@@ -2656,22 +2648,29 @@
         renderUsersTable();
       } catch (e) { showToast(e.message, 'error'); }
     }
+    function normalizeRole(role) {
+      return role === 'manager' ? 'staff' : role;
+    }
+    function roleLabel(role) {
+      return { admin: 'أدمن', staff: 'موظف', manager: 'موظف' }[role] || role;
+    }
     function renderUsersTable() {
       const wrap = document.getElementById('usersTableWrap');
       if (!usersCache.length) { wrap.innerHTML = '<div class="empty-state"><i class="fa-solid fa-users"></i><p>لا يوجد مستخدمون</p></div>'; return; }
-      const roleLabel = { admin: 'أدمن', manager: 'مدير', staff: 'موظف' };
       wrap.innerHTML = `<table class="users-table"><thead><tr>
         <th>اسم المستخدم</th><th>الاسم الكامل</th><th>الدور</th><th>الحالة</th><th>آخر دخول</th><th>إجراءات</th>
       </tr></thead><tbody>${usersCache.map(u => {
         const isActive = Number(u.is_active) === 1;
         const lastLogin = u.last_login_at ? new Date(u.last_login_at).toLocaleString('ar-DZ') : 'لم يدخل بعد';
+        const role = normalizeRole(u.role);
         return `<tr>
           <td style="font-weight:700;">${escapeHtml(u.username)}</td>
           <td>${escapeHtml(u.full_name || '-')}</td>
-          <td><span class="user-role-badge role-${u.role}">${roleLabel[u.role] || u.role}</span></td>
+          <td><span class="user-role-badge role-${role}">${roleLabel(u.role)}</span></td>
           <td>${isActive ? '<span style="color:var(--success);font-weight:700;">✓ نشط</span>' : '<span style="color:var(--danger);font-weight:700;">✗ معطّل</span>'}</td>
           <td style="font-size:.82rem; color:var(--text-gray);">${lastLogin}</td>
           <td><div class="row-actions">
+            <button class="icon-btn icon-btn-view" onclick="viewActivity(${u.id})" title="سجل النشاط"><i class="fa-solid fa-clock-rotate-left"></i></button>
             <button class="icon-btn icon-btn-edit" onclick="openUserModal(${u.id})" title="تعديل"><i class="fa-solid fa-pen"></i></button>
             <button class="icon-btn icon-btn-del" onclick="deleteUser(${u.id})" title="حذف"><i class="fa-solid fa-trash"></i></button>
           </div></td>
@@ -2690,7 +2689,7 @@
         document.getElementById('uUsername').disabled = true;
         document.getElementById('uFullName').value = u.full_name || '';
         document.getElementById('uEmail').value = u.email || '';
-        document.getElementById('uRole').value = u.role;
+        document.getElementById('uRole').value = normalizeRole(u.role);
         document.getElementById('uIsActive').checked = Number(u.is_active) === 1;
         document.getElementById('uPasswordLabel').textContent = 'كلمة مرور جديدة (اتركها فارغة لعدم التغيير)';
         document.getElementById('uPassword').value = '';
@@ -2742,8 +2741,39 @@
       } catch (err) { showToast(err.message, 'error'); }
     }
 
+    // ✅ سجل النشاط
+    async function viewActivity(userId) {
+      const user = usersCache.find(u => u.id === userId);
+      activityUserCache = user || { id: userId, username: 'مستخدم' };
+      document.getElementById('activityModalTitle').innerHTML = `<i class="fa-solid fa-clock-rotate-left"></i> سجل النشاط — ${escapeHtml(activityUserCache.username || '')}`;
+      document.getElementById('activityModalBody').innerHTML = '<div style="text-align:center;padding:40px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;color:var(--primary);"></i><p style="margin-top:12px;color:var(--text-gray);">جارٍ التحميل...</p></div>';
+      document.getElementById('activityModal').classList.add('show');
+      await loadActivity();
+    }
+    async function loadActivity() {
+      if (!activityUserCache) return;
+      const body = document.getElementById('activityModalBody');
+      try {
+        const activities = await apiJSON(`/api/users/${activityUserCache.id}/activity`).catch(() => []);
+        if (!activities.length) {
+          body.innerHTML = '<div class="empty-state"><i class="fa-solid fa-clock-rotate-left"></i><p>لا يوجد سجل نشاط بعد</p><small style="font-size:.75rem;color:var(--text-gray);">سيظهر النشاط عند تنفيذ أول عملية</small></div>';
+          return;
+        }
+        body.innerHTML = activities.map(a => `
+          <div class="activity-item">
+            <div class="action"><i class="fa-solid fa-${a.icon || 'circle-info'}" style="color:var(--primary);margin-left:6px;"></i>${escapeHtml(a.description || a.action || '-')}</div>
+            <div class="meta"><i class="fa-solid fa-clock"></i> ${formatDate(a.createdAt || a.created_at)}${a.target ? ' · ' + escapeHtml(a.target) : ''}</div>
+          </div>
+        `).join('');
+      } catch (e) {
+        body.innerHTML = `<div class="empty-state" style="color:var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i><p>تعذر تحميل سجل النشاط</p><small style="font-size:.75rem;">${escapeHtml(e.message || '')}<br>ملاحظة: قد تحتاج إلى إضافة نقطة النهاية <code>GET /api/users/:id/activity</code> في السيرفر</small></div>`;
+      }
+    }
+    async function refreshActivityLog() { await loadActivity(); }
+    function closeActivityModal() { document.getElementById('activityModal').classList.remove('show'); activityUserCache = null; }
+
     // ============================================================
-    // DELIVERY PER WILAYA
+    // ✅ DELIVERY (بدون defaults + بدون سريع)
     // ============================================================
     async function loadDeliveryAll() {
       try {
@@ -2751,14 +2781,8 @@
           apiJSON('/api/delivery/all'),
           apiJSON('/api/wilayas')
         ]);
-        deliveryAllCache = deliveryData;
-        wilayasCache = wilayas;
-        document.getElementById('defHome').textContent = deliveryData.defaults.home || 0;
-        document.getElementById('defAgency').textContent = deliveryData.defaults.agency || 0;
-        document.getElementById('defExpress').textContent = deliveryData.defaults.express || 0;
-        document.getElementById('defHomeInput').value = deliveryData.defaults.home || 0;
-        document.getElementById('defAgencyInput').value = deliveryData.defaults.agency || 0;
-        document.getElementById('defExpressInput').value = deliveryData.defaults.express || 0;
+        deliveryAllCache = deliveryData || { byWilaya: {} };
+        wilayasCache = wilayas || [];
         renderDeliveryTable();
       } catch (e) { showToast(e.message, 'error'); }
     }
@@ -2767,13 +2791,12 @@
       const body = document.getElementById('deliveryTableBody');
       const filtered = search ? wilayasCache.filter(w => w.name.toLowerCase().includes(search)) : wilayasCache;
       body.innerHTML = filtered.map(w => {
-        const prices = deliveryAllCache.byWilaya[w.name] || {};
+        const prices = (deliveryAllCache.byWilaya && deliveryAllCache.byWilaya[w.name]) || {};
         return `<tr>
           <td style="font-weight:700; color:var(--text-gray);">${w.code}</td>
           <td style="font-weight:700;">${escapeHtml(w.name)}</td>
-          <td><input type="number" min="0" placeholder="${deliveryAllCache.defaults.home || 0}" value="${prices.home ?? ''}" oninput="this.closest('tr').classList.add('edited')" data-wilaya="${escapeAttr(w.name)}" data-type="home"></td>
-          <td><input type="number" min="0" placeholder="${deliveryAllCache.defaults.agency || 0}" value="${prices.agency ?? ''}" oninput="this.closest('tr').classList.add('edited')" data-wilaya="${escapeAttr(w.name)}" data-type="agency"></td>
-          <td><input type="number" min="0" placeholder="${deliveryAllCache.defaults.express || 0}" value="${prices.express ?? ''}" oninput="this.closest('tr').classList.add('edited')" data-wilaya="${escapeAttr(w.name)}" data-type="express"></td>
+          <td><input type="number" min="0" placeholder="0" value="${prices.home ?? ''}" oninput="this.closest('tr').classList.add('edited')" data-wilaya="${escapeAttr(w.name)}" data-type="home"></td>
+          <td><input type="number" min="0" placeholder="0" value="${prices.agency ?? ''}" oninput="this.closest('tr').classList.add('edited')" data-wilaya="${escapeAttr(w.name)}" data-type="agency"></td>
         </tr>`;
       }).join('');
     }
@@ -2784,18 +2807,13 @@
       const orig = btn.innerHTML;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
       try {
-        await apiJSON('/api/delivery', { method: 'PUT', body: JSON.stringify({
-          home: Number(document.getElementById('defHomeInput').value) || 0,
-          agency: Number(document.getElementById('defAgencyInput').value) || 0,
-          express: Number(document.getElementById('defExpressInput').value) || 0
-        }) });
         const changes = {};
         document.querySelectorAll('.delivery-wilaya-table input[data-wilaya]').forEach(input => {
           const w = input.dataset.wilaya;
           const type = input.dataset.type;
           const val = input.value.trim();
-          if (!changes[w]) changes[w] = {};
-          if (val !== '') changes[w][type] = Number(val);
+      if (!changes[w]) changes[w] = {};
+changes[w][type] = val === '' ? 0 : Number(val);
         });
         for (const [wilaya, prices] of Object.entries(changes)) {
           if (Object.keys(prices).length === 0) continue;
@@ -2808,10 +2826,8 @@
     }
 
     // ============================================================
-    // COMBO (SET) PRODUCTS
+    // ✅ COMBO (SET) PRODUCTS
     // ============================================================
-    const PART_LABELS = ['قميص', 'سروال', 'جاكيت', 'بنطلون', 'حذاء', 'قبعة', 'فستان', 'تنورة', 'وشاح', 'قطعة'];
-
     function toggleSetMode() {
       const isSet = document.getElementById('pIsSet').checked;
       document.getElementById('combosList').style.display = isSet ? 'block' : 'none';
@@ -2821,7 +2837,6 @@
       if (isSet && comboRows.length === 0) addCombo();
       if (isSet) renderCombosRows();
     }
-
     function addCombo() {
       comboRows.push({
         name: `طقم ${comboRows.length + 1}`,
@@ -2864,7 +2879,20 @@
       comboRows[ci].images.push('');
       renderCombosRows();
     }
-    function updateComboImage(ci, ii, val) { comboRows[ci].images[ii] = val; }
+    function updateComboImage(ci, ii, val) {
+      comboRows[ci].images[ii] = val;
+      const card = document.querySelectorAll('.combo-card')[ci];
+      if (!card) return;
+      const item = card.querySelectorAll('.color-image-item')[ii];
+      if (!item) return;
+      const preview = item.querySelector('.color-image-preview');
+      if (!preview) return;
+      preview.setAttribute('data-media-url', val || '');
+      if (val && val.trim()) {
+        if (isVideoUrl(val)) preview.innerHTML = `<video src="${escapeAttr(val)}" muted></video><span class="video-badge"><i class="fa-solid fa-video"></i></span>`;
+        else preview.innerHTML = `<img src="${escapeAttr(val)}" onerror="this.parentElement.innerHTML='<span class=\\'placeholder\\'>فشل التحميل</span>'">`;
+      } else preview.innerHTML = '<span class="placeholder">لا يوجد</span>';
+    }
     function removeComboImage(ci, ii) {
       if (comboRows[ci].images.length <= 1) { showToast('الطقم يحتاج صورة واحدة على الأقل', 'error'); return; }
       comboRows[ci].images.splice(ii, 1);
@@ -2886,12 +2914,12 @@
         comboRows[ci].availableAges = comboRows[ci].availableAges.filter(a => a !== age);
       }
       if (labelEl) {
-        labelEl.style.background  = isChecked ? 'var(--card-bg)' : 'var(--bg)';
+        labelEl.style.background = isChecked ? 'var(--card-bg)' : 'var(--bg)';
         labelEl.style.borderColor = isChecked ? 'var(--success)' : 'var(--border)';
-        labelEl.style.opacity     = isChecked ? '1' : '0.65';
+        labelEl.style.opacity = isChecked ? '1' : '0.65';
         const span = labelEl.querySelector('span');
         if (span) span.style.textDecoration = isChecked ? 'none' : 'line-through';
-        const card  = labelEl.closest('.combo-card');
+        const card = labelEl.closest('.combo-card');
         const badge = card?.querySelector('.combo-age-count');
         if (badge) {
           const total = ageRows.filter(a => a && a.trim()).length;
@@ -2899,6 +2927,8 @@
         }
       }
     }
+
+    // ✅ renderCombosRows: اسم القطعة حر (input+datalist)
     function renderCombosRows() {
       const el = document.getElementById('combosList');
       if (!comboRows.length) { el.innerHTML = ''; return; }
@@ -2906,9 +2936,9 @@
         <div style="font-size:.82rem; color:var(--text); margin-bottom:12px; padding:12px; background:linear-gradient(135deg, rgba(108,92,231,0.08), rgba(255,107,129,0.08)); border-radius:10px; border-right:4px solid var(--secondary); line-height:1.8;">
           <b style="color:var(--secondary);"><i class="fa-solid fa-lightbulb"></i> كيف أضيف طقماً؟</b><br>
           <b>1.</b> اكتب اسم الطقم<br>
-          <b>2.</b> أضف <b style="color:var(--primary);">صورة واحدة (أو أكثر) للطقم كاملاً</b> (مثلاً صورة فيها القميص والسروال معاً)<br>
-          <b>3.</b> لكل قطعة: اختر نوعها (قميص، سروال...) ثم <b style="color:var(--primary);">ابحث عن لونها أو اختره من القائمة</b><br>
-          <b style="color:var(--success);">✓</b> لا حاجة لصورة لكل لون — صورة الطقم كافية.
+          <b>2.</b> أضف <b style="color:var(--primary);">صورة للطقم كاملاً</b><br>
+          <b>3.</b> لكل قطعة: <b style="color:var(--primary);">اكتب اسمها (حر) أو اختر من الاقتراحات</b> ثم ابحث عن لونها<br>
+          <b style="color:var(--success);">✓</b> اكتب أي اسم قطعة تريده (وليس فقط من القائمة).
         </div>
         ${comboRows.map((combo, ci) => `
         <div class="combo-card">
@@ -2932,7 +2962,7 @@
                 <span class="image-index-badge">${ii + 1}</span>
                 <div class="color-image-preview" style="height:110px;" data-media-url="${escapeAttr(img)}">${prev}</div>
                 <div class="color-image-actions">
-                  <input type="url" value="${escapeAttr(img)}" placeholder="URL أو ارفع" oninput="updateComboImage(${ci}, ${ii}, this.value); this.closest('.color-image-item').querySelector('.color-image-preview').setAttribute('data-media-url', this.value);">
+                  <input type="url" value="${escapeAttr(img)}" placeholder="URL أو ارفع" oninput="updateComboImage(${ci}, ${ii}, this.value)">
                   <button class="mini-btn mini-btn-upload" title="رفع" onclick="triggerImageUpload((d) => { comboRows[${ci}].images[${ii}] = d; renderCombosRows(); })"><i class="fa-solid fa-upload"></i></button>
                   ${ii > 0 ? `<button class="mini-btn mini-btn-main" title="تعيين كرئيسية" onclick="makeComboImageMain(${ci}, ${ii})"><i class="fa-solid fa-star"></i></button>` : `<button class="mini-btn mini-btn-main is-main" disabled><i class="fa-solid fa-star"></i></button>`}
                   <button class="mini-btn mini-btn-remove" title="حذف" onclick="removeComboImage(${ci}, ${ii})"><i class="fa-solid fa-xmark"></i></button>
@@ -2952,9 +2982,7 @@
               <div class="part-card">
                 <div class="part-card-header">
                   <span class="part-index">القطعة ${pi + 1}</span>
-                  <select class="part-label-select" onchange="updatePartLabel(${ci}, ${pi}, this.value)">
-                    ${PART_LABELS.map(l => `<option value="${l}" ${part.label===l?'selected':''}>${l}</option>`).join('')}
-                  </select>
+                  <input type="text" class="part-label-input" list="partLabelsList" value="${escapeAttr(part.label)}" placeholder="اسم القطعة (حر أو من الاقتراحات)" oninput="updatePartLabel(${ci}, ${pi}, this.value)">
                   <button class="icon-btn icon-btn-del" onclick="removePartFromCombo(${ci}, ${pi})" title="حذف القطعة"><i class="fa-solid fa-xmark"></i></button>
                 </div>
 
@@ -2962,7 +2990,7 @@
                   <label class="part-color-label"><i class="fa-solid fa-palette"></i> لون القطعة</label>
                   <div class="color-search-wrap">
                     <i class="fa-solid fa-magnifying-glass color-search-icon"></i>
-                    <input type="text" class="color-search" placeholder="ابحث باسم اللون..." autocomplete="off"
+                    <input type="text" class="color-search" placeholder="ابحث باسم اللون (يتسامح مع الأخطاء)..." autocomplete="off"
                            value="${escapeAttr(part.name)}"
                            oninput="updatePartColorName(${ci}, ${pi}, this.value)"
                            onkeydown="handlePartColorSearchKeydown(event, ${ci}, ${pi})">
@@ -3004,10 +3032,6 @@
                 </label>`;
               }).join('') || '<span style="font-size:.8rem;color:var(--text-gray);">أضف أعماراً أولاً من القسم أعلاه</span>'}
             </div>
-            <div style="font-size:.72rem;color:var(--text-gray);margin-top:10px;line-height:1.6;">
-              <i class="fa-solid fa-circle-info" style="color:var(--info);"></i>
-              المحدد = <b>متوفر</b> في هذا الطقم · غير المحدد = يظهر في صفحة المنتج <b>مشطوباً وباهتاً</b>.
-            </div>
           </div>
         </div>
       `).join('')}`;
@@ -3024,18 +3048,17 @@
       }
       renderCombosRows();
     }
-
     function filterPartColorOptions(ci, pi, query) {
       const sugg = document.getElementById(`partColorSugg-${ci}-${pi}`);
       if (!sugg) return;
       const q = (query || '').trim();
       if (!q) { sugg.classList.remove('open'); sugg.innerHTML = ''; return; }
-      const matches = PREDEFINED_COLORS.filter(pc => pc.name.includes(q));
+      const scored = PREDEFINED_COLORS.map(pc => ({ pc, score: scoreColorMatch(q, pc.name) })).filter(x => x.score >= 0).sort((a, b) => b.score - a.score).slice(0, 40);
       let html = '';
-      if (matches.length === 0) {
-        html += '<div class="color-no-match"><i class="fa-solid fa-magnifying-glass"></i> لا توجد ألوان مطابقة</div>';
+      if (scored.length === 0) {
+        html += '<div class="color-no-match"><i class="fa-solid fa-magnifying-glass"></i> لا توجد ألوان مطابقة (جرّب كتابة مختلفة)</div>';
       } else {
-        html += matches.slice(0, 40).map(pc => `
+        html += scored.map(({pc}) => `
           <button type="button" class="color-suggestion-chip" onclick="selectPartColorFromSuggestion(${ci}, ${pi}, '${escapeAttr(pc.name)}')">
             <span class="chip-swatch" style="background:${pc.hex};"></span>
             <span>${escapeHtml(pc.name)}</span>
@@ -3080,12 +3103,9 @@
         if (sugg) { sugg.classList.remove('open'); sugg.innerHTML = ''; }
       }
     }
-    function onPartColorSearchInput(ci, pi, val) {
-      updatePartColorName(ci, pi, val);
-    }
 
     // ============================================================
-    // 🗑️ TRASH (سلة المحذوفات)
+    // TRASH
     // ============================================================
     async function loadTrash() {
       try {
@@ -3094,20 +3114,15 @@
         const badge = document.getElementById('trashBadge');
         if (items.length > 0) { badge.textContent = items.length; badge.style.display = 'inline-block'; }
         else badge.style.display = 'none';
-
         const wrap = document.getElementById('trashTableWrap');
         if (!items.length) {
           wrap.innerHTML = '<div class="empty-state"><i class="fa-solid fa-broom"></i><p>السلة فارغة — كل شيء على ما يرام ✓</p></div>';
           return;
         }
-
         const typeLabels = { product: 'منتج', order: 'طلب', user: 'مستخدم', settings: 'إعدادات' };
         const typeIcons = { product: 'box', order: 'shopping-bag', user: 'user', settings: 'gear' };
         const typeColors = { product: '#ff6b81', order: '#6c5ce7', user: '#0984e3', settings: '#f39c12' };
-
-        wrap.innerHTML = `<table><thead><tr>
-          <th>النوع</th><th>الاسم</th><th>حذفه</th><th>التاريخ</th><th>إجراءات</th>
-        </tr></thead><tbody>${items.map(it => `
+        wrap.innerHTML = `<table><thead><tr><th>النوع</th><th>الاسم</th><th>حذفه</th><th>التاريخ</th><th>إجراءات</th></tr></thead><tbody>${items.map(it => `
           <tr>
             <td><span class="status-badge" style="background:${typeColors[it.item_type]}22;color:${typeColors[it.item_type]};"><i class="fa-solid fa-${typeIcons[it.item_type] || 'box'}"></i> ${typeLabels[it.item_type] || it.item_type}</span></td>
             <td style="font-weight:700;">${escapeHtml(it.item_name || '-')}</td>
@@ -3121,37 +3136,26 @@
           </tr>`).join('')}</tbody></table>`;
       } catch (e) { showToast(e.message, 'error'); }
     }
-
     async function viewTrashItem(id) {
       try {
         const item = await apiJSON(`/api/trash/${id}`);
-        const data = item.item_data;
         const win = window.open('', '_blank');
-        win.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><title>تفاصيل العنصر المحذوف</title>
-          <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-          <style>body{font-family:'Cairo',sans-serif;padding:24px;background:#f5f6fa;color:#2d3436;line-height:1.9}h1{color:#e74c3c;margin-bottom:16px;font-size:1.3rem}pre{background:#fff;padding:20px;border-radius:12px;font-size:.8rem;direction:ltr;text-align:left;overflow-x:auto;border:1px solid #e9ecef;font-family:monospace}</style>
-          </head><body><h1>🔍 تفاصيل ${escapeHtml(item.item_name || 'العنصر')}</h1>
-          <p><strong>النوع:</strong> ${escapeHtml(item.item_type)} · <strong>حُذف بواسطة:</strong> ${escapeHtml(item.deleted_by_username || 'system')} · <strong>التاريخ:</strong> ${formatDate(item.deleted_at)}</p>
-          <pre>${escapeHtml(JSON.stringify(data, null, 2))}</pre></body></html>`);
+        win.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><title>تفاصيل العنصر المحذوف</title><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet"><style>body{font-family:'Cairo',sans-serif;padding:24px;background:#f5f6fa;color:#2d3436;line-height:1.9}h1{color:#e74c3c;margin-bottom:16px;font-size:1.3rem}pre{background:#fff;padding:20px;border-radius:12px;font-size:.8rem;direction:ltr;text-align:left;overflow-x:auto;border:1px solid #e9ecef;font-family:monospace}</style></head><body><h1>🔍 تفاصيل ${escapeHtml(item.item_name || 'العنصر')}</h1><p><strong>النوع:</strong> ${escapeHtml(item.item_type)} · <strong>حُذف بواسطة:</strong> ${escapeHtml(item.deleted_by_username || 'system')} · <strong>التاريخ:</strong> ${formatDate(item.deleted_at)}</p><pre>${escapeHtml(JSON.stringify(item.item_data, null, 2))}</pre></body></html>`);
         win.document.close();
       } catch (e) { showToast(e.message, 'error'); }
     }
-
     async function restoreFromTrash(id) {
       if (!confirm('استعادة هذا العنصر كما كان؟')) return;
       showLoading(true);
       try {
         const result = await apiJSON(`/api/trash/${id}/restore`, { method: 'POST' });
         await loadAllData();
-        renderDashboard();
-        renderProductsTable();
-        renderOrdersView();
+        renderDashboard(); renderProductsTable(); renderOrdersView();
         await loadTrash();
         showToast(result.message || 'تمت الاستعادة ✓', 'success');
       } catch (e) { showToast(e.message, 'error'); }
       finally { showLoading(false); }
     }
-
     async function deleteTrashItem(id) {
       if (!confirm('حذف هذا العنصر نهائياً من السلة؟ لا يمكن التراجع!')) return;
       try {
@@ -3160,7 +3164,6 @@
         showToast('تم الحذف النهائي', 'info');
       } catch (e) { showToast(e.message, 'error'); }
     }
-
     async function emptyTrash() {
       if (!confirm('تفريغ كل السلة نهائياً؟ لا يمكن التراجع!')) return;
       try {
@@ -3171,7 +3174,7 @@
     }
 
     // ============================================================
-    // 💾 BACKUPS (النسخ الاحتياطية)
+    // BACKUPS
     // ============================================================
     async function loadBackups() {
       try {
@@ -3181,17 +3184,13 @@
           wrap.innerHTML = '<div class="empty-state"><i class="fa-solid fa-database"></i><p>لا توجد نسخ احتياطية بعد. اضغط "إنشاء نسخة جديدة الآن"</p></div>';
           return;
         }
-        wrap.innerHTML = `<table><thead><tr>
-          <th>الاسم</th><th>النوع</th><th>المحتوى</th><th>المنشئ</th><th>التاريخ</th><th>إجراءات</th>
-        </tr></thead><tbody>${backups.map(b => {
+        wrap.innerHTML = `<table><thead><tr><th>الاسم</th><th>النوع</th><th>المحتوى</th><th>المنشئ</th><th>التاريخ</th><th>إجراءات</th></tr></thead><tbody>${backups.map(b => {
           const c = b.item_counts || {};
           const isAuto = Number(b.is_auto) === 1;
           return `<tr>
             <td style="font-weight:700;font-size:.85rem;">${escapeHtml(b.name || '-')}</td>
             <td><span class="status-badge" style="background:${isAuto ? 'rgba(243,156,18,.15)' : 'rgba(0,184,148,.15)'};color:${isAuto ? '#f39c12' : '#00b894'};"><i class="fa-solid fa-${isAuto ? 'robot' : 'hand'}"></i> ${isAuto ? 'تلقائية' : 'يدوية'}</span></td>
-            <td style="font-size:.78rem;color:var(--text-gray);">
-              📦 ${c.products || 0} منتج · 🛒 ${c.orders || 0} طلب · 👤 ${c.users || 0} مستخدم
-            </td>
+            <td style="font-size:.78rem;color:var(--text-gray);">📦 ${c.products || 0} منتج · 🛒 ${c.orders || 0} طلب · 👤 ${c.users || 0} مستخدم</td>
             <td style="font-size:.82rem;">${escapeHtml(b.created_by_username || 'system')}</td>
             <td style="font-size:.82rem;">${formatDate(b.created_at)}</td>
             <td><div class="row-actions">
@@ -3203,22 +3202,17 @@
         }).join('')}</tbody></table>`;
       } catch (e) { showToast(e.message, 'error'); }
     }
-
     async function createBackupManual() {
       const name = prompt('اسم النسخة (اتركه فارغاً للاسم التلقائي):', '');
       if (name === null) return;
       showLoading(true);
       try {
-        const result = await apiJSON('/api/backups', {
-          method: 'POST',
-          body: JSON.stringify({ name: name.trim() || undefined })
-        });
+        const result = await apiJSON('/api/backups', { method: 'POST', body: JSON.stringify({ name: name.trim() || undefined }) });
         await loadBackups();
         showToast(`✓ تم إنشاء النسخة (${result.counts.products} منتج، ${result.counts.orders} طلب)`, 'success');
       } catch (e) { showToast(e.message, 'error'); }
       finally { showLoading(false); }
     }
-
     async function downloadBackup(id) {
       try {
         const res = await apiFetch(`/api/backups/${id}/download`);
@@ -3233,7 +3227,6 @@
         showToast('تم تحميل الملف ✓', 'success');
       } catch (e) { showToast(e.message, 'error'); }
     }
-
     async function restoreBackup(id) {
       if (!confirm('استعادة الإعدادات والثيم وأسعار التوصيل من هذه النسخة؟\n\nقبل الاستعادة، سيتم إنشاء نسخة احتياطية من الوضع الحالي تلقائياً.')) return;
       showLoading(true);
@@ -3250,7 +3243,6 @@
       } catch (e) { showToast(e.message, 'error'); }
       finally { showLoading(false); }
     }
-
     async function deleteBackup(id) {
       if (!confirm('حذف هذه النسخة نهائياً؟')) return;
       try {
@@ -3295,6 +3287,8 @@
         if (openSuggestions.length) { openSuggestions.forEach(el => el.classList.remove('open')); return; }
         document.getElementById('productModal').classList.remove('show');
         document.getElementById('orderDetailsModal').classList.remove('show');
+        document.getElementById('userModal').classList.remove('show');
+        document.getElementById('activityModal').classList.remove('show');
         closeImageViewer();
       }
     });

@@ -44,103 +44,43 @@ async function initDB() {
     }
   } catch (_) {}
 
+  // ✅ إعادة بناء جدول التوصيل بدون express وبدون is_default
   try {
     const check = await db.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='delivery_prices'");
-    if (check.rows.length > 0 && !check.rows[0].sql.includes("'express'")) {
-      console.log('🔄 Migrating delivery_prices for express support...');
-      await db.execute('ALTER TABLE delivery_prices RENAME TO delivery_prices_old');
-      await db.execute(`CREATE TABLE delivery_prices (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        delivery_type TEXT NOT NULL CHECK(delivery_type IN ('home','agency','express')),
-        wilaya TEXT,
-        price REAL NOT NULL DEFAULT 0,
-        is_default INTEGER NOT NULL DEFAULT 0,
-        updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-        UNIQUE(delivery_type, wilaya)
-      )`);
-      await db.execute(`INSERT INTO delivery_prices (id, delivery_type, wilaya, price, is_default, updated_at)
-        SELECT id, delivery_type, wilaya, price, is_default, updated_at FROM delivery_prices_old`);
-      await db.execute('DROP TABLE delivery_prices_old');
-      console.log('✅ delivery_prices migrated');
+    if (check.rows.length > 0 && (check.rows[0].sql.includes("'express'") || check.rows[0].sql.includes("is_default") || !check.rows[0].sql.includes("wilaya TEXT NOT NULL"))) {
+      console.log('🔄 Rebuilding delivery_prices (no express, no defaults)...');
+      await db.execute('DROP TABLE IF EXISTS delivery_prices');
     }
   } catch (e) { console.error('delivery_prices migration error:', e.message); }
 
+  // ✅ إعادة بناء جدول المستخدمين لتقييد الأدوار (admin, staff فقط)
   try {
-    const check = await db.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='orders'");
-    if (check.rows.length > 0 && !check.rows[0].sql.includes("'express'")) {
-      console.log('🔄 Migrating orders for express support...');
-      await db.execute('ALTER TABLE orders RENAME TO orders_old');
-      await db.execute(`CREATE TABLE orders (
+    const check = await db.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='users'");
+    if (check.rows.length > 0 && check.rows[0].sql.includes("'manager'")) {
+      console.log('🔄 Rebuilding users table (removing manager role)...');
+      await db.execute('PRAGMA foreign_keys=off');
+      await db.execute('ALTER TABLE users RENAME TO users_old');
+      await db.execute(`CREATE TABLE users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        order_number TEXT NOT NULL UNIQUE,
-        customer_id INTEGER,
-        first_name TEXT NOT NULL,
-        last_name TEXT NOT NULL,
-        phone1 TEXT NOT NULL,
-        phone2 TEXT,
-        wilaya TEXT NOT NULL,
-        municipality TEXT NOT NULL,
-        address TEXT NOT NULL,
-        delivery_method TEXT NOT NULL DEFAULT 'home' CHECK(delivery_method IN ('home','agency','express')),
-        delivery_cost REAL NOT NULL DEFAULT 0,
-        subtotal REAL NOT NULL DEFAULT 0,
-        discount REAL NOT NULL DEFAULT 0,
-        coupon_code TEXT,
-        total REAL NOT NULL DEFAULT 0,
-        status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','confirmed','out_for_delivery','delivered','cancelled')),
-        notes TEXT,
-        admin_notes TEXT,
+        username TEXT NOT NULL UNIQUE,
+        email TEXT UNIQUE,
+        password_hash TEXT NOT NULL,
+        full_name TEXT,
+        role TEXT NOT NULL DEFAULT 'staff' CHECK(role IN ('admin','staff')),
+        is_active INTEGER NOT NULL DEFAULT 1,
+        last_login_at TEXT,
         created_at TEXT NOT NULL DEFAULT (datetime('now')),
-        updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-        FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL
+        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
       )`);
-      await db.execute(`INSERT INTO orders
-        (id, order_number, customer_id, first_name, last_name, phone1, phone2, wilaya, municipality, address,
-         delivery_method, delivery_cost, subtotal, discount, coupon_code, total, status, notes, admin_notes,
-         created_at, updated_at)
-        SELECT id, order_number, customer_id, first_name, last_name, phone1, phone2, wilaya, municipality, address,
-         delivery_method, delivery_cost, subtotal, discount, coupon_code, total, status, notes, admin_notes,
-         created_at, updated_at FROM orders_old`);
-      await db.execute('DROP TABLE orders_old');
-      console.log('✅ orders migrated');
+      await db.execute(`INSERT INTO users (id, username, email, password_hash, full_name, role, is_active, last_login_at, created_at, updated_at)
+        SELECT id, username, email, password_hash, full_name, 
+        CASE WHEN role = 'manager' THEN 'staff' ELSE role END, 
+        is_active, last_login_at, created_at, updated_at FROM users_old`);
+      await db.execute('DROP TABLE users_old');
+      await db.execute('PRAGMA foreign_keys=on');
+      console.log('✅ users table migrated');
     }
-  } catch (e) { console.error('orders migration error:', e.message); }
-
-  try {
-    const cols = await db.execute("PRAGMA table_info(products)");
-    if (cols.rows.length > 0) {
-      if (!cols.rows.some(r => r.name === 'is_set')) {
-        await db.execute("ALTER TABLE products ADD COLUMN is_set INTEGER NOT NULL DEFAULT 0");
-        console.log('✅ Added is_set to products');
-      }
-      if (!cols.rows.some(r => r.name === 'badge_color')) {
-        await db.execute("ALTER TABLE products ADD COLUMN badge_color TEXT DEFAULT '#feca57'");
-        console.log('✅ Added badge_color to products');
-      }
-      if (!cols.rows.some(r => r.name === 'badge_color_name')) {
-        await db.execute("ALTER TABLE products ADD COLUMN badge_color_name TEXT DEFAULT 'أصفر فاتح'");
-        console.log('✅ Added badge_color_name to products');
-      }
-    }
-  } catch (e) { console.error('products migration error:', e.message); }
-
-  try {
-    const cols = await db.execute("PRAGMA table_info(product_colors)");
-    if (cols.rows.length > 0) {
-      if (!cols.rows.some(r => r.name === 'combo_name')) {
-        await db.execute("ALTER TABLE product_colors ADD COLUMN combo_name TEXT");
-        console.log('✅ Added combo_name to product_colors');
-      }
-      if (!cols.rows.some(r => r.name === 'part_label')) {
-        await db.execute("ALTER TABLE product_colors ADD COLUMN part_label TEXT");
-        console.log('✅ Added part_label to product_colors');
-      }
-      if (!cols.rows.some(r => r.name === 'combo_available_ages')) {
-        await db.execute("ALTER TABLE product_colors ADD COLUMN combo_available_ages TEXT");
-        console.log('✅ Added combo_available_ages to product_colors');
-      }
-    }
-  } catch (e) { console.error('product_colors migration error:', e.message); }
+  } catch (e) { console.error('users migration error:', e.message); }
 
   const tables = [
     `CREATE TABLE IF NOT EXISTS users (
@@ -149,7 +89,7 @@ async function initDB() {
       email TEXT UNIQUE,
       password_hash TEXT NOT NULL,
       full_name TEXT,
-      role TEXT NOT NULL DEFAULT 'admin' CHECK(role IN ('admin','manager','staff')),
+      role TEXT NOT NULL DEFAULT 'staff' CHECK(role IN ('admin','staff')),
       is_active INTEGER NOT NULL DEFAULT 1,
       last_login_at TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
@@ -253,7 +193,7 @@ async function initDB() {
       wilaya TEXT NOT NULL,
       municipality TEXT NOT NULL,
       address TEXT NOT NULL,
-      delivery_method TEXT NOT NULL DEFAULT 'home' CHECK(delivery_method IN ('home','agency','express')),
+      delivery_method TEXT NOT NULL DEFAULT 'home' CHECK(delivery_method IN ('home','agency')),
       delivery_cost REAL NOT NULL DEFAULT 0,
       subtotal REAL NOT NULL DEFAULT 0,
       discount REAL NOT NULL DEFAULT 0,
@@ -304,10 +244,9 @@ async function initDB() {
     )`,
     `CREATE TABLE IF NOT EXISTS delivery_prices (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      delivery_type TEXT NOT NULL CHECK(delivery_type IN ('home','agency','express')),
-      wilaya TEXT,
+      delivery_type TEXT NOT NULL CHECK(delivery_type IN ('home','agency')),
+      wilaya TEXT NOT NULL,
       price REAL NOT NULL DEFAULT 0,
-      is_default INTEGER NOT NULL DEFAULT 0,
       updated_at TEXT NOT NULL DEFAULT (datetime('now')),
       UNIQUE(delivery_type, wilaya)
     )`,
@@ -403,12 +342,24 @@ async function initDB() {
       is_auto INTEGER DEFAULT 0,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     )`,
+    `CREATE TABLE IF NOT EXISTS audit_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT,
+      action TEXT,
+      details TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`
   ];
 
   for (const sql of tables) {
     try { await db.execute(sql); }
     catch (err) { console.error('❌ Table creation error:', err.message); }
   }
+
+  // تنظيف جدول التوصيل من البيانات القديمة إذا وجدت
+  try {
+    await db.execute("DELETE FROM delivery_prices WHERE delivery_type = 'express'");
+  } catch(e) {}
 
   const indexes = [
     `CREATE INDEX IF NOT EXISTS idx_sessions_token         ON sessions(token)`,
@@ -477,15 +428,6 @@ async function initDB() {
     } catch (_) {}
   }
 
-  for (const [type, price] of [['home', 600], ['agency', 400], ['express', 900]]) {
-    try {
-      await db.execute({
-        sql: 'INSERT OR IGNORE INTO delivery_prices (delivery_type, wilaya, price, is_default) VALUES (?, NULL, ?, 1)',
-        args: [type, price]
-      });
-    } catch (_) {}
-  }
-
   const settingsSeeds = [
     ['storeName', 'بيبي شوب'],
     ['phone', '0550 00 00 00'],
@@ -516,6 +458,15 @@ async function initDB() {
 // ============================================================
 function generateToken() {
   return crypto.randomBytes(32).toString('hex');
+}
+
+async function logAction(username, action, details) {
+  try {
+    await db.execute({
+      sql: 'INSERT INTO audit_logs (username, action, details) VALUES (?, ?, ?)',
+      args: [username, action, details]
+    });
+  } catch (e) { console.error('Audit Log error:', e.message); }
 }
 
 async function authMiddleware(req, res, next) {
@@ -663,7 +614,7 @@ async function createBackup(name, user, isAuto = false) {
   }
 
   const backupData = {
-    version: 1,
+    version: 2,
     createdAt: new Date().toISOString(),
     products, settings, theme, delivery, users, orders
   };
@@ -764,6 +715,7 @@ app.post('/api/auth/login', async (req, res) => {
       args: [user.id, token, req.ip || '', req.headers['user-agent'] || '', expiresAt]
     });
     await db.execute({ sql: `UPDATE users SET last_login_at = datetime('now') WHERE id = ?`, args: [user.id] });
+    await logAction(user.username, 'تسجيل دخول', 'تم تسجيل الدخول إلى لوحة التحكم');
     res.json({
       success: true, token, expiresAt,
       user: { id: user.id, username: user.username, role: user.role, full_name: user.full_name, email: user.email }
@@ -779,7 +731,7 @@ app.post('/api/auth/logout', authMiddleware, async (req, res) => {
 app.get('/api/auth/me', authMiddleware, (req, res) => res.json({ user: req.user }));
 
 // ============================================================
-// 5.b) USERS MANAGEMENT (admin only)
+// 5.b) USERS MANAGEMENT & LOGS
 // ============================================================
 app.get('/api/users', authMiddleware, adminMiddleware, async (req, res) => {
   try {
@@ -791,12 +743,34 @@ app.get('/api/users', authMiddleware, adminMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+app.get('/api/logs', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const result = await db.execute('SELECT * FROM audit_logs ORDER BY created_at DESC LIMIT 200');
+    res.json(result.rows);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.get('/api/users/:id/activity', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const userRes = await db.execute({ sql: 'SELECT username FROM users WHERE id = ?', args: [id] });
+    if (userRes.rows.length === 0) return res.status(404).json({ error: 'User not found' });
+    const username = userRes.rows[0].username;
+
+    const logs = await db.execute({
+      sql: 'SELECT * FROM audit_logs WHERE username = ? ORDER BY created_at DESC LIMIT 100',
+      args: [username]
+    });
+    res.json(logs.rows);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 app.post('/api/users', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const { username, password, role, full_name, email } = req.body;
     if (!username || !password) return res.status(400).json({ error: 'اسم المستخدم وكلمة المرور مطلوبان' });
     if (password.length < 4) return res.status(400).json({ error: 'كلمة المرور قصيرة (4 أحرف على الأقل)' });
-    if (!['admin', 'manager', 'staff'].includes(role)) return res.status(400).json({ error: 'دور غير صالح' });
+    if (!['admin', 'staff'].includes(role)) return res.status(400).json({ error: 'دور غير صالح' });
     const existing = await db.execute({ sql: 'SELECT id FROM users WHERE username = ?', args: [username] });
     if (existing.rows.length > 0) return res.status(400).json({ error: 'اسم المستخدم موجود مسبقاً' });
     const hash = await bcrypt.hash(password, 10);
@@ -804,6 +778,7 @@ app.post('/api/users', authMiddleware, adminMiddleware, async (req, res) => {
       sql: `INSERT INTO users (username, email, password_hash, full_name, role) VALUES (?, ?, ?, ?, ?)`,
       args: [username, email || null, hash, full_name || null, role]
     });
+    await logAction(req.user.username, 'إضافة مستخدم', `تم إضافة المستخدم ${username} بدور ${role}`);
     res.json({ success: true, id: Number(result.lastInsertRowid) });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -817,7 +792,7 @@ app.put('/api/users/:id', authMiddleware, adminMiddleware, async (req, res) => {
     }
     const { role, full_name, email, is_active, password } = req.body;
     const updates = []; const args = [];
-    if (role && ['admin','manager','staff'].includes(role)) { updates.push('role = ?'); args.push(role); }
+    if (role && ['admin','staff'].includes(role)) { updates.push('role = ?'); args.push(role); }
     if (full_name !== undefined) { updates.push('full_name = ?'); args.push(full_name || null); }
     if (email !== undefined) { updates.push('email = ?'); args.push(email || null); }
     if (is_active !== undefined) { updates.push('is_active = ?'); args.push(is_active ? 1 : 0); }
@@ -830,11 +805,11 @@ app.put('/api/users/:id', authMiddleware, adminMiddleware, async (req, res) => {
     updates.push("updated_at = datetime('now')");
     args.push(id);
     await db.execute({ sql: `UPDATE users SET ${updates.join(', ')} WHERE id = ?`, args });
+    await logAction(req.user.username, 'تعديل مستخدم', `تم تعديل المستخدم رقم ${id}`);
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ✅ DELETE: يحفظ المستخدم في السلة قبل الحذف
 app.delete('/api/users/:id', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
@@ -843,15 +818,14 @@ app.delete('/api/users/:id', authMiddleware, adminMiddleware, async (req, res) =
     if (u.rows.length > 0) {
       const uData = u.rows[0];
       await saveToTrash('user', id, uData.username, uData, req.user);
+      await logAction(req.user.username, 'حذف مستخدم', `تم حذف المستخدم ${uData.username}`);
     }
     await db.execute({ sql: 'DELETE FROM users WHERE id = ?', args: [id] });
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ============================================================
-// Telegram test (admin only)
-// ============================================================
+// Telegram test
 app.post('/api/telegram/test', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const tokenRes = await db.execute({ sql: "SELECT value FROM settings WHERE key = 'telegramBotToken'", args: [] });
@@ -1098,6 +1072,7 @@ app.post('/api/products', authMiddleware, async (req, res) => {
     });
     const id = Number(result.lastInsertRowid);
     await saveProductRelations(id, colors, ages, details);
+    await logAction(req.user.username, 'إضافة منتج', `تم إضافة المنتج ${name}`);
     const product = await getProductWithRelations(id);
     res.json({ success: true, id, product });
   } catch (err) { console.error('POST /products:', err); res.status(500).json({ error: err.message }); }
@@ -1143,18 +1118,19 @@ app.put('/api/products/:id', authMiddleware, async (req, res) => {
     });
 
     await saveProductRelations(id, colors, ages, details);
+    await logAction(req.user.username, 'تعديل منتج', `تم تعديل المنتج ${name}`);
     const product = await getProductWithRelations(id);
     res.json({ success: true, product });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ✅ DELETE: يحفظ المنتج في السلة قبل الحذف
 app.delete('/api/products/:id', authMiddleware, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const product = await getProductWithRelations(id);
     if (product) {
       await saveToTrash('product', id, product.name, product, req.user);
+      await logAction(req.user.username, 'حذف منتج', `تم حذف المنتج ${product.name}`);
     }
     await db.execute({ sql: 'DELETE FROM products WHERE id = ?', args: [id] });
     res.json({ success: true });
@@ -1256,6 +1232,7 @@ app.post('/api/orders', async (req, res) => {
       }
     }
 
+    // ✅ إرسال إشعار تيليجرام (مع await لضمان الوصول)
     try {
       const itemsText = preparedItems.map((pi, i) =>
         `<b>${i + 1}.</b> ${escapeTelegram(pi.product_name)}\n` +
@@ -1263,7 +1240,7 @@ app.post('/api/orders', async (req, res) => {
         `   📦 ${pi.quantity} × ${pi.unit_price.toLocaleString()} = <b>${pi.total_price.toLocaleString()} د.ج</b>`
       ).join('\n\n');
 
-      const deliveryLabel = { home: 'المنزل', agency: 'الوكالة', express: 'سريع ⚡' }[deliveryMethod] || 'المنزل';
+      const deliveryLabel = { home: 'المنزل', agency: 'الوكالة' }[deliveryMethod] || 'المنزل';
 
       const telegramMessage =
         `🛒 <b>طلب جديد وصل!</b>\n\n` +
@@ -1279,7 +1256,7 @@ app.post('/api/orders', async (req, res) => {
         `🚚 <b>التوصيل:</b> ${deliveryLabel} — ${finalDeliveryCost.toLocaleString()} د.ج\n` +
         `💰 <b>الإجمالي المطلوب:</b> <b>${total.toLocaleString()} د.ج</b>`;
 
-      sendTelegramMessage(telegramMessage).catch(e => console.error('Telegram async:', e));
+      await sendTelegramMessage(telegramMessage);
     } catch (tgErr) {
       console.error('❌ Telegram prep failed:', tgErr.message);
     }
@@ -1328,22 +1305,34 @@ app.get('/api/orders/:id', authMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ✅ إصلاح مسار تحديث حالة الطلب مع تسجيل التعديل
 app.put('/api/orders/:id/status', authMiddleware, async (req, res) => {
   try {
     const { status } = req.body;
     const valid = ['pending', 'confirmed', 'out_for_delivery', 'delivered', 'cancelled'];
     if (!valid.includes(status)) return res.status(400).json({ error: 'Invalid status' });
+    
     const key = req.params.id;
-    const orderRes = await db.execute({ sql: 'SELECT id FROM orders WHERE order_number = ? OR id = ?', args: [key, parseInt(key) || 0] });
+    const orderRes = await db.execute({ 
+      sql: 'SELECT id, order_number, status FROM orders WHERE order_number = ? OR id = ?', 
+      args: [key, parseInt(key) || 0] 
+    });
+    
     if (orderRes.rows.length === 0) return res.status(404).json({ error: 'Order not found' });
+    
     const orderId = orderRes.rows[0].id;
+    const orderNumber = orderRes.rows[0].order_number;
+    const oldStatus = orderRes.rows[0].status;
+
     await db.execute({ sql: `UPDATE orders SET status = ?, updated_at = datetime('now') WHERE id = ?`, args: [status, orderId] });
     await db.execute({ sql: `INSERT INTO order_status_history (order_id, status, changed_by_user_id, note) VALUES (?, ?, ?, ?)`, args: [orderId, status, req.user.user_id, 'تم التحديث من لوحة التحكم'] });
+    
+    await logAction(req.user.username, 'تغيير حالة طلب', `تم تغيير حالة الطلب ${orderNumber} من ${oldStatus} إلى ${status}`);
+    
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ✅ DELETE: يحفظ الطلب كاملاً في السلة قبل الحذف
 app.delete('/api/orders/:id', authMiddleware, async (req, res) => {
   try {
     const key = req.params.id;
@@ -1357,6 +1346,7 @@ app.delete('/api/orders/:id', authMiddleware, async (req, res) => {
     const historyRes = await db.execute({ sql: 'SELECT * FROM order_status_history WHERE order_id = ?', args: [o.id] });
     const fullOrder = { ...o, items: itemsRes.rows, statusHistory: historyRes.rows };
     await saveToTrash('order', o.order_number, `${o.first_name} ${o.last_name} — ${o.total} د.ج`, fullOrder, req.user);
+    await logAction(req.user.username, 'حذف طلب', `تم حذف الطلب ${o.order_number} للزبون ${o.first_name} ${o.last_name}`);
     await db.execute({ sql: 'DELETE FROM orders WHERE id = ?', args: [o.id] });
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -1374,7 +1364,6 @@ app.get('/api/settings', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ✅ PUT: يحفظ الإعدادات القديمة في السلة قبل التعديل
 app.put('/api/settings', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const currentRes = await db.execute('SELECT key, value FROM settings');
@@ -1397,6 +1386,7 @@ app.put('/api/settings', authMiddleware, adminMiddleware, async (req, res) => {
         args: [key, String(value)]
       });
     }
+    await logAction(req.user.username, 'تعديل الإعدادات', 'تم تحديث إعدادات المتجر');
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -1423,35 +1413,24 @@ app.put('/api/theme', authMiddleware, adminMiddleware, async (req, res) => {
         args: [name, String(value)]
       });
     }
+    await logAction(req.user.username, 'تعديل الألوان', 'تم تحديث ألوان الموقع');
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ============================================================
-// 10) DELIVERY
+// 10) DELIVERY (بدون Express وبدون Defaults)
 // ============================================================
-app.get('/api/delivery', async (req, res) => {
-  try {
-    const result = await db.execute('SELECT * FROM delivery_prices WHERE wilaya IS NULL');
-    const delivery = { home: 0, agency: 0, express: 0 };
-    for (const row of result.rows) delivery[row.delivery_type] = row.price;
-    res.json(delivery);
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
 app.get('/api/delivery/all', async (req, res) => {
   try {
     const result = await db.execute('SELECT * FROM delivery_prices');
-    const defaults = { home: 0, agency: 0, express: 0 };
     const byWilaya = {};
     for (const row of result.rows) {
-      if (row.wilaya === null) defaults[row.delivery_type] = row.price;
-      else {
-        if (!byWilaya[row.wilaya]) byWilaya[row.wilaya] = { home: null, agency: null, express: null };
-        byWilaya[row.wilaya][row.delivery_type] = row.price;
-      }
+      if (!row.wilaya) continue;
+      if (!byWilaya[row.wilaya]) byWilaya[row.wilaya] = { home: 0, agency: 0 };
+      byWilaya[row.wilaya][row.delivery_type] = row.price;
     }
-    res.json({ defaults, byWilaya });
+    res.json({ byWilaya });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -1459,54 +1438,27 @@ app.get('/api/delivery/wilaya/:wilaya', async (req, res) => {
   try {
     const wilaya = decodeURIComponent(req.params.wilaya);
     const specRes = await db.execute({ sql: 'SELECT delivery_type, price FROM delivery_prices WHERE wilaya = ?', args: [wilaya] });
-    const defRes = await db.execute({ sql: 'SELECT delivery_type, price FROM delivery_prices WHERE wilaya IS NULL', args: [] });
-    const specific = {}; const defaults = {};
-    for (const r of specRes.rows) specific[r.delivery_type] = r.price;
-    for (const r of defRes.rows) defaults[r.delivery_type] = r.price;
-    const prices = {
-      home: specific.home ?? defaults.home ?? 0,
-      agency: specific.agency ?? defaults.agency ?? 0,
-      express: specific.express ?? defaults.express ?? 0
-    };
+    const prices = { home: 0, agency: 0 };
+    for (const r of specRes.rows) prices[r.delivery_type] = r.price;
     res.json(prices);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.put('/api/delivery', authMiddleware, adminMiddleware, async (req, res) => {
-  try {
-    const { home, agency, express } = req.body || {};
-    const upsertDefault = async (type, price) => {
-      if (price === undefined) return;
-      await db.execute({
-        sql: `INSERT INTO delivery_prices (delivery_type, wilaya, price, is_default, updated_at)
-              VALUES (?, NULL, ?, 1, datetime('now'))
-              ON CONFLICT(delivery_type, wilaya) DO UPDATE SET price = excluded.price, updated_at = datetime('now')`,
-        args: [type, Number(price)]
-      });
-    };
-    await upsertDefault('home', home);
-    await upsertDefault('agency', agency);
-    await upsertDefault('express', express);
-    res.json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.put('/api/delivery/wilaya/:wilaya', authMiddleware, adminMiddleware, async (req, res) => {
+app.put('/api/delivery/wilaya/:wilaya', authMiddleware, async (req, res) => {
   try {
     const wilaya = decodeURIComponent(req.params.wilaya);
-    const { home, agency, express } = req.body || {};
+    const { home, agency } = req.body || {};
     const upsert = async (type, price) => {
       if (price === undefined) return;
       await db.execute({
-        sql: `INSERT INTO delivery_prices (delivery_type, wilaya, price, is_default, updated_at)
-              VALUES (?, ?, ?, 0, datetime('now'))
+        sql: `INSERT INTO delivery_prices (delivery_type, wilaya, price, updated_at) VALUES (?, ?, ?, datetime('now')) 
               ON CONFLICT(delivery_type, wilaya) DO UPDATE SET price = excluded.price, updated_at = datetime('now')`,
         args: [type, wilaya, Number(price)]
       });
     };
     await upsert('home', home);
     await upsert('agency', agency);
-    await upsert('express', express);
+    await logAction(req.user.username, 'تعديل التوصيل', `تم تحديث أسعار التوصيل لولاية ${wilaya}`);
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -1755,7 +1707,6 @@ app.post('/api/backups/:id/restore', authMiddleware, adminMiddleware, async (req
     const backup = result.rows[0];
     const data = JSON.parse(backup.data);
 
-    // نسخة أمان قبل الاستعادة
     await createBackup(`قبل استعادة "${backup.name}"`, req.user, true);
 
     if (data.settings && typeof data.settings === 'object') {
@@ -1778,18 +1729,19 @@ app.post('/api/backups/:id/restore', authMiddleware, adminMiddleware, async (req
     }
     if (Array.isArray(data.delivery)) {
       for (const dp of data.delivery) {
+        if (dp.delivery_type === 'express') continue;
         await db.execute({
-          sql: `INSERT INTO delivery_prices (delivery_type, wilaya, price, is_default, updated_at)
-                VALUES (?, ?, ?, ?, datetime('now'))
+          sql: `INSERT INTO delivery_prices (delivery_type, wilaya, price, updated_at)
+                VALUES (?, ?, ?, datetime('now'))
                 ON CONFLICT(delivery_type, wilaya) DO UPDATE SET price = excluded.price, updated_at = datetime('now')`,
-          args: [dp.delivery_type, dp.wilaya, dp.price, dp.is_default]
+          args: [dp.delivery_type, dp.wilaya, dp.price]
         });
       }
     }
 
     res.json({
       success: true,
-      message: 'تم استعادة الإعدادات والثيم والتوصيل ✓ — المنتجات والطلبات تُستعاد من سلة المحذوفات أو بالتحميل اليدوي'
+      message: 'تم استعادة الإعدادات والثيم والتوصيل ✓'
     });
   } catch (err) {
     console.error('restore backup error:', err);
@@ -1822,9 +1774,7 @@ initDB()
       console.log(`🚀 Server running on http://localhost:${PORT}`);
       console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
     });
-    // ✅ نسخة احتياطية أولى بعد 30 ثانية من الإقلاع
     setTimeout(() => { maybeAutoBackup().catch(e => console.error('auto backup:', e)); }, 30 * 1000);
-    // ✅ ثم كل ساعة تحقق إذا مر 24 ساعة
     setInterval(() => { maybeAutoBackup().catch(e => console.error('auto backup:', e)); }, 60 * 60 * 1000);
   })
   .catch((err) => { console.error('❌ Failed to initialize DB:', err); process.exit(1); });

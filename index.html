@@ -1010,8 +1010,8 @@
     }
     .form-group textarea { resize: vertical; min-height: 70px; }
 
-    /* ✅ FIX 1: 3 أعمدة لخيارات التوصيل */
-    .delivery-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
+    /* ✅ 2 أعمدة لخيارات التوصيل فقط (تم حذف السريع) */
+    .delivery-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 8px; }
     .delivery-option {
       position: relative;
       display: block;
@@ -1441,34 +1441,24 @@
 
           <div class="form-group">
             <label><i class="fa-solid fa-truck-fast"></i> طريقة التوصيل</label>
-            <div class="delivery-options">
-              <label class="delivery-option">
-                <input type="radio" name="delivery" data-type="home" value="600" checked onchange="updateDeliveryCost()">
+            <div class="delivery-options" id="deliveryOptionsContainer">
+              <label class="delivery-option" id="delivery-home-label">
+                <input type="radio" name="delivery" data-type="home" value="0" checked onchange="updateDeliveryCost()">
                 <div class="delivery-info">
                   <i class="fa-solid fa-house"></i>
                   <div>
                     <strong>توصيل إلى المنزل</strong>
-                    <span>600 د.ج</span>
+                    <span id="home-price-label">0 د.ج</span>
                   </div>
                 </div>
               </label>
-              <label class="delivery-option">
-                <input type="radio" name="delivery" data-type="agency" value="400" onchange="updateDeliveryCost()">
+              <label class="delivery-option" id="delivery-agency-label">
+                <input type="radio" name="delivery" data-type="agency" value="0" onchange="updateDeliveryCost()">
                 <div class="delivery-info">
                   <i class="fa-solid fa-store"></i>
                   <div>
                     <strong>توصيل إلى الوكالة</strong>
-                    <span>400 د.ج</span>
-                  </div>
-                </div>
-              </label>
-              <label class="delivery-option">
-                <input type="radio" name="delivery" data-type="express" value="900" onchange="updateDeliveryCost()">
-                <div class="delivery-info">
-                  <i class="fa-solid fa-bolt"></i>
-                  <div>
-                    <strong>توصيل سريع</strong>
-                    <span>900 د.ج</span>
+                    <span id="agency-price-label">0 د.ج</span>
                   </div>
                 </div>
               </label>
@@ -1487,7 +1477,7 @@
             </div>
             <div class="summary-row">
               <span>التوصيل:</span>
-              <span id="summaryDelivery">600 د.ج</span>
+              <span id="summaryDelivery">0 د.ج</span>
             </div>
             <div class="summary-row total">
               <span>الإجمالي:</span>
@@ -1507,67 +1497,9 @@
 
   <script>
     // ==================== البيانات الافتراضية ====================
-    const DEFAULT_PRODUCTS = [
-      {
-        id: 1, name: "صدرية أطفال مبطنة", category: "winter", categoryLabel: "شتوي", gender: "both",
-        price: 3200, oldPrice: 4000, badge: "جديد", badgeType: "new",
-        colors: [
-          { name: "أحمر", hex: "#e74c3c", image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=600&q=80" },
-          { name: "أصفر", hex: "#f1c40f", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=600&q=80" },
-          { name: "أخضر", hex: "#2ecc71", image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&q=80" }
-        ],
-        ages: ["10 سنوات", "8 سنوات", "7 سنوات", "5 سنوات"]
-      },
-      {
-        id: 2, name: "قميص قطني صيفي", category: "summer", categoryLabel: "صيفي", gender: "boys",
-        price: 1800, oldPrice: 2500, badge: "خصم", badgeType: "sale",
-        colors: [
-          { name: "أبيض", hex: "#ecf0f1", image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&q=80" },
-          { name: "أزرق", hex: "#3498db", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=600&q=80" }
-        ],
-        ages: ["8 سنوات", "7 سنوات", "6 سنوات"]
-      },
-      {
-        id: 3, name: "حذاء رياضي للأطفال", category: "shoes", categoryLabel: "أحذية", gender: "both",
-        price: 4500, oldPrice: null, badge: "الأكثر مبيعاً", badgeType: "new",
-        colors: [
-          { name: "أسود", hex: "#2d3436", image: "https://images.unsplash.com/photo-1514989940723-e8e51635b782?w=600&q=80" },
-          { name: "وردي", hex: "#fd79a8", image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=600&q=80" }
-        ],
-        ages: ["10 سنوات", "8 سنوات", "6 سنوات"]
-      },
-      {
-        id: 4, name: "جاكيت شتوي مبطن", category: "heavy", categoryLabel: "ثقيل", gender: "boys",
-        price: 5800, oldPrice: 7000, badge: "خصم", badgeType: "sale",
-        colors: [
-          { name: "أحمر", hex: "#e74c3c", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=600&q=80" },
-          { name: "أزرق", hex: "#2980b9", image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=600&q=80" }
-        ],
-        ages: ["10 سنوات", "8 سنوات", "7 سنوات", "5 سنوات"]
-      },
-      {
-        id: 5, name: "طقم بناتي خفيف", category: "light", categoryLabel: "خفيف", gender: "girls",
-        price: 2600, oldPrice: null, badge: "جديد", badgeType: "new",
-        colors: [
-          { name: "وردي", hex: "#fd79a8", image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&q=80" },
-          { name: "بنفسجي", hex: "#a29bfe", image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=600&q=80" }
-        ],
-        ages: ["8 سنوات", "7 سنوات", "6 سنوات"]
-      },
-      {
-        id: 6, name: "قبعة شمسية للأطفال", category: "accessories", categoryLabel: "إكسسوارات", gender: "girls",
-        price: 900, oldPrice: 1200, badge: "خصم", badgeType: "sale",
-        colors: [
-          { name: "بيج", hex: "#f5cd79", image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=600&q=80" },
-          { name: "أبيض", hex: "#ecf0f1", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=600&q=80" }
-        ],
-        ages: ["10 سنوات", "8 سنوات", "6 سنوات"]
-      }
-    ];
-
     const DEFAULT_SETTINGS = {
       storeName: 'بيبي شوب',
-        logo: '',                        // ✅ أضف هذا السطر
+      logo: '',
       phone: '0550 00 00 00',
       email: 'contact@babyshop.dz',
       address: 'الجزائر العاصمة، الجزائر',
@@ -1575,26 +1507,13 @@
       topBarText: 'توصيل لجميع الولايات | الدفع عند الاستلام ',
       searchPlaceholder: 'ابحث عن ملابس، أحذية، إكسسوارات...',
       footerCopyright: '© 2025 بيبي شوب - جميع الحقوق محفوظة | صُنع بحب لأطفال الجزائر',
-      girlsCard: {
-        image: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=800&q=80',
-        title: 'ملابس البنات',
-        subtitle: 'نعومة، ألوان، وأناقة لا تُقاوم'
-      },
-      boysCard: {
-        image: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&q=80',
-        title: 'ملابس الأولاد',
-        subtitle: 'قوة، حركة، وراحة طول اليوم'
-      },
-      categoryCards: {
-        winter: { image: 'https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=600&q=80', title: 'ملابس شتوية', subtitle: 'دفء وأناقة' },
-        summer: { image: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&q=80', title: 'ملابس صيفية', subtitle: 'خفة وانتعاش' },
-        shoes: { image: 'https://images.unsplash.com/photo-1514989940723-e8e51635b782?w=600&q=80', title: 'أحذية', subtitle: 'خطوات مريحة' },
-        accessories: { image: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=600&q=80', title: 'إكسسوارات', subtitle: 'لمسات مميزة' },
-        babies: { image: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=600&q=80', title: 'مواليد', subtitle: 'نعومة وحنان' }
-      }
+      girlsCard: { image: '...', title: 'ملابس البنات', subtitle: 'نعومة، ألوان، وأناقة لا تُقاوم' },
+      boysCard: { image: '...', title: 'ملابس الأولاد', subtitle: 'قوة، حركة، وراحة طول اليوم' },
+      categoryCards: { winter: {}, summer: {}, shoes: {}, accessories: {}, babies: {} }
     };
     const DEFAULT_THEME_DATA = { primary: '#ff6b81', primaryDark: '#e8556d', secondary: '#6c5ce7', accent: '#feca57' };
-    const DEFAULT_DELIVERY_DATA = { home: 600, agency: 400, express: 900 };
+    const DEFAULT_DELIVERY_DATA = { home: 600, agency: 400 };
+
     function deepMerge(target, source) {
       if (!source || typeof source !== 'object') return target;
       for (const k in source) {
@@ -1614,24 +1533,24 @@
     let cart = [];
     let wishlist = [];
 
-    document.documentElement.style.setProperty('--primary', adminTheme.primary);
-    document.documentElement.style.setProperty('--primary-dark', adminTheme.primaryDark);
-    document.documentElement.style.setProperty('--secondary', adminTheme.secondary);
-    document.documentElement.style.setProperty('--accent', adminTheme.accent);
+    // ==================== تطبيع النص للبحث الذكي ====================
+    function normalizeArabic(text) {
+      if (!text) return '';
+      return text.replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/[ىي]/g, 'ي').replace(/[\u064B-\u065F]/g, '').toLowerCase().trim();
+    }
 
-    // ==================== Fetch from Server ====================
-async function fetchProductsFromServer() {
-  try {
-    const response = await fetch('/api/products');
-    if (!response.ok) throw new Error('HTTP ' + response.status);
-    const serverProducts = await response.json();
-    products = Array.isArray(serverProducts) ? serverProducts : [];
-    console.log(`✅ ${products.length} منتج من السيرفر`);
-  } catch (error) {
-    console.warn('⚠️ فشل تحميل المنتجات:', error);
-    products = [];  // ✅ لا fallback — فقط منتجات السيرفر الحقيقية
-  }
-}
+    // ==================== جلب البيانات من السيرفر ====================
+    async function fetchProductsFromServer() {
+      try {
+        const response = await fetch('/api/products');
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const serverProducts = await response.json();
+        products = Array.isArray(serverProducts) ? serverProducts : [];
+      } catch (error) {
+        console.warn('⚠️ فشل تحميل المنتجات:', error);
+        products = [];
+      }
+    }
 
     async function fetchSettingsFromServer() {
       try {
@@ -1656,6 +1575,11 @@ async function fetchProductsFromServer() {
           adminTheme = deepMerge(JSON.parse(JSON.stringify(DEFAULT_THEME_DATA)), serverTheme);
         }
       } catch (e) { console.warn('theme fallback:', e); }
+      
+      // ✅ حساب اللون الداكن تلقائياً إذا لم يكن موجوداً
+      if (!adminTheme.primaryDark && adminTheme.primary) {
+        adminTheme.primaryDark = darkenHex(adminTheme.primary, 15);
+      }
       document.documentElement.style.setProperty('--primary', adminTheme.primary);
       document.documentElement.style.setProperty('--primary-dark', adminTheme.primaryDark);
       document.documentElement.style.setProperty('--secondary', adminTheme.secondary);
@@ -1664,21 +1588,34 @@ async function fetchProductsFromServer() {
 
     async function fetchDeliveryFromServer() {
       try {
-        const res = await fetch('/api/delivery');
+        const res = await fetch('/api/delivery/all');
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const serverDelivery = await res.json();
-        adminDelivery = deepMerge(JSON.parse(JSON.stringify(DEFAULT_DELIVERY_DATA)), serverDelivery);
+        // serverDelivery = { byWilaya: { "الجزائر": {home: 500, agency: 300} } }
+        adminDelivery = serverDelivery; 
       } catch (e) { console.warn('delivery fallback:', e); }
     }
 
-   // ==================== Apply Settings ====================
+    function darkenHex(hex, percent = 15) {
+      try {
+        let h = hex.replace('#','');
+        if (h.length === 3) h = h.split('').map(c => c+c).join('');
+        const num = parseInt(h, 16);
+        const amt = Math.round(2.55 * percent);
+        const r = Math.max(0, ((num >> 16) & 0xff) - amt);
+        const g = Math.max(0, ((num >> 8) & 0xff) - amt);
+        const b = Math.max(0, (num & 0xff) - amt);
+        return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+      } catch(e) { return hex; }
+    }
+
+    // ==================== تطبيق الإعدادات ====================
     function applyAdminSettings() {
       const topBar = document.querySelector('.top-bar');
       if (topBar && adminSettings.topBarText) {
         topBar.innerHTML = `<i class="fa-solid fa-truck-fast"></i> ${adminSettings.topBarText}`;
       }
 
-      // ✅ إصلاح: عرض اللوجو من الإعدادات بجانب اسم المتجر
       const logo = document.getElementById('logo');
       if (logo) {
         const logoUrl = (adminSettings.logo || '').trim();
@@ -1687,7 +1624,6 @@ async function fetchProductsFromServer() {
         if (logoUrl) {
           const safeUrl = logoUrl.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           logo.innerHTML = `<img src="${safeUrl}" alt="${safeName}" style="width:40px;height:40px;object-fit:contain;border-radius:8px;background:#fff;padding:2px;flex-shrink:0;"> ${safeName}`;
-          // في حال فشل تحميل الصورة، ارجع للأيقونة الافتراضية
           const logoImg = logo.querySelector('img');
           if (logoImg) {
             logoImg.addEventListener('error', () => {
@@ -1755,19 +1691,6 @@ async function fetchProductsFromServer() {
       if (footerBottom && adminSettings.footerCopyright) {
         footerBottom.innerHTML = adminSettings.footerCopyright + ' <i class="fa-solid fa-heart" style="color: var(--primary);"></i>';
       }
-
-      // ✅ FIX 2: تحديث أسعار التوصيل الثلاثة من adminDelivery
-      document.querySelectorAll('input[name="delivery"]').forEach(r => {
-        const type = r.dataset.type;
-        if (!type) return;
-        const price = Number(adminDelivery[type]) || 0;
-        r.value = price;
-        const info = r.nextElementSibling;
-        if (info) {
-          const span = info.querySelector('span');
-          if (span) span.textContent = price.toLocaleString() + ' د.ج';
-        }
-      });
     }
 
     const wilayas = [
@@ -1914,6 +1837,7 @@ async function fetchProductsFromServer() {
       if (value === stored) { closeAdminGate(); window.location.href = 'admin.html'; }
       else { gateError.textContent = 'كلمة المرور غير صحيحة.'; gatePassword.value = ''; gatePassword.focus(); }
     }
+
     // ==================== Slider ====================
     let currentSlide = 0, sliderInterval = null, totalSlides = 0;
     function initSlider() {
@@ -1922,9 +1846,12 @@ async function fetchProductsFromServer() {
       const featured = products.slice(0, Math.min(products.length, 5));
       totalSlides = featured.length;
       if (totalSlides === 0) { container.innerHTML = ''; dotsContainer.innerHTML = ''; return; }
-      container.innerHTML = featured.map((p, i) => `
+      
+      container.innerHTML = featured.map((p, i) => {
+        const imgSrc = (p.colors && p.colors[0]) ? (p.colors[0].images ? p.colors[0].images[0] : p.colors[0].image) : '';
+        return `
         <div class="slide ${i === 0 ? 'active' : ''}">
-          <img src="${p.colors[0].image}" alt="${p.name}">
+          <img src="${imgSrc || ''}" alt="${p.name}">
           <div class="slide-content">
             <span class="slide-category">${p.categoryLabel} • جديد</span>
             <h2>${p.name}</h2>
@@ -1935,7 +1862,8 @@ async function fetchProductsFromServer() {
             <a href="product.html?id=${p.id}" class="slide-btn">تسوق الآن <i class="fa-solid fa-arrow-left"></i></a>
           </div>
         </div>
-      `).join('');
+      `}).join('');
+      
       dotsContainer.innerHTML = featured.map((_, i) =>
         `<button class="dot ${i === 0 ? 'active' : ''}" data-slide="${i}"></button>`
       ).join('');
@@ -1966,17 +1894,20 @@ async function fetchProductsFromServer() {
     // ==================== Products ====================
     const productsGrid = document.getElementById('productsGrid');
     function renderProductCard(product) {
-      const firstColor = product.colors[0];
+      const firstColor = product.colors[0] || { image: '', images: [] };
+      const imgSrc = firstColor.images && firstColor.images.length > 0 ? firstColor.images[0] : (firstColor.image || '');
+      
       const fav = isWishlisted(product.id);
       const heartClass = fav ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
       const heartColor = fav ? 'color:var(--primary);' : '';
       const heartTitle = fav ? 'إزالة من المفضلة' : 'أضف للمفضلة';
       const heartBtnClass = fav ? 'wishlisted' : '';
+      
       return `
         <div class="product-card" data-id="${product.id}">
           ${product.badge ? `<span class="product-badge ${product.badgeType === 'sale' ? 'sale' : ''}">${product.badge}</span>` : ''}
           <div class="product-image" onclick="viewProduct(${product.id})">
-            <img src="${firstColor.image}" alt="${product.name}" loading="lazy" id="img-${product.id}">
+            <img src="${imgSrc}" alt="${product.name}" loading="lazy" id="img-${product.id}" onerror="this.style.opacity=0.3">
             <div class="product-actions">
               <button title="أضف إلى السلة" onclick="event.stopPropagation(); addToCart(${product.id})"><i class="fa-solid fa-cart-plus"></i></button>
               <button title="عرض المنتج" onclick="event.stopPropagation(); viewProduct(${product.id})"><i class="fa-regular fa-eye"></i></button>
@@ -2009,6 +1940,7 @@ async function fetchProductsFromServer() {
       if (filter === 'girls') filtered = products.filter(p => p.gender === 'girls' || p.gender === 'both');
       else if (filter === 'boys') filtered = products.filter(p => p.gender === 'boys' || p.gender === 'both');
       else if (filter !== 'all') filtered = products.filter(p => p.category === filter);
+      
       if (filtered.length === 0) {
         productsGrid.innerHTML = `<p style="text-align:center; grid-column:1/-1; padding:40px; color:var(--text-gray);">لا توجد منتجات في هذا التصنيف حالياً.</p>`;
         return;
@@ -2020,8 +1952,10 @@ async function fetchProductsFromServer() {
       if (!product) return;
       const imgEl = document.getElementById(`img-${productId}`);
       if (imgEl) {
+        const c = product.colors[colorIndex];
+        const newSrc = c.images && c.images.length > 0 ? c.images[0] : (c.image || '');
         imgEl.style.opacity = '0.5';
-        setTimeout(() => { imgEl.src = product.colors[colorIndex].image; imgEl.style.opacity = '1'; }, 150);
+        setTimeout(() => { imgEl.src = newSrc; imgEl.style.opacity = '1'; }, 150);
       }
       const swatchesContainer = document.getElementById(`swatches-${productId}`);
       if (swatchesContainer) {
@@ -2052,13 +1986,21 @@ async function fetchProductsFromServer() {
       });
     });
 
-    // ==================== Search ====================
+    // ==================== Search (ذكي مع تسامح الهمزات) ====================
     const searchInput = document.getElementById('searchInput');
     const searchBtn = document.getElementById('searchBtn');
+    
     function performSearch() {
-      const query = searchInput.value.trim().toLowerCase();
+      const query = searchInput.value.trim();
       if (!query) { renderProducts(activeCategory); return; }
-      const filtered = products.filter(p => p.name.toLowerCase().includes(query) || p.categoryLabel.toLowerCase().includes(query));
+      
+      const normQuery = normalizeArabic(query);
+      const filtered = products.filter(p => {
+        const normName = normalizeArabic(p.name);
+        const normCat = normalizeArabic(p.categoryLabel);
+        return normName.includes(normQuery) || normCat.includes(normQuery);
+      });
+      
       if (filtered.length === 0) {
         productsGrid.innerHTML = `<p style="text-align:center; grid-column:1/-1; padding:40px; color:var(--text-gray);">لا توجد نتائج مطابقة لبحثك عن "${query}".</p>`;
         return;
@@ -2112,9 +2054,11 @@ async function fetchProductsFromServer() {
       const product = products.find(p => p.id === productId);
       if (!product) return;
       if (!age) age = product.ages[0];
+      
       const existing = cart.find(item => item.productId === productId && item.colorIndex === colorIndex && item.age === age);
       if (existing) existing.qty += 1;
       else cart.push({ itemId: generateId(), productId, colorIndex, age, qty: 1, price: product.price });
+      
       saveCart();
       renderCart();
       showToast('تمت إضافة المنتج إلى السلة ✓');
@@ -2132,10 +2076,11 @@ async function fetchProductsFromServer() {
       cartBody.innerHTML = cart.map(item => {
         const product = products.find(p => p.id === item.productId);
         if (!product) return '';
-        const color = product.colors[item.colorIndex];
+        const color = product.colors[item.colorIndex] || product.colors[0];
+        const imgSrc = color.images && color.images.length > 0 ? color.images[0] : (color.image || '');
         return `
           <div class="cart-item" data-item-id="${item.itemId}" onclick="openEditModal('${item.itemId}')">
-            <img src="${color.image}" alt="${product.name}">
+            <img src="${imgSrc}" alt="${product.name}">
             <div class="cart-item-info">
               <h4>${product.name}</h4>
               <div class="cart-item-variants">
@@ -2215,15 +2160,22 @@ async function fetchProductsFromServer() {
       editAge = item.age;
       const product = products.find(p => p.id === item.productId);
       if (!product) return;
-      document.getElementById('editModalImage').src = product.colors[editColorIndex].image;
+      
+      const color = product.colors[editColorIndex] || product.colors[0];
+      const imgSrc = color.images && color.images.length > 0 ? color.images[0] : (color.image || '');
+      
+      document.getElementById('editModalImage').src = imgSrc;
       document.getElementById('editModalTitle').textContent = product.name;
       document.getElementById('editModalPrice').textContent = product.price.toLocaleString() + ' د.ج';
+      
       document.getElementById('editModalColors').innerHTML = product.colors.map((c, i) => `
         <span class="swatch ${i === editColorIndex ? 'active' : ''}" style="background:${c.hex};" title="${c.name}" onclick="changeEditColor(${i})"></span>
       `).join('');
+      
       document.getElementById('editModalAges').innerHTML = product.ages.map(a => `
         <span class="age-tag ${a === editAge ? 'active' : ''}" onclick="changeEditAge(this, '${a}')">${a}</span>
       `).join('');
+      
       document.getElementById('editModal').classList.add('show');
     }
     function changeEditColor(i) {
@@ -2231,9 +2183,11 @@ async function fetchProductsFromServer() {
       const item = cart.find(it => it.itemId === editingItemId);
       if (!item) return;
       const product = products.find(p => p.id === item.productId);
+      const color = product.colors[i];
+      const imgSrc = color.images && color.images.length > 0 ? color.images[0] : (color.image || '');
       const imgEl = document.getElementById('editModalImage');
       imgEl.style.opacity = '0.5';
-      setTimeout(() => { imgEl.src = product.colors[i].image; imgEl.style.opacity = '1'; }, 150);
+      setTimeout(() => { imgEl.src = imgSrc; imgEl.style.opacity = '1'; }, 150);
       document.querySelectorAll('#editModalColors .swatch').forEach((s, idx) => s.classList.toggle('active', idx === i));
     }
     function changeEditAge(el, age) {
@@ -2258,15 +2212,12 @@ async function fetchProductsFromServer() {
     }
 
     // ==================== Checkout ====================
-    let currentDeliveryCost = adminDelivery.home;
+    let currentDeliveryCost = 0;
 
     function openCheckout() {
       if (cart.length === 0) { showToast('السلة فارغة', 'error'); return; }
       document.getElementById('checkoutModal').classList.add('show');
       document.body.style.overflow = 'hidden';
-      const sel = document.querySelector('input[name="delivery"]:checked');
-      currentDeliveryCost = sel ? parseInt(sel.value) : adminDelivery.home;
-      updateCheckoutSummary();
       updateDeliveryCost();
     }
     function closeCheckout() {
@@ -2274,24 +2225,84 @@ async function fetchProductsFromServer() {
       document.body.style.overflow = '';
     }
 
+    // ✅ تحديث ذكي لأسعار التوصيل وإخفاء الخيارات غير المتاحة
     async function updateDeliveryCost() {
       const wilaya = document.getElementById('checkoutWilaya')?.value;
-      const sel = document.querySelector('input[name="delivery"]:checked');
-      const type = sel?.dataset.type || 'home';
-      let price = Number(adminDelivery[type]) || 0;
+      const homeLabel = document.getElementById('delivery-home-label');
+      const agencyLabel = document.getElementById('delivery-agency-label');
+      const homeRadio = document.querySelector('input[name="delivery"][data-type="home"]');
+      const agencyRadio = document.querySelector('input[name="delivery"][data-type="agency"]');
+      const homePriceSpan = document.getElementById('home-price-label');
+      const agencyPriceSpan = document.getElementById('agency-price-label');
+
+      // القيم الافتراضية
+      let homePrice = 0;
+      let agencyPrice = 0;
+
+      // جلب أسعار الولاية من السيرفر
       if (wilaya) {
         try {
           const res = await fetch(`/api/delivery/wilaya/${encodeURIComponent(wilaya)}`);
           if (res.ok) {
             const prices = await res.json();
-            if (prices[type] !== undefined && prices[type] !== null) price = Number(prices[type]);
+            homePrice = Number(prices.home) || 0;
+            agencyPrice = Number(prices.agency) || 0;
           }
-        } catch (e) {}
+        } catch (e) { console.warn('Failed to fetch delivery:', e); }
       }
-      if (sel) sel.value = price;
-      const infoSpan = sel?.nextElementSibling?.querySelector('span');
-      if (infoSpan) infoSpan.textContent = price.toLocaleString() + ' د.ج';
-      currentDeliveryCost = price;
+
+      // إخفاء / إظهار خيار المنزل
+      if (homePrice > 0) {
+        homeLabel.style.display = 'block';
+        homeRadio.value = homePrice;
+        homeRadio.disabled = false;
+        if (homePriceSpan) homePriceSpan.textContent = homePrice.toLocaleString() + ' د.ج';
+      } else {
+        homeLabel.style.display = 'none';
+        homeRadio.checked = false;
+        homeRadio.disabled = true;
+      }
+
+      // إخفاء / إظهار خيار الوكالة
+      if (agencyPrice > 0) {
+        agencyLabel.style.display = 'block';
+        agencyRadio.value = agencyPrice;
+        agencyRadio.disabled = false;
+        if (agencyPriceSpan) agencyPriceSpan.textContent = agencyPrice.toLocaleString() + ' د.ج';
+      } else {
+        agencyLabel.style.display = 'none';
+        agencyRadio.checked = false;
+        agencyRadio.disabled = true;
+      }
+
+      // ضبط الخيار المحدد
+      let selectedRadio = document.querySelector('input[name="delivery"]:checked');
+      if (!selectedRadio || selectedRadio.disabled) {
+        if (homePrice > 0) {
+          homeRadio.checked = true;
+          currentDeliveryCost = homePrice;
+        } else if (agencyPrice > 0) {
+          agencyRadio.checked = true;
+          currentDeliveryCost = agencyPrice;
+        } else {
+          currentDeliveryCost = 0;
+        }
+      } else {
+        currentDeliveryCost = Number(selectedRadio.value);
+      }
+
+      // تعطيل زر التأكيد إذا لم تكن هناك خيارات توصيل
+      const btnConfirm = document.getElementById('btnConfirmOrder');
+      if (btnConfirm) {
+        if (currentDeliveryCost === 0 && wilaya) {
+          btnConfirm.disabled = true;
+          btnConfirm.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> التوصيل غير متاح لهذه الولاية';
+        } else {
+          btnConfirm.disabled = false;
+          btnConfirm.innerHTML = '<i class="fa-solid fa-check-circle"></i> تأكيد الطلب';
+        }
+      }
+
       updateCheckoutSummary();
     }
 
@@ -2307,6 +2318,7 @@ async function fetchProductsFromServer() {
     async function submitOrder() {
       const form = document.getElementById('checkoutForm');
       if (!form.checkValidity()) { form.reportValidity(); return; }
+      
       const firstName = document.getElementById('checkoutFirstName').value.trim();
       const lastName = document.getElementById('checkoutLastName').value.trim();
       const wilaya = document.getElementById('checkoutWilaya').value;
@@ -2314,14 +2326,13 @@ async function fetchProductsFromServer() {
       const phone1 = document.getElementById('checkoutPhone1').value.trim();
       const phone2 = document.getElementById('checkoutPhone2').value.trim();
       const address = document.getElementById('checkoutAddress').value.trim();
+      
       if (cart.length === 0) { showToast('السلة فارغة', 'error'); return; }
+      if (currentDeliveryCost === 0) { showToast('يرجى اختيار طريقة توصيل متاحة', 'error'); return; }
 
       const btn = document.getElementById('btnConfirmOrder');
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جارٍ التأكيد...';
-
-      // ✅ FIX 3: أعد حساب سعر التوصيل بدقة قبل القراءة
-      await updateDeliveryCost();
 
       const selDelivery = document.querySelector('input[name="delivery"]:checked');
       const deliveryMethod = selDelivery?.dataset.type || 'home';
@@ -2352,10 +2363,6 @@ async function fetchProductsFromServer() {
           const result = await res.json();
           orderId = result.orderId || ('ORD-' + Date.now());
           savedToServer = true;
-          console.log('✅ الطلب محفوظ:', orderId);
-        } else {
-          const errData = await res.json().catch(() => ({}));
-          console.warn('⚠️ رفض السيرفر:', res.status, errData);
         }
       } catch (err) {
         console.warn('⚠️ تعذّر الاتصال:', err);
@@ -2374,26 +2381,24 @@ async function fetchProductsFromServer() {
       saveCart();
       renderCart();
       form.reset();
-      populateWilayasAndReset();
-
-      // ✅ FIX 4: أعد مزامنة أسعار التوصيل بعد إعادة التعيين
-      applyAdminSettings();
-      updateDeliveryCost();
+      
+      // إعادة ضبط خيارات التوصيل
+      const homeLabel = document.getElementById('delivery-home-label');
+      const agencyLabel = document.getElementById('delivery-agency-label');
+      if(homeLabel) homeLabel.style.display = 'block';
+      if(agencyLabel) agencyLabel.style.display = 'block';
+      const btnConfirm = document.getElementById('btnConfirmOrder');
+      btnConfirm.disabled = false;
+      btnConfirm.innerHTML = '<i class="fa-solid fa-check-circle"></i> تأكيد الطلب';
 
       closeCheckout();
       btn.disabled = false;
       btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> تأكيد الطلب';
+      
       const msg = savedToServer
         ? `تم تأكيد طلبك بنجاح! رقم الطلب: ${orderId}`
         : `تم استلام طلبك محلياً (${orderId}). سيتم رفعه عند استعادة الاتصال.`;
       showToast(msg, savedToServer ? 'success' : 'info');
-    }
-
-    function populateWilayasAndReset() {
-      const sel = document.getElementById('checkoutWilaya');
-      if (!sel) return;
-      while (sel.options.length > 1) sel.remove(1);
-      sel.value = '';
     }
 
     document.addEventListener('keydown', (e) => {
@@ -2433,8 +2438,7 @@ async function fetchProductsFromServer() {
       ]);
 
       applyAdminSettings();
-      updateDeliveryCost();
-
+      
       loadWishlist();
       loadCart();
 
