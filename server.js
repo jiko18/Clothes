@@ -28,13 +28,13 @@ const db = createClient({
   authToken: process.env.TURSO_AUTH_TOKEN,
 });
 
-// ============================================================
-// ✅ NEW: دالة إصلاح المراجع المعطوبة إلى _old (آمنة تماماً)
-// ============================================================
-async function sanitizeStaleOldRefs() {
+/async function sanitizeStaleOldRefs() {
   console.log('🧹 Sanitizing stale _old references...');
 
-  // 1) تشخيص كامل: نطبع كل شيء به _old
+  // 0) تعطيل FKs أثناء إعادة البناء
+  try { await db.execute('PRAGMA foreign_keys=OFF'); } catch (_) {}
+
+  // 1) تشخيص
   try {
     const all = await db.execute(
       "SELECT type, name, sql FROM sqlite_master WHERE sql LIKE '%\\_old%' ESCAPE '\\'"
@@ -47,7 +47,7 @@ async function sanitizeStaleOldRefs() {
     }
   } catch (e) { console.error('   diagnostic failed:', e.message); }
 
-  // 2) حذف triggers/views/indexes (آمن — لا يوجد فيها بيانات)
+  // 2) حذف triggers/views/indexes
   try {
     const unsafe = await db.execute(
       "SELECT type, name FROM sqlite_master WHERE type IN ('trigger','view','index') AND sql LIKE '%\\_old%' ESCAPE '\\'"
@@ -62,7 +62,7 @@ async function sanitizeStaleOldRefs() {
     }
   } catch (e) {}
 
-  // 3) إعادة بناء أي جدول (غير _old) به FK يشير إلى _old
+  // 3) إعادة بناء الجداول التي تحتوي FK إلى _old
   try {
     const tables = await db.execute(
       "SELECT name, sql FROM sqlite_master WHERE type='table' AND sql LIKE '%\\_old%' ESCAPE '\\'"
@@ -72,9 +72,31 @@ async function sanitizeStaleOldRefs() {
 
       console.log(`🔧 Rebuilding "${t.name}"...`);
 
-      const cleaned = t.sql
-        .replace(/,\s*FOREIGN KEY\s*\([^)]*\)\s*REFERENCES\s+["']?\w+_old["']?\s*\([^)]*\)/gi, '')
-        .replace(/\s+REFERENCES\s+["']?\w+_old["']?\s*\([^)]*\)/gi, '');
+      // ✅ النمط يشمل ON DELETE / ON UPDATE بعد REFERENCES
+      const ON_CLAUSE = '(?:\\s+ON\\s+(?:DELETE|UPDATE)\\s+(?:CASCADE|SET\\s+NULL|SET\\s+DEFAULT|RESTRICT|NO\\s+ACTION))?';
+
+      const fkStandalone = new RegExp(
+        `,\\s*FOREIGN\\s+KEY\\s*\\([^)]*\\)\\s*REFERENCES\\s+["']?\\w+_old["']?\\s*\\([^)]*\\)${ON_CLAUSE}`,
+        'gi'
+      );
+      const fkInline = new RegExp(
+        `\\s+REFERENCES\\s+["']?\\w+_old["']?\\s*\\([^)]*\\)${ON_CLAUSE}`,
+        'gi'
+      );
+
+      let cleaned = t.sql.replace(fkStandalone, '').replace(fkInline, '');
+
+      // Fallback: احذف كل الـ FKs إذا بقي أي _old
+      if (/_old/i.test(cleaned)) {
+        console.log(`   ⚠️ Fallback: removing ALL FKs from "${t.name}"`);
+        cleaned = t.sql.replace(
+          /,\s*FOREIGN\s+KEY\s*\([^)]*\)\s*REFERENCES\s+[^,()]+(?:\s*\([^)]*\))?(?:\s+ON\s+(?:DELETE|UPDATE)\s+(?:CASCADE|SET\s+NULL|SET\s+DEFAULT|RESTRICT|NO\s+ACTION))?/gi,
+          ''
+        );
+      }
+
+      // إزالة أي فاصلة معلقة قبل قوس الإغلاق
+      cleaned = cleaned.replace(/,\s*\)/g, ')');
 
       if (cleaned === t.sql) {
         console.log(`   ⚠️ No removable FK found — skipping`);
@@ -82,8 +104,9 @@ async function sanitizeStaleOldRefs() {
       }
 
       const tmpName = `__san_${t.name}_${Date.now()}`;
+      const nameEsc = t.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const newSql = cleaned.replace(
-        new RegExp(`CREATE TABLE\\s+(?:IF NOT EXISTS\\s+)?["'\`]?${t.name}["'\`]?`, 'i'),
+        new RegExp(`CREATE\\s+TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?["'\`]?${nameEsc}["'\`]?`, 'i'),
         `CREATE TABLE "${tmpName}"`
       );
 
@@ -112,7 +135,7 @@ async function sanitizeStaleOldRefs() {
     }
   } catch (e) { console.error('   table rebuild:', e.message); }
 
-  // 4) حذف جداول _old المتبقية (الآن فقط — بعد فك كل المراجع)
+  // 4) حذف جداول _old المتبقية
   try {
     const oldTables = await db.execute(
       "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE '%\\_old' ESCAPE '\\'"
@@ -124,6 +147,9 @@ async function sanitizeStaleOldRefs() {
       } catch (e) { console.error(`   Drop ${r.name}:`, e.message); }
     }
   } catch (e) {}
+
+  // 5) إعادة تشغيل FKs
+  try { await db.execute('PRAGMA foreign_keys=ON'); } catch (_) {}
 
   console.log('✅ Sanitization complete');
 }
