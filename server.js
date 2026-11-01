@@ -29,44 +29,113 @@ const db = createClient({
 });
 
 // ============================================================
+// ✅ NEW: دالة إصلاح المراجع المعطوبة إلى _old (آمنة تماماً)
+// ============================================================
+async function sanitizeStaleOldRefs() {
+  console.log('🧹 Sanitizing stale _old references...');
+
+  // 1) تشخيص كامل: نطبع كل شيء به _old
+  try {
+    const all = await db.execute(
+      "SELECT type, name, sql FROM sqlite_master WHERE sql LIKE '%\\_old%' ESCAPE '\\'"
+    );
+    if (all.rows.length > 0) {
+      console.log(`⚠️ Found ${all.rows.length} object(s) with _old reference:`);
+      for (const r of all.rows) console.log(`   [${r.type}] ${r.name}`);
+    } else {
+      console.log('   ✓ No _old references in schema');
+    }
+  } catch (e) { console.error('   diagnostic failed:', e.message); }
+
+  // 2) حذف triggers/views/indexes (آمن — لا يوجد فيها بيانات)
+  try {
+    const unsafe = await db.execute(
+      "SELECT type, name FROM sqlite_master WHERE type IN ('trigger','view','index') AND sql LIKE '%\\_old%' ESCAPE '\\'"
+    );
+    for (const r of unsafe.rows) {
+      try {
+        if (r.type === 'trigger') await db.execute(`DROP TRIGGER IF EXISTS "${r.name}"`);
+        else if (r.type === 'view') await db.execute(`DROP VIEW IF EXISTS "${r.name}"`);
+        else if (r.type === 'index') await db.execute(`DROP INDEX IF EXISTS "${r.name}"`);
+        console.log(`🧹 Dropped ${r.type}: ${r.name}`);
+      } catch (e) { console.error(`   Drop ${r.name}:`, e.message); }
+    }
+  } catch (e) {}
+
+  // 3) إعادة بناء أي جدول (غير _old) به FK يشير إلى _old
+  try {
+    const tables = await db.execute(
+      "SELECT name, sql FROM sqlite_master WHERE type='table' AND sql LIKE '%\\_old%' ESCAPE '\\'"
+    );
+    for (const t of tables.rows) {
+      if (t.name.endsWith('_old')) continue;
+
+      console.log(`🔧 Rebuilding "${t.name}"...`);
+
+      const cleaned = t.sql
+        .replace(/,\s*FOREIGN KEY\s*\([^)]*\)\s*REFERENCES\s+["']?\w+_old["']?\s*\([^)]*\)/gi, '')
+        .replace(/\s+REFERENCES\s+["']?\w+_old["']?\s*\([^)]*\)/gi, '');
+
+      if (cleaned === t.sql) {
+        console.log(`   ⚠️ No removable FK found — skipping`);
+        continue;
+      }
+
+      const tmpName = `__san_${t.name}_${Date.now()}`;
+      const newSql = cleaned.replace(
+        new RegExp(`CREATE TABLE\\s+(?:IF NOT EXISTS\\s+)?["'\`]?${t.name}["'\`]?`, 'i'),
+        `CREATE TABLE "${tmpName}"`
+      );
+
+      try {
+        await db.execute(`DROP TABLE IF EXISTS "${tmpName}"`);
+        await db.execute(newSql);
+
+        const oc = await db.execute(`PRAGMA table_info("${t.name}")`);
+        const nc = await db.execute(`PRAGMA table_info("${tmpName}")`);
+        const oldNames = oc.rows.map(c => c.name);
+        const newNames = nc.rows.map(c => c.name);
+        const shared = oldNames.filter(n => newNames.includes(n));
+
+        if (shared.length > 0) {
+          const cols = shared.map(c => `"${c}"`).join(', ');
+          await db.execute(`INSERT INTO "${tmpName}" (${cols}) SELECT ${cols} FROM "${t.name}"`);
+        }
+
+        await db.execute(`DROP TABLE "${t.name}"`);
+        await db.execute(`ALTER TABLE "${tmpName}" RENAME TO "${t.name}"`);
+        console.log(`   ✅ Rebuilt "${t.name}"`);
+      } catch (e) {
+        console.error(`   ❌ Rebuild failed:`, e.message);
+        try { await db.execute(`DROP TABLE IF EXISTS "${tmpName}"`); } catch (_) {}
+      }
+    }
+  } catch (e) { console.error('   table rebuild:', e.message); }
+
+  // 4) حذف جداول _old المتبقية (الآن فقط — بعد فك كل المراجع)
+  try {
+    const oldTables = await db.execute(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE '%\\_old' ESCAPE '\\'"
+    );
+    for (const r of oldTables.rows) {
+      try {
+        await db.execute(`DROP TABLE IF EXISTS "${r.name}"`);
+        console.log(`🧹 Dropped orphan _old table: ${r.name}`);
+      } catch (e) { console.error(`   Drop ${r.name}:`, e.message); }
+    }
+  } catch (e) {}
+
+  console.log('✅ Sanitization complete');
+}
+
+// ============================================================
 // 2) Database Init
 // ============================================================
 async function initDB() {
   console.log('🔄 Initializing database...');
 
-  // ==========================================================
-  // ✅ التنظيف الاستباقي: إزالة أي triggers/views تشير إلى _old
-  // (يمنع خطأ "no such table: main.orders_old")
-  // ==========================================================
-  try {
-    const stale = await db.execute(
-      "SELECT type, name FROM sqlite_master WHERE (type='trigger' OR type='view') AND sql LIKE '%_old%'"
-    );
-    for (const row of stale.rows) {
-      try {
-        if (row.type === 'trigger') {
-          await db.execute(`DROP TRIGGER IF EXISTS "${row.name}"`);
-          console.log(`🧹 Dropped stale trigger: ${row.name}`);
-        } else if (row.type === 'view') {
-          await db.execute(`DROP VIEW IF EXISTS "${row.name}"`);
-          console.log(`🧹 Dropped stale view: ${row.name}`);
-        }
-      } catch (e) { console.error(`cleanup ${row.type} ${row.name}:`, e.message); }
-    }
-  } catch (e) { console.error('cleanup stale objects error:', e.message); }
-
-  // ✅ إزالة جداول _old المتبقية (من migrations فاشلة سابقاً)
-  try {
-    const oldTables = await db.execute(
-      "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE '%\\_old' ESCAPE '\\'"
-    );
-    for (const row of oldTables.rows) {
-      try {
-        await db.execute(`DROP TABLE IF EXISTS "${row.name}"`);
-        console.log(`🧹 Dropped stale table: ${row.name}`);
-      } catch (e) { console.error(`drop table ${row.name}:`, e.message); }
-    }
-  } catch (e) { console.error('cleanup stale tables error:', e.message); }
+  // ✅ خطوة 1: إصلاح المراجع المعطوبة (يجب أن تكون أولاً)
+  await sanitizeStaleOldRefs();
 
   // ---------- migrations القديمة ----------
   try {
@@ -82,19 +151,19 @@ async function initDB() {
   try {
     const check = await db.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='delivery_prices'");
     if (check.rows.length > 0 && (check.rows[0].sql.includes("'express'") || check.rows[0].sql.includes("is_default") || !check.rows[0].sql.includes("wilaya TEXT NOT NULL"))) {
-      console.log('🔄 Rebuilding delivery_prices (no express, no defaults)...');
+      console.log('🔄 Rebuilding delivery_prices...');
       await db.execute('DROP TABLE IF EXISTS delivery_prices');
     }
   } catch (e) { console.error('delivery_prices migration error:', e.message); }
 
+  // users migration (بدون استخدام RENAME — لإبقاء FKs سليمة)
   try {
     const check = await db.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='users'");
     if (check.rows.length > 0 && check.rows[0].sql.includes("'manager'")) {
-      console.log('🔄 Rebuilding users table (removing manager role)...');
+      console.log('🔄 Migrating users table (removing manager role)...');
       await db.execute('PRAGMA foreign_keys=off');
-      await db.execute('DROP TABLE IF EXISTS users_old');
-      await db.execute('ALTER TABLE users RENAME TO users_old');
-      await db.execute(`CREATE TABLE users (
+      await db.execute('DROP TABLE IF EXISTS users_new');
+      await db.execute(`CREATE TABLE users_new (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT NOT NULL UNIQUE,
         email TEXT UNIQUE,
@@ -106,11 +175,12 @@ async function initDB() {
         created_at TEXT NOT NULL DEFAULT (datetime('now')),
         updated_at TEXT NOT NULL DEFAULT (datetime('now'))
       )`);
-      await db.execute(`INSERT INTO users (id, username, email, password_hash, full_name, role, is_active, last_login_at, created_at, updated_at)
-        SELECT id, username, email, password_hash, full_name, 
-        CASE WHEN role = 'manager' THEN 'staff' ELSE role END, 
-        is_active, last_login_at, created_at, updated_at FROM users_old`);
-      await db.execute('DROP TABLE users_old');
+      await db.execute(`INSERT INTO users_new (id, username, email, password_hash, full_name, role, is_active, last_login_at, created_at, updated_at)
+        SELECT id, username, email, password_hash, full_name,
+        CASE WHEN role = 'manager' THEN 'staff' ELSE role END,
+        is_active, last_login_at, created_at, updated_at FROM users`);
+      await db.execute('DROP TABLE users');
+      await db.execute('ALTER TABLE users_new RENAME TO users');
       await db.execute('PRAGMA foreign_keys=on');
       console.log('✅ users table migrated');
     }
@@ -179,7 +249,7 @@ async function initDB() {
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     )`,
-    `CREATE TABLE IF NOT EXISTS product_colors (
+       `CREATE TABLE IF NOT EXISTS product_colors (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       product_id INTEGER NOT NULL,
       name TEXT NOT NULL,
