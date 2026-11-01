@@ -1862,4 +1862,4 @@ initDB()
     setTimeout(() => { maybeAutoBackup().catch(e => console.error('auto backup:', e)); }, 30 * 1000);
     setInterval(() => { maybeAutoBackup().catch(e => console.error('auto backup:', e)); }, 60 * 60 * 1000);
   })
-  .catch((err) => { console.error('❌ Failed to initialize DB:', err); process.exit(1); });s
+  .catch((err) => { console.error('❌ Failed to initialize DB:', err); process.exit(1); });
