@@ -36,26 +36,28 @@
     body{font-family:'Cairo',sans-serif;background-color:var(--bg-light);color:var(--text-dark);line-height:1.7;overflow-x:hidden;transition:background-color 0.4s ease,color 0.4s ease}
     a{text-decoration:none;color:inherit}ul{list-style:none}img{max-width:100%;display:block}button{font-family:inherit}
     .top-bar{background:linear-gradient(135deg,var(--secondary),var(--primary));color:#fff;text-align:center;padding:8px 16px;font-size:0.85rem;font-weight:600}
-    .header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 2px 20px rgba(0,0,0,0.04);transition:var(--transition)}
+    .header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 2px 20px rgba(0,0,0,0.04);transition:box-shadow 0.3s ease}
     .header.scrolled{box-shadow:0 4px 30px rgba(0,0,0,0.08)}
-    .header-inner{max-width:1300px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:72px;gap:20px;transition:height 0.35s ease,padding 0.35s ease,gap 0.35s ease}
+
+    /* ✅ إصلاح: بدون transition على height/gap لمنع الارتعاش */
+    .header-inner{max-width:1300px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:72px;gap:20px}
     .logo{font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;transition:transform 0.2s ease}
     .logo:active{transform:scale(0.96)}
     .logo i{font-size:1.6rem;-webkit-text-fill-color:var(--primary)}
-    .search-bar{flex:1;max-width:480px;position:relative;transition:opacity 0.3s ease,max-width 0.35s ease,margin 0.35s ease,padding 0.35s ease;overflow:hidden}
-    .search-bar input{width:100%;padding:12px 48px 12px 20px;border:2px solid #eee;border-radius:50px;font-family:'Cairo',sans-serif;font-size:0.95rem;background:var(--bg-light);transition:var(--transition);outline:none;color:var(--text-dark)}
+    .search-bar{flex:1;max-width:480px;position:relative;overflow:hidden}
+    .search-bar input{width:100%;padding:12px 48px 12px 20px;border:2px solid #eee;border-radius:50px;font-family:'Cairo',sans-serif;font-size:0.95rem;background:var(--bg-light);transition:border-color 0.2s ease,box-shadow 0.2s ease,background-color 0.2s ease;outline:none;color:var(--text-dark)}
     .search-bar input:focus{border-color:var(--primary);background:#fff;box-shadow:0 0 0 4px rgba(255,107,129,0.12)}
-    .search-bar button{position:absolute;left:6px;top:50%;transform:translateY(-50%);background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;width:38px;height:38px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition)}
+    .search-bar button{position:absolute;left:6px;top:50%;transform:translateY(-50%);background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;width:38px;height:38px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.2s ease}
     .search-bar button:hover{transform:translateY(-50%) scale(1.08)}
     .header-icons{display:flex;align-items:center;gap:10px;flex-shrink:0}
-    .header-icons a,.header-icons button{position:relative;font-size:1.15rem;color:var(--text-dark);transition:var(--transition);display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:transparent;border:none;cursor:pointer}
+    .header-icons a,.header-icons button{position:relative;font-size:1.15rem;color:var(--text-dark);transition:color 0.2s ease,background-color 0.2s ease;display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:transparent;border:none;cursor:pointer}
     .header-icons a:hover,.header-icons button:hover{color:var(--primary);background:rgba(255,107,129,0.1)}
     .cart-count{position:absolute;top:-2px;right:-2px;background:var(--primary);color:#fff;font-size:0.65rem;font-weight:700;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
     .theme-toggle{transition:transform 0.4s ease}
     .theme-toggle:hover{transform:rotate(20deg)}
 
-    /* ✅ عند التمرير للأسفل: أخفِ البحث والأيقونات الثانوية وأبقِ فقط اللوجو والسلة */
-    .header.compact .search-bar{opacity:0;max-width:0;margin:0;padding:0;pointer-events:none}
+    /* ✅ الوضع المدمج: إخفاء فوري بدون transition على layout */
+    .header.compact .search-bar{display:none}
     .header.compact .theme-toggle{display:none}
     .header.compact .header-icons > a:not(#cartToggle){display:none}
     .header.compact .header-inner{height:60px;gap:12px}
@@ -86,9 +88,6 @@
     .product-details{padding-top:8px}
     .detail-category{display:inline-block;background:rgba(108,92,231,0.1);color:var(--secondary);padding:4px 14px;border-radius:50px;font-size:0.75rem;font-weight:700;margin-bottom:12px}
     .detail-title{font-size:2rem;font-weight:800;color:var(--text-dark);line-height:1.3;margin-bottom:14px}
-    .detail-rating{display:flex;align-items:center;gap:8px;margin-bottom:18px;font-size:0.85rem;color:var(--text-gray)}
-    .detail-rating .stars{color:var(--accent);display:flex;gap:2px}
-    .detail-rating .stars i{font-size:0.85rem}
     .detail-price{display:flex;align-items:center;gap:14px;margin-bottom:20px;padding:18px 0;border-top:1px solid rgba(0,0,0,0.06);border-bottom:1px solid rgba(0,0,0,0.06)}
     html[data-theme="dark"] .detail-price{border-color:rgba(255,255,255,0.06)}
     .detail-price .current{font-size:2.2rem;font-weight:800;color:var(--primary-dark);line-height:1}
@@ -99,7 +98,6 @@
     .detail-section-label{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:0.88rem;font-weight:700;color:var(--text-dark)}
     .detail-section-label .selected-value{color:var(--primary-dark);font-weight:700;font-size:0.85rem}
 
-    /* دوائر الألوان */
     .detail-swatches{display:flex;gap:12px;flex-wrap:wrap}
     .detail-swatch{
       width:52px;height:52px;border-radius:50%;cursor:pointer;
@@ -120,7 +118,6 @@
       font-size:1.1rem;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,0.7);z-index:2;pointer-events:none;
     }
 
-    /* الأعمار */
     .detail-ages{display:flex;gap:8px;flex-wrap:wrap}
     .detail-age{
       padding:10px 20px;border-radius:12px;border:2px solid rgba(0,0,0,0.08);
@@ -138,7 +135,6 @@
       box-shadow:0 6px 18px rgba(108,92,231,0.45) !important;
       transform:translateY(-3px);
     }
-    /* ✅ العمر غير المتوفر: باهت + "غير متوفر حاليا" بدون خط يشطبه */
     .detail-age.unavailable{
       position:relative;
       background:rgba(0,0,0,0.03) !important;
@@ -305,6 +301,8 @@
     .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.1);border-radius:10px;font-family:'Cairo',sans-serif;font-size:0.9rem;background:var(--bg-light);color:var(--text-dark);outline:none;transition:var(--transition)}
     .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(255,107,129,0.12)}
     .form-group textarea{resize:vertical;min-height:70px}
+
+    /* ✅ 2 أعمدة فقط (المنزل والوكالة) */
     .delivery-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
     .delivery-option{position:relative;display:block;cursor:pointer}
     .delivery-option input{position:absolute;opacity:0;pointer-events:none}
@@ -341,7 +339,7 @@
     @media (max-width:992px){.product-detail-grid{grid-template-columns:1fr;gap:32px}.product-gallery{position:static}.detail-title{font-size:1.7rem}.detail-price .current{font-size:1.9rem}}
     @media (max-width:768px){
       .header-inner{flex-wrap:wrap;height:auto;padding:12px 16px;gap:10px}
-      .header.compact .header-inner{height:56px;padding:8px 16px;flex-wrap:nowrap}
+      .header.compact .header-inner{height:56px;padding:8px 16px;flex-wrap:nowrap;gap:10px}
       .search-bar{order:3;flex:1 1 100%;max-width:100%}
       .header.compact .search-bar{display:none}
       .section-header h2{font-size:1.5rem}
@@ -479,16 +477,15 @@
           <div class="form-group">
             <label><i class="fa-solid fa-truck-fast"></i> طريقة التوصيل</label>
             <div class="delivery-options">
-              <label class="delivery-option"><input type="radio" name="delivery" data-type="home" value="600" checked onchange="updateDeliveryCost()"><div class="delivery-info"><i class="fa-solid fa-house"></i><div><strong>توصيل إلى المنزل</strong><span id="deliveryHomeLabel">600 د.ج</span></div></div></label>
-              <label class="delivery-option"><input type="radio" name="delivery" data-type="agency" value="400" onchange="updateDeliveryCost()"><div class="delivery-info"><i class="fa-solid fa-store"></i><div><strong>توصيل إلى الوكالة</strong><span id="deliveryAgencyLabel">400 د.ج</span></div></div></label>
-              <label class="delivery-option" style="grid-column:1/-1;"><input type="radio" name="delivery" data-type="express" value="900" onchange="updateDeliveryCost()"><div class="delivery-info"><i class="fa-solid fa-bolt"></i><div><strong>⚡ توصيل سريع (24-48 ساعة)</strong><span id="deliveryExpressLabel">900 د.ج</span></div></div></label>
+              <label class="delivery-option"><input type="radio" name="delivery" data-type="home" value="0" onchange="updateDeliveryCost()"><div class="delivery-info"><i class="fa-solid fa-house"></i><div><strong>توصيل إلى المنزل</strong><span id="deliveryHomeLabel">0 د.ج</span></div></div></label>
+              <label class="delivery-option"><input type="radio" name="delivery" data-type="agency" value="0" onchange="updateDeliveryCost()"><div class="delivery-info"><i class="fa-solid fa-store"></i><div><strong>توصيل إلى الوكالة</strong><span id="deliveryAgencyLabel">0 د.ج</span></div></div></label>
             </div>
           </div>
           <div class="order-summary">
             <h4><i class="fa-solid fa-receipt"></i> ملخص الطلب</h4>
             <div class="summary-row"><span>عدد المنتجات:</span><span id="summaryItemsCount">0</span></div>
             <div class="summary-row"><span>المجموع الفرعي:</span><span id="summarySubtotal">0 د.ج</span></div>
-            <div class="summary-row"><span>التوصيل:</span><span id="summaryDelivery">600 د.ج</span></div>
+            <div class="summary-row"><span>التوصيل:</span><span id="summaryDelivery">0 د.ج</span></div>
             <div class="summary-row total"><span>الإجمالي:</span><span id="summaryTotal">0 د.ج</span></div>
           </div>
         </form>
@@ -507,17 +504,10 @@
 
   <script>
     // ==================== البيانات الافتراضية ====================
-    const DEFAULT_PRODUCTS = [
-      { id: 1, name: "صدرية أطفال مبطنة", category: "winter", categoryLabel: "شتوي", gender: "both", price: 3200, oldPrice: 4000, badge: "جديد", badgeType: "new", description: "صدرية أطفال مبطنة بخامة قطنية دافئة ومريحة.", details: ["قماش 100% قطن مبطن"], colors: [{ name: "أحمر", hex: "#e74c3c", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80", images: ["https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80"] }, { name: "أصفر", hex: "#f1c40f", image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80", images: ["https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80"] }], ages: ["10 سنوات", "8 سنوات"] },
-      { id: 2, name: "قميص قطني صيفي", category: "summer", categoryLabel: "صيفي", gender: "boys", price: 1800, oldPrice: 2500, badge: "خصم", badgeType: "sale", description: "قميص قطني خفيف.", details: ["قطن 100%"], colors: [{ name: "أبيض", hex: "#ecf0f1", image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80", images: ["https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80"] }, { name: "أزرق", hex: "#3498db", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80", images: ["https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80"] }], ages: ["8 سنوات", "7 سنوات"] },
-      { id: 3, name: "حذاء رياضي للأطفال", category: "shoes", categoryLabel: "أحذية", gender: "both", price: 4500, oldPrice: null, badge: "الأكثر مبيعاً", badgeType: "new", description: "حذاء رياضي مريح.", details: ["نعل مرن"], colors: [{ name: "أسود", hex: "#2d3436", image: "https://images.unsplash.com/photo-1514989940723-e8e51635b782?w=900&q=80", images: ["https://images.unsplash.com/photo-1514989940723-e8e51635b782?w=900&q=80"] }], ages: ["10 سنوات", "8 سنوات"] },
-      { id: 4, name: "جاكيت شتوي مبطن", category: "heavy", categoryLabel: "ثقيل", gender: "boys", price: 5800, oldPrice: 7000, badge: "خصم", badgeType: "sale", description: "جاكيت شتوي مبطن.", details: ["بطانة صوفية"], colors: [{ name: "أحمر", hex: "#e74c3c", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80", images: ["https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=900&q=80"] }], ages: ["10 سنوات", "8 سنوات"] },
-      { id: 5, name: "طقم بناتي خفيف", category: "light", categoryLabel: "خفيف", gender: "girls", price: 2600, oldPrice: null, badge: "جديد", badgeType: "new", description: "طقم بناتي خفيف.", details: ["قطن ناعم"], colors: [{ name: "وردي", hex: "#fd79a8", image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80", images: ["https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&q=80"] }], ages: ["8 سنوات", "7 سنوات"] },
-      { id: 6, name: "قبعة شمسية للأطفال", category: "accessories", categoryLabel: "إكسسوارات", gender: "girls", price: 900, oldPrice: 1200, badge: "خصم", badgeType: "sale", description: "قبعة شمسية.", details: ["حماية UV"], colors: [{ name: "بيج", hex: "#f5cd79", image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80", images: ["https://images.unsplash.com/photo-1522771930-78848d9293e8?w=900&q=80"] }], ages: ["10 سنوات", "8 سنوات"] }
-    ];
+    const DEFAULT_PRODUCTS = [];
     const DEFAULT_SETTINGS = { storeName: 'بيبي شوب', logo: '', phone: '0550 00 00 00', email: 'contact@babyshop.dz', address: 'الجزائر العاصمة، الجزائر', facebook: '#', instagram: '#', tiktok: '#', whatsapp: '#', topBarText: 'توصيل لجميع الولايات | الدفع عند الاستلام ', searchPlaceholder: 'ابحث عن ملابس، أحذية، إكسسوارات...', footerCopyright: '© 2025 بيبي شوب - جميع الحقوق محفوظة' };
     const DEFAULT_THEME_DATA = { primary: '#ff6b81', primaryDark: '#e8556d', secondary: '#6c5ce7', accent: '#feca57' };
-    const DEFAULT_DELIVERY_DATA = { home: 600, agency: 400, express: 900, byWilaya: {} };
+    const DEFAULT_DELIVERY_DATA = { home: 0, agency: 0, express: 0, byWilaya: {} };
 
     function deepMerge(target, source) {
       if (!source || typeof source !== 'object') return target;
@@ -625,18 +615,23 @@
       document.documentElement.style.setProperty('--secondary', adminTheme.secondary);
       document.documentElement.style.setProperty('--accent', adminTheme.accent);
     }
+
+    // ✅ إصلاح: السيرفر يرسل { byWilaya } فقط بدون defaults
     async function fetchDeliveryFromServer() {
       try {
         const res = await fetch('/api/delivery/all');
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const serverDelivery = await res.json();
         adminDelivery = {
-          home: serverDelivery.defaults.home || 0,
-          agency: serverDelivery.defaults.agency || 0,
-          express: serverDelivery.defaults.express || 0,
+          home: 0,
+          agency: 0,
+          express: 0,
           byWilaya: serverDelivery.byWilaya || {}
         };
-      } catch (e) { console.warn('Delivery fetch failed', e); }
+      } catch (e) { 
+        console.warn('Delivery fetch failed', e);
+        adminDelivery = { home: 0, agency: 0, express: 0, byWilaya: {} };
+      }
     }
 
     function applyAdminSettings() {
@@ -649,7 +644,11 @@
         const safeName = storeName.replace(/</g, '&lt;').replace(/>/g, '&gt;');
         if (logoUrl) {
           const safeUrl = logoUrl.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          logoEl.innerHTML = `<img src="${safeUrl}" alt="${safeName}" style="width:40px;height:40px;object-fit:contain;border-radius:8px;background:#fff;padding:2px;flex-shrink:0;" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\\'fa-solid fa-child-reaching\\' style=\\'font-size:1.6rem;-webkit-text-fill-color:var(--primary)\\';></i> ${safeName.replace(/'/g, "\\'")}';"> ${safeName}`;
+          logoEl.innerHTML = `<img src="${safeUrl}" alt="${safeName}" style="width:40px;height:40px;object-fit:contain;border-radius:8px;background:#fff;padding:2px;flex-shrink:0;"> ${safeName}`;
+          const logoImg = logoEl.querySelector('img');
+          if (logoImg) logoImg.addEventListener('error', () => {
+            logoEl.innerHTML = `<i class="fa-solid fa-child-reaching"></i> ${safeName}`;
+          }, { once: true });
         } else {
           logoEl.innerHTML = `<i class="fa-solid fa-child-reaching"></i> ${safeName}`;
         }
@@ -966,6 +965,8 @@
       document.getElementById('breadcrumbCategory').textContent = p.categoryLabel;
       document.getElementById('breadcrumbProduct').textContent = p.name;
       const grid = document.getElementById('productDetailGrid');
+      
+      // ✅ تم نقل قسم اختيار اللون إلى أعلى (تحت الاسم مباشرة) وحذف قسم التقييم
       grid.innerHTML = `
         <div class="product-gallery">
           <div class="main-image-wrapper" onclick="openLightbox()">
@@ -980,18 +981,13 @@
         <div class="product-details">
           <span class="detail-category">${p.categoryLabel}</span>
           <h1 class="detail-title">${p.name}</h1>
-          <div class="detail-rating"><div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span>(4.7) • 128 تقييم</span></div>
-          <div class="detail-price">
-            <span class="current">${p.price.toLocaleString()} د.ج</span>
-            ${p.oldPrice ? `<span class="old">${p.oldPrice.toLocaleString()} د.ج</span>` : ''}
-            ${discountPercent > 0 ? `<span class="discount">-${discountPercent}%</span>` : ''}
-          </div>
-          <p class="detail-description">${p.description || ''}</p>
-        ${showColorSection ? `<div class="detail-section">
-  <div class="detail-section-label">
-    <span><i class="fa-solid fa-palette"></i> ${isSet ? 'اختر الطقم' : 'اللون'}</span>
-    <span class="selected-value">${color.name || ''}</span>
-  </div>
+          
+          <!-- ✅ قسم الألوان / الطقم (مرفوع للأعلى) -->
+          ${showColorSection ? `<div class="detail-section" style="margin-top: 12px; margin-bottom: 20px;">
+            <div class="detail-section-label">
+              <span><i class="fa-solid fa-palette"></i> ${isSet ? 'اختر الطقم' : 'اختر اللون'}</span>
+              <span class="selected-value">${color.name || ''}</span>
+            </div>
             <div class="detail-swatches">
               ${p.colors.map((c, i) => {
                 const bg = isSet ? getSetSwatchGradient(c) : (c.hex || '#cccccc');
@@ -1000,6 +996,14 @@
             </div>
             ${isSet && color.parts ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">${color.parts.map(pt => `<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:50px;background:rgba(108,92,231,0.08);font-size:0.75rem;font-weight:700;color:var(--text-dark);"><span style="width:14px;height:14px;border-radius:50%;background:${pt.hex || '#ccc'};border:1px solid rgba(0,0,0,0.15);"></span>${pt.name || 'قطعة'}: ${pt.colorName || ''}</span>`).join('')}</div>` : ''}
           </div>` : ''}
+
+          <div class="detail-price">
+            <span class="current">${p.price.toLocaleString()} د.ج</span>
+            ${p.oldPrice ? `<span class="old">${p.oldPrice.toLocaleString()} د.ج</span>` : ''}
+            ${discountPercent > 0 ? `<span class="discount">-${discountPercent}%</span>` : ''}
+          </div>
+          <p class="detail-description">${p.description || ''}</p>
+
           ${isSet && color.parts ? `<div class="detail-section">
             <div class="detail-section-label"><span><i class="fa-solid fa-puzzle-piece"></i> محتويات الطقم</span><span class="selected-value">${color.parts.length} قطعة</span></div>
             <div style="display:flex;flex-direction:column;gap:8px;">
@@ -1433,7 +1437,7 @@
     document.getElementById('checkoutMunicipalityText').addEventListener('input', saveCheckoutDraft);
     document.querySelectorAll('input[name="delivery"]').forEach(r => r.addEventListener('change', () => { saveCheckoutDraft(); updateDeliveryCost(); }));
 
-    let currentDeliveryCost = adminDelivery.home;
+    let currentDeliveryCost = 0;
 
     function openCheckout() {
       if (cart.length === 0) { showToast('السلة فارغة', 'error'); return; }
@@ -1441,7 +1445,7 @@
       document.body.style.overflow = 'hidden';
       loadCheckoutDraft();
       const sel = document.querySelector('input[name="delivery"]:checked');
-      currentDeliveryCost = sel ? parseInt(sel.value) : adminDelivery.home;
+      currentDeliveryCost = sel ? parseInt(sel.value) : 0;
       updateCheckoutSummary();
     }
     function closeCheckout() {
@@ -1449,12 +1453,24 @@
       document.getElementById('checkoutModal').classList.remove('show');
       document.body.style.overflow = '';
     }
-    function refreshDeliveryOptions(wilayaName) {
+
+    // ✅ دالة إصلاح التوصيل: تجلب الأسعار مباشرة من السيرفر عند اختيار الولاية
+    async function refreshDeliveryOptions(wilayaName) {
       if (!wilayaName) return;
-      const byW = (adminDelivery.byWilaya && adminDelivery.byWilaya[wilayaName]) || {};
-      const home = byW.home != null ? byW.home : adminDelivery.home;
-      const agency = byW.agency != null ? byW.agency : adminDelivery.agency;
-      const express = byW.express != null ? byW.express : adminDelivery.express;
+      
+      let home = 0;
+      let agency = 0;
+      
+      try {
+        const res = await fetch(`/api/delivery/wilaya/${encodeURIComponent(wilayaName)}`);
+        if (res.ok) {
+          const prices = await res.json();
+          home = Number(prices.home) || 0;
+          agency = Number(prices.agency) || 0;
+        }
+      } catch (e) {
+        console.warn('Failed to fetch delivery prices:', e);
+      }
 
       const setOpt = (type, val) => {
         const r = document.querySelector(`input[name="delivery"][data-type="${type}"]`);
@@ -1464,16 +1480,15 @@
           if (labelWrap) labelWrap.style.display = 'none';
           r.checked = false;
         } else {
-          if (labelWrap) labelWrap.style.display = '';
+          if (labelWrap) labelWrap.style.display = 'block';
           r.value = val;
           const lbl = document.getElementById('delivery' + type.charAt(0).toUpperCase() + type.slice(1) + 'Label');
-          if (lbl) lbl.textContent = val + ' د.ج';
+          if (lbl) lbl.textContent = val.toLocaleString() + ' د.ج';
         }
       };
 
       setOpt('home', home);
       setOpt('agency', agency);
-      setOpt('express', express);
 
       const checked = document.querySelector('input[name="delivery"]:checked');
       let isCheckedValid = false;
@@ -1490,9 +1505,10 @@
       currentDeliveryCost = sel ? parseInt(sel.value) : 0;
       updateCheckoutSummary();
     }
+
     function updateDeliveryCost() {
       const sel = document.querySelector('input[name="delivery"]:checked');
-      currentDeliveryCost = sel ? parseInt(sel.value) : adminDelivery.home;
+      currentDeliveryCost = sel ? parseInt(sel.value) : 0;
       updateCheckoutSummary();
     }
     function updateCheckoutSummary() {
@@ -1657,16 +1673,20 @@
     // ==================== زر العودة للأعلى + الهيدر المدمج ====================
     const backToTop = document.getElementById('backToTop');
     const header = document.getElementById('header');
+    let isTicking = false;
 
     function handleScrollUI() {
-      const y = window.scrollY;
-      // زر الصعود للأعلى
-      backToTop.classList.toggle('show', y > 400);
-      // الظل عند التمرير
-      header.classList.toggle('scrolled', y > 50);
-      // ✅ عند التمرير للأسفل: أخفِ البحث والأيقونات، أبقِ اللوجو والسلة فقط
-      // ✅ عند العودة للأعلى: أعِد كل شيء
-      header.classList.toggle('compact', y > 120);
+      if (!isTicking) {
+        window.requestAnimationFrame(() => {
+          const y = window.scrollY;
+          backToTop.classList.toggle('show', y > 400);
+          header.classList.toggle('scrolled', y > 50);
+          // ✅ إخفاء فوري بدون ارتعاش
+          header.classList.toggle('compact', y > 120);
+          isTicking = false;
+        });
+        isTicking = true;
+      }
     }
     window.addEventListener('scroll', handleScrollUI, { passive: true });
     handleScrollUI();
