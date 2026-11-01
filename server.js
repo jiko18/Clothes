@@ -28,13 +28,14 @@ const db = createClient({
   authToken: process.env.TURSO_AUTH_TOKEN,
 });
 
-/async function sanitizeStaleOldRefs() {
+// ============================================================
+// ✅ دالة إصلاح المراجع المعطوبة إلى _old
+// ============================================================
+async function sanitizeStaleOldRefs() {
   console.log('🧹 Sanitizing stale _old references...');
 
-  // 0) تعطيل FKs أثناء إعادة البناء
   try { await db.execute('PRAGMA foreign_keys=OFF'); } catch (_) {}
 
-  // 1) تشخيص
   try {
     const all = await db.execute(
       "SELECT type, name, sql FROM sqlite_master WHERE sql LIKE '%\\_old%' ESCAPE '\\'"
@@ -47,7 +48,6 @@ const db = createClient({
     }
   } catch (e) { console.error('   diagnostic failed:', e.message); }
 
-  // 2) حذف triggers/views/indexes
   try {
     const unsafe = await db.execute(
       "SELECT type, name FROM sqlite_master WHERE type IN ('trigger','view','index') AND sql LIKE '%\\_old%' ESCAPE '\\'"
@@ -62,17 +62,14 @@ const db = createClient({
     }
   } catch (e) {}
 
-  // 3) إعادة بناء الجداول التي تحتوي FK إلى _old
   try {
     const tables = await db.execute(
       "SELECT name, sql FROM sqlite_master WHERE type='table' AND sql LIKE '%\\_old%' ESCAPE '\\'"
     );
     for (const t of tables.rows) {
       if (t.name.endsWith('_old')) continue;
-
       console.log(`🔧 Rebuilding "${t.name}"...`);
 
-      // ✅ النمط يشمل ON DELETE / ON UPDATE بعد REFERENCES
       const ON_CLAUSE = '(?:\\s+ON\\s+(?:DELETE|UPDATE)\\s+(?:CASCADE|SET\\s+NULL|SET\\s+DEFAULT|RESTRICT|NO\\s+ACTION))?';
 
       const fkStandalone = new RegExp(
@@ -86,7 +83,6 @@ const db = createClient({
 
       let cleaned = t.sql.replace(fkStandalone, '').replace(fkInline, '');
 
-      // Fallback: احذف كل الـ FKs إذا بقي أي _old
       if (/_old/i.test(cleaned)) {
         console.log(`   ⚠️ Fallback: removing ALL FKs from "${t.name}"`);
         cleaned = t.sql.replace(
@@ -95,7 +91,6 @@ const db = createClient({
         );
       }
 
-      // إزالة أي فاصلة معلقة قبل قوس الإغلاق
       cleaned = cleaned.replace(/,\s*\)/g, ')');
 
       if (cleaned === t.sql) {
@@ -135,7 +130,6 @@ const db = createClient({
     }
   } catch (e) { console.error('   table rebuild:', e.message); }
 
-  // 4) حذف جداول _old المتبقية
   try {
     const oldTables = await db.execute(
       "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE '%\\_old' ESCAPE '\\'"
@@ -148,7 +142,6 @@ const db = createClient({
     }
   } catch (e) {}
 
-  // 5) إعادة تشغيل FKs
   try { await db.execute('PRAGMA foreign_keys=ON'); } catch (_) {}
 
   console.log('✅ Sanitization complete');
@@ -160,10 +153,8 @@ const db = createClient({
 async function initDB() {
   console.log('🔄 Initializing database...');
 
-  // ✅ خطوة 1: إصلاح المراجع المعطوبة (يجب أن تكون أولاً)
   await sanitizeStaleOldRefs();
 
-  // ---------- migrations القديمة ----------
   try {
     const oldCheck = await db.execute(
       "SELECT sql FROM sqlite_master WHERE type='table' AND name='products'"
@@ -182,7 +173,6 @@ async function initDB() {
     }
   } catch (e) { console.error('delivery_prices migration error:', e.message); }
 
-  // users migration (بدون استخدام RENAME — لإبقاء FKs سليمة)
   try {
     const check = await db.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='users'");
     if (check.rows.length > 0 && check.rows[0].sql.includes("'manager'")) {
@@ -275,7 +265,7 @@ async function initDB() {
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     )`,
-       `CREATE TABLE IF NOT EXISTS product_colors (
+    `CREATE TABLE IF NOT EXISTS product_colors (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       product_id INTEGER NOT NULL,
       name TEXT NOT NULL,
@@ -1005,7 +995,6 @@ app.delete('/api/users/:id', authMiddleware, adminMiddleware, async (req, res) =
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Telegram test
 app.post('/api/telegram/test', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const tokenRes = await db.execute({ sql: "SELECT value FROM settings WHERE key = 'telegramBotToken'", args: [] });
