@@ -1930,10 +1930,17 @@ app.delete('/api/backups/:id', authMiddleware, adminMiddleware, async (req, res)
 // ============================================================
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api/')) return res.status(404).json({ error: 'API endpoint not found' });
+  
+  // السماح بطلب ملفات html مباشرة (مثل product.html و admin.html)
+  if (req.path.endsWith('.html')) {
+    return res.sendFile(path.join(__dirname, req.path), (err) => {
+      if (err) res.status(404).send('File not found');
+    });
+  }
+  
   if (req.path.includes('.')) return res.status(404).send('File not found');
   res.sendFile(path.join(__dirname, 'index.html'));
 });
-
 // ============================================================
 // 17) Start & Vercel Serverless Export
 // ============================================================
