@@ -558,6 +558,7 @@ async function initDB() {
     ['footerCopyright', '© 2025 بيبي شوب - جميع الحقوق محفوظة'],
     ['telegramBotToken', ''],
     ['telegramChatId', ''],
+    ['telegramExtraChatIds', '[]'],
     ['logo', ''],
   ];
   for (const [k, v] of settingsSeeds) {
@@ -648,19 +649,52 @@ function escapeTelegram(str) {
   return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+// ✅ دالة مساعدة: تجميع كل معرفات الدردشة (الأساسي + الإضافيين) مع إزالة التكرار
+async function getTelegramChatIds() {
+  const chatRes = await db.execute({
+    sql: "SELECT value FROM settings WHERE key = 'telegramChatId'", args: []
+  });
+  const extraRes = await db.execute({
+    sql: "SELECT value FROM settings WHERE key = 'telegramExtraChatIds'", args: []
+  });
+  const mainChatId = chatRes.rows[0]?.value || '';
+  const extraRaw = extraRes.rows[0]?.value || '';
+
+  const chatIds = [];
+  const pushId = (id) => {
+    const s = String(id || '').trim();
+    if (s && !chatIds.includes(s)) chatIds.push(s);
+  };
+
+  if (mainChatId) pushId(mainChatId);
+  if (extraRaw) {
+    try {
+      const parsed = JSON.parse(extraRaw);
+      if (Array.isArray(parsed)) parsed.forEach(pushId);
+      else extraRaw.split(',').forEach(pushId);
+    } catch (e) {
+      extraRaw.split(',').forEach(pushId);
+    }
+  }
+  return chatIds;
+}
+
+// ✅ دالة الإرسال إلى جميع معرفات الدردشة (رئيسي + إضافيين)
 async function sendTelegramMessage(text, options = {}) {
   try {
     const tokenRes = await db.execute({
       sql: "SELECT value FROM settings WHERE key = 'telegramBotToken'", args: []
     });
-    const chatRes = await db.execute({
-      sql: "SELECT value FROM settings WHERE key = 'telegramChatId'", args: []
-    });
     const token = tokenRes.rows[0]?.value;
-    const chatId = chatRes.rows[0]?.value;
 
-    if (!token || !chatId) {
-      console.log('⚠️ Telegram not configured — skipped');
+    if (!token) {
+      console.log('⚠️ Telegram not configured (no token) — skipped');
+      return false;
+    }
+
+    const chatIds = await getTelegramChatIds();
+    if (chatIds.length === 0) {
+      console.log('⚠️ Telegram: no chat IDs configured — skipped');
       return false;
     }
 
@@ -680,47 +714,53 @@ async function sendTelegramMessage(text, options = {}) {
         remaining = remaining.slice(cut);
       }
     }
-    console.log(`📤 Sending Telegram message (${chunks.length} chunk(s), ${text.length} chars)`);
+    console.log(`📤 Telegram: sending to ${chatIds.length} chat(s), ${chunks.length} chunk(s) each`);
 
-    let allOk = true;
-    for (let i = 0; i < chunks.length; i++) {
-      const chunk = chunks[i];
-      const useHtml = options.parseMode !== false;
-      const payload = { chat_id: chatId, text: chunk, disable_web_page_preview: true };
-      if (useHtml) payload.parse_mode = 'HTML';
-      
-      const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const result = await res.json();
-      
-      if (!result.ok) {
-        console.error(`❌ Telegram API error (chunk ${i+1}/${chunks.length}):`, result.description);
-        if (useHtml) {
-          console.log('🔄 Retrying without HTML parse_mode...');
-          const plainText = chunk.replace(/<[^>]*>/g, '');
-          const retryRes = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    let successCount = 0, failCount = 0;
+    for (const chatId of chatIds) {
+      let chatOk = true;
+      for (let i = 0; i < chunks.length; i++) {
+        const chunk = chunks[i];
+        const useHtml = options.parseMode !== false;
+        const payload = { chat_id: chatId, text: chunk, disable_web_page_preview: true };
+        if (useHtml) payload.parse_mode = 'HTML';
+
+        try {
+          const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: chatId, text: plainText, disable_web_page_preview: true })
+            body: JSON.stringify(payload)
           });
-          const retryResult = await retryRes.json();
-          if (!retryResult.ok) {
-            console.error('❌ Retry without HTML also failed:', retryResult.description);
-            allOk = false;
-          } else {
-            console.log('✅ Telegram notification sent (plain text fallback)');
+          const result = await res.json();
+
+          if (!result.ok) {
+            if (useHtml) {
+              const plain = chunk.replace(/<[^>]*>/g, '');
+              const retryRes = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: chatId, text: plain, disable_web_page_preview: true })
+              });
+              const retryResult = await retryRes.json();
+              if (!retryResult.ok) {
+                chatOk = false;
+                console.error(`❌ Telegram chat ${chatId} (chunk ${i+1}/${chunks.length}): ${retryResult.description}`);
+              }
+            } else {
+              chatOk = false;
+              console.error(`❌ Telegram chat ${chatId} (chunk ${i+1}/${chunks.length}): ${result.description}`);
+            }
           }
-        } else {
-          allOk = false;
+        } catch (e) {
+          chatOk = false;
+          console.error(`❌ Telegram chat ${chatId} exception:`, e.message);
         }
-      } else {
-        console.log(`✅ Telegram notification sent (chunk ${i+1}/${chunks.length})`);
       }
+      if (chatOk) successCount++; else failCount++;
     }
-    return allOk;
+
+    console.log(`📊 Telegram result: ${successCount} succeeded, ${failCount} failed`);
+    return failCount === 0;
   } catch (e) {
     console.error('❌ Telegram exception:', e.message);
     return false;
@@ -995,28 +1035,28 @@ app.delete('/api/users/:id', authMiddleware, adminMiddleware, async (req, res) =
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ✅ تحديث نقطة الاختبار لترسل إلى جميع المعرفات (رئيسي + إضافيين)
 app.post('/api/telegram/test', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const tokenRes = await db.execute({ sql: "SELECT value FROM settings WHERE key = 'telegramBotToken'", args: [] });
-    const chatRes = await db.execute({ sql: "SELECT value FROM settings WHERE key = 'telegramChatId'", args: [] });
     const token = tokenRes.rows[0]?.value;
-    const chatId = chatRes.rows[0]?.value;
-    if (!token || !chatId) return res.status(400).json({ error: 'لم يتم تكوين بيانات تيليجرام بعد' });
+    if (!token) return res.status(400).json({ error: 'لم يتم تكوين Bot Token بعد' });
 
-    const telegramRes = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: '🧪 <b>رسالة تجريبية</b>\n\nإذا وصلتك هذه الرسالة، فإن إعدادات البوت تعمل بنجاح ✓\n\nستصلك إشعارات الطلبات الجديدة تلقائياً.',
-        parse_mode: 'HTML'
-      })
-    });
-    const result = await telegramRes.json();
-    if (!telegramRes.ok || !result.ok) {
-      return res.status(400).json({ error: result.description || 'رفض تيليجرام الطلب' });
+    const chatIds = await getTelegramChatIds();
+    if (chatIds.length === 0) {
+      return res.status(400).json({ error: 'لا توجد أي معرفات دردشة (Chat IDs) — أضف معرفاً أساسياً على الأقل' });
     }
-    res.json({ success: true });
+
+    const ok = await sendTelegramMessage(
+      '🧪 <b>رسالة تجريبية</b>\n\nإذا وصلتك هذه الرسالة، فإن إعدادات البوت تعمل بنجاح ✓\n\nستصلك إشعارات الطلبات الجديدة تلقائياً.'
+    );
+
+    if (!ok) {
+      return res.status(400).json({
+        error: `تمت المحاولة على ${chatIds.length} دردشة، لكن فشل الإرسال لبعضها. تأكد أن كل معرف أرسل /start للبوت. راجع سجلات السيرفر.`
+      });
+    }
+    res.json({ success: true, chatCount: chatIds.length });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -1426,7 +1466,7 @@ app.post('/api/orders', async (req, res) => {
 
       const ok = await sendTelegramMessage(telegramMessage);
       if (!ok) {
-        console.warn('⚠️ Telegram message not sent successfully — check logs above');
+        console.warn('⚠️ Telegram message not sent successfully to some chats — check logs above');
       }
     } catch (tgErr) {
       console.error('❌ Telegram prep failed:', tgErr.message, tgErr.stack);

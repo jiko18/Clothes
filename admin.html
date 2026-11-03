@@ -33,7 +33,6 @@
     .admin-layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
     .sidebar{background:linear-gradient(180deg,#1a1a2e 0%,#0f0f1e 100%);color:#fff;padding:24px 0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
     .sidebar-header{padding:0 24px 24px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:16px}
-    /* ✅ إصلاح: لون واحد بدل التدرج النصي */
     .sidebar-header h1{font-size:1.4rem;font-weight:800;color:var(--primary);display:flex;align-items:center;gap:8px}
     .sidebar-header h1 i{color:var(--primary);font-size:1.3rem}
     .sidebar-header span{display:block;color:rgba(255,255,255,.5);font-size:.75rem;margin-top:4px}
@@ -384,6 +383,14 @@
     .activity-item{padding:12px;background:var(--bg);border-radius:10px;border-right:3px solid var(--primary);margin-bottom:8px}
     .activity-item .action{font-weight:700;color:var(--text);font-size:.9rem;margin-bottom:4px}
     .activity-item .meta{font-size:.78rem;color:var(--text-gray)}
+    /* ✅ حقل معرف الدردشة الإضافي */
+    .extra-chat-row{display:flex;align-items:center;gap:10px;background:var(--bg);padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);transition:border-color .2s}
+    .extra-chat-row:hover{border-color:var(--primary)}
+    .extra-chat-row .chat-index{font-size:.72rem;font-weight:800;color:var(--text-gray);background:var(--card-bg);padding:3px 10px;border-radius:50px;border:1px solid var(--border);min-width:44px;text-align:center}
+    .extra-chat-row input{flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;background:var(--card-bg);color:var(--text);direction:ltr;text-align:left;font-family:'Courier New',monospace;outline:none}
+    .extra-chat-row input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(255,107,129,.12)}
+    .extra-chat-row .remove-btn{width:34px;height:34px;border-radius:8px;border:none;background:rgba(231,76,60,.12);color:var(--danger);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+    .extra-chat-row .remove-btn:hover{background:var(--danger);color:#fff}
   </style>
 </head>
 <body>
@@ -516,7 +523,6 @@
           </div>
         </section>
 
-        <!-- ✅ التوصيل: بدون جداول افتراضية، بدون سريع -->
         <section class="view" id="view-delivery">
           <div class="panel">
             <div class="panel-header">
@@ -541,7 +547,6 @@
           </div>
         </section>
 
-        <!-- ✅ الألوان مبسطة: لونان فقط -->
         <section class="view" id="view-theme">
           <div class="panel">
             <div class="panel-header"><h3><i class="fa-solid fa-palette"></i> ألوان الموقع</h3></div>
@@ -679,10 +684,25 @@
                   <input type="password" id="setTelegramBotToken" placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz" autocomplete="off" style="direction:ltr;text-align:left;font-family:monospace;font-size:.85rem;">
                 </div>
                 <div class="fg">
-                  <label><i class="fa-solid fa-id-card"></i> Chat ID</label>
+                  <label><i class="fa-solid fa-id-card"></i> Chat ID (الأساسي — المالك)</label>
                   <input type="text" id="setTelegramChatId" placeholder="123456789 أو -1001234567890 (للمجموعة)" autocomplete="off" style="direction:ltr;text-align:left;font-family:monospace;font-size:.85rem;">
                 </div>
               </div>
+
+              <!-- ✅ جديد: معرفات دردشة إضافية للموظفين -->
+              <div class="fg" style="margin-top:20px;">
+                <label><i class="fa-solid fa-users"></i> معرفات دردشة إضافية (للموظفين)</label>
+                <div style="font-size:.78rem;color:var(--text-gray);margin-bottom:12px;padding:10px 12px;background:rgba(9,132,227,.06);border-radius:8px;border-right:3px solid var(--info);line-height:1.9;">
+                  <i class="fa-solid fa-circle-info" style="color:var(--info);"></i>
+                  أضف هنا <b>Chat ID</b> لكل موظف تريد أن يصله إشعار كل طلب. <b>جميع هذه المعرفات + المعرف الأساسي ستستلم نفس إشعارات الطلبات</b>.
+                  <br><b>مهم:</b> كل موظف يجب أن يرسل <code style="background:rgba(0,0,0,.08);padding:1px 6px;border-radius:4px;direction:ltr;display:inline-block;">/start</code> للبوت أولاً ليتمكن من استلام الرسائل.
+                </div>
+                <div class="dynamic-list" id="extraChatIdsList"></div>
+                <button type="button" class="add-btn" onclick="addExtraChatIdRow()">
+                  <i class="fa-solid fa-plus"></i> إضافة معرف دردشة
+                </button>
+              </div>
+
               <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;">
                 <button class="btn btn-primary" onclick="saveTelegramSettings()"><i class="fa-solid fa-check"></i> حفظ الإعدادات</button>
                 <button class="btn btn-success" onclick="testTelegramConnection()"><i class="fa-solid fa-paper-plane"></i> إرسال رسالة تجريبية</button>
@@ -693,10 +713,10 @@
                   <i class="fa-solid fa-triangle-exclamation"></i> ملاحظات مهمة
                 </p>
                 <ul style="font-size:0.82rem; color:var(--text-gray); line-height:1.9; padding-right:20px;">
-                  <li>يجب أن تبدأ محادثة مع البوت مرة واحدة على الأقل قبل الاختبار (أرسل له <b>/start</b>)</li>
+                  <li>يجب أن يبدأ كل معرف دردشة (بما فيها معرفات الموظفين) محادثة مع البوت مرة واحدة على الأقل قبل الاختبار (<b>/start</b>)</li>
                   <li>إذا كنت تستخدم مجموعة، أضف البوت للمجموعة واستخدم Chat ID الخاص بالمجموعة (يبدأ بـ <b>-100...</b>)</li>
                   <li>التوكن سري، لا تشاركه مع أحد</li>
-                  <li><b style="color:var(--danger);">مهم:</b> إشعار الطلب تلقائي في السيرفر — إذا وصلت الرسالة التجريبية ولم يصل إشعار الطلب، فالمشكلة في <b>دالة إنشاء الطلب في السيرفر</b> (يجب استدعاء إرسال التيليجرام عند POST /api/orders)</li>
+                  <li><b style="color:var(--danger);">مهم:</b> إشعار الطلب تلقائي في السيرفر — إذا وصلت الرسالة التجريبية ولم يصل إشعار الطلب، فالمشكلة في <b>دالة إنشاء الطلب في السيرفر</b></li>
                 </ul>
               </div>
             </div>
@@ -716,7 +736,6 @@
           </div>
         </section>
 
-        <!-- ✅ المستخدمون: أدمن + موظف فقط -->
         <section class="view" id="view-users">
           <div class="panel">
             <div class="panel-header">
@@ -772,7 +791,6 @@
     </div>
   </div>
 
-  <!-- ✅ مودال المنتج: أعمار بقائمة منسدلة، لون الشارة بقائمة + بحث ذكي، اسم القطعة حر -->
   <div class="modal-overlay" id="productModal">
     <div class="modal">
       <div class="modal-header"><h3 id="productModalTitle"><i class="fa-solid fa-plus"></i> إضافة منتج جديد</h3><button class="modal-close" onclick="closeProductModal()"><i class="fa-solid fa-xmark"></i></button></div>
@@ -816,7 +834,6 @@
         </div>
         <div class="fg" style="margin-top:8px;"><label>الوصف</label><textarea id="pDescription" placeholder="وصف قصير وجذاب للمنتج..."></textarea></div>
 
-        <!-- ✅ الأعمار: قائمة منسدلة + إضافة عمر مخصص -->
         <div class="fg" style="margin-top:16px;">
           <label><i class="fa-solid fa-child"></i> الأعمار المتاحة</label>
           <div style="font-size:.78rem;color:var(--text-gray);margin-bottom:10px;padding:10px 12px;background:rgba(9,132,227,.06);border-radius:8px;border-right:3px solid var(--info);">
@@ -870,7 +887,6 @@
     </div>
   </div>
 
-  <!-- datalist لأسماء القطع (مع الحرية في الكتابة) -->
   <datalist id="partLabelsList">
     <option value="قميص">
     <option value="سروال">
@@ -900,7 +916,6 @@
     </div>
   </div>
 
-  <!-- ✅ مودال المستخدم: أدمن + موظف فقط -->
   <div class="modal-overlay" id="userModal">
     <div class="modal" style="max-width:520px;">
       <div class="modal-header">
@@ -931,7 +946,6 @@
     </div>
   </div>
 
-  <!-- ✅ مودال سجل النشاط -->
   <div class="modal-overlay" id="activityModal">
     <div class="modal" style="max-width:760px;">
       <div class="modal-header">
@@ -973,6 +987,7 @@
       footerCopyright: '© 2025 بيبي شوب - جميع الحقوق محفوظة',
       telegramBotToken: '',
       telegramChatId: '',
+      telegramExtraChatIds: '[]',
       girlsCard: { image: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=800&q=80', title: 'ملابس البنات', subtitle: 'نعومة، ألوان، وأناقة لا تُقاوم' },
       boysCard: { image: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&q=80', title: 'ملابس الأولاد', subtitle: 'قوة، حركة، وراحة طول اليوم' },
       categoryCards: {
@@ -984,7 +999,6 @@
       }
     };
 
-    // ✅ الأعمار القياسية (للقائمة المنسدلة)
     const STANDARD_AGES = ['سنة واحدة','سنتان','3 سنوات','4 سنوات','5 سنوات','6 سنوات','7 سنوات','8 سنوات','9 سنوات','10 سنوات','11 سنة','12 سنة','13 سنة','14 سنة','15 سنة','16 سنة','17 سنة','18 سنة'];
 
     const PREDEFINED_COLORS = [
@@ -1004,9 +1018,6 @@
     const BADGE_PRESETS = ['جديد', 'الأكثر مبيعاً', 'خصم', 'عرض خاص', 'حصري', 'تخفيض', 'هدية', 'لفترة محدودة'];
     const CUSTOM_BADGES_KEY = 'babyshop_custom_badges';
 
-    // ============================================================
-    // ✅ تطبيع عربي + Levenshtein للبحث الذكي عن الألوان
-    // ============================================================
     function normalizeArabic(str) {
       return (str || '')
         .toString()
@@ -1070,6 +1081,7 @@
     let deliveryAllCache = { byWilaya: {} };
     let wilayasCache = [];
     let activityUserCache = null;
+    let extraChatIds = [];   // ✅ معرفات دردشة تيليجرام الإضافية (للموظفين)
 
     function showToast(msg, type = 'success') {
       const t = document.getElementById('toast');
@@ -1111,7 +1123,6 @@
       if (Array.isArray(c.images) && c.images.length > 0) return c.images.find(u => u && u.trim()) || c.image || '';
       return c.image || '';
     }
-    // ✅ حساب اللون الداكن تلقائياً من الأساسي
     function darkenHex(hex, percent = 15) {
       try {
         let h = hex.replace('#','');
@@ -1246,7 +1257,6 @@
         apiJSON('/api/stats').catch(() => null)
       ]);
       data = { products, settings, theme, delivery, orders, stats };
-      // ✅ ضمان وجود الحقول الأساسية
       if (!data.theme.primary) data.theme.primary = DEFAULT_THEME.primary;
       if (!data.theme.secondary) data.theme.secondary = DEFAULT_THEME.secondary;
       data.theme.primaryDark = darkenHex(data.theme.primary, 15);
@@ -1461,11 +1471,9 @@
         renderOrdersView();
         showToast('تم تحديث حالة الطلب ✓');
       } catch (err) {
-        // ✅ رسالة خطأ مفصلة (بدل "فشل تحديث الحالة" فقط)
         const msg = err.message || 'خطأ غير معروف';
         showToast(`فشل تحديث الحالة: ${msg}`, 'error');
         console.error('[updateOrderStatus] orderId=', orderId, 'status=', status, 'error=', err);
-        // ✅ إعادة تحميل الطلبات لكي تعود القائمة المنسدلة للحالة الصحيحة
         try {
           const freshOrders = await apiJSON('/api/orders');
           data.orders = freshOrders;
@@ -1769,7 +1777,6 @@
       showToast('تم حفظ الشارة ✓ ستظهر في القائمة لاحقاً');
     }
 
-    // ✅ لون الشارة: قائمة منسدلة + بحث ذكي
     function populateBadgeColorSelect(selectedHex) {
       const sel = document.getElementById('pBadgeColorSelect');
       if (!sel) return;
@@ -1781,7 +1788,6 @@
       document.getElementById('pBadgeColorLabel').textContent = hex.toUpperCase();
       const found = PREDEFINED_COLORS.find(pc => pc.hex.toLowerCase() === hex.toLowerCase());
       document.getElementById('pBadgeColorName').textContent = name || (found ? found.name : 'مخصص');
-      // مزامنة القائمة المنسدلة
       const sel = document.getElementById('pBadgeColorSelect');
       if (sel) {
         let matched = false;
@@ -2404,6 +2410,21 @@
         const el = document.getElementById(id);
         if (el) el.value = s[k] || '';
       });
+
+      // ✅ تحميل معرفات دردشة تيليجرام الإضافية
+      try {
+        const raw = s.telegramExtraChatIds;
+        if (Array.isArray(raw)) {
+          extraChatIds = raw.map(String);
+        } else if (typeof raw === 'string' && raw.trim()) {
+          const parsed = JSON.parse(raw);
+          extraChatIds = Array.isArray(parsed) ? parsed.map(String) : [];
+        } else {
+          extraChatIds = [];
+        }
+      } catch (e) { extraChatIds = []; }
+      renderExtraChatIds();
+
       updateLogoPreview(s.logo || '');
       applyLogoToSidebar();
       renderGenderEditor();
@@ -2448,23 +2469,70 @@
       data.settings.footerCopyright = document.getElementById('setFooterCopyright').value.trim();
       if (await persistSettings()) showToast('تم الحفظ ✓');
     }
+
+    // ============================================================
+    // ✅ إدارة معرفات دردشة تيليجرام الإضافية (للموظفين)
+    // ============================================================
+    function renderExtraChatIds() {
+      const el = document.getElementById('extraChatIdsList');
+      if (!el) return;
+      if (!extraChatIds.length) {
+        el.innerHTML = '<p style="text-align:center;color:var(--text-gray);font-size:.82rem;padding:14px;background:var(--bg);border-radius:8px;margin:0;">لا توجد معرفات إضافية — أضف معرفاً واحداً على الأقل للموظفين</p>';
+        return;
+      }
+      el.innerHTML = extraChatIds.map((id, i) => `
+        <div class="extra-chat-row">
+          <span class="chat-index">#${i + 1}</span>
+          <input type="text" value="${escapeAttr(id)}" placeholder="مثال: 123456789"
+                 oninput="extraChatIds[${i}] = this.value"
+                 autocomplete="off">
+          <button type="button" class="remove-btn" onclick="removeExtraChatId(${i})" title="حذف"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      `).join('');
+    }
+    function addExtraChatIdRow() {
+      extraChatIds.push('');
+      renderExtraChatIds();
+      setTimeout(() => {
+        const inputs = document.querySelectorAll('#extraChatIdsList input');
+        if (inputs.length) inputs[inputs.length - 1].focus();
+      }, 60);
+    }
+    function removeExtraChatId(i) {
+      extraChatIds.splice(i, 1);
+      renderExtraChatIds();
+    }
+
     async function saveTelegramSettings() {
       data.settings.telegramBotToken = document.getElementById('setTelegramBotToken').value.trim();
       data.settings.telegramChatId = document.getElementById('setTelegramChatId').value.trim();
-      if (await persistSettings()) showToast('تم حفظ إعدادات تيليجرام ✓');
+
+      // ✅ تنظيف وحفظ المعرفات الإضافية كـ JSON
+      const cleaned = extraChatIds.map(s => String(s || '').trim()).filter(Boolean);
+      data.settings.telegramExtraChatIds = JSON.stringify(cleaned);
+
+      if (await persistSettings()) {
+        const total = cleaned.length + (data.settings.telegramChatId ? 1 : 0);
+        showToast(`تم حفظ إعدادات تيليجرام ✓ — إجمالي ${total} دردشة`, 'success');
+      }
     }
     async function testTelegramConnection() {
       const token = document.getElementById('setTelegramBotToken').value.trim();
       const chatId = document.getElementById('setTelegramChatId').value.trim();
-      if (!token || !chatId) { showToast('يرجى إدخال Bot Token و Chat ID أولاً', 'error'); return; }
+      if (!token || !chatId) { showToast('يرجى إدخال Bot Token و Chat ID الأساسي أولاً', 'error'); return; }
+
       data.settings.telegramBotToken = token;
       data.settings.telegramChatId = chatId;
+      const cleaned = extraChatIds.map(s => String(s || '').trim()).filter(Boolean);
+      data.settings.telegramExtraChatIds = JSON.stringify(cleaned);
+
       const saved = await persistSettings();
       if (!saved) return;
       showLoading(true);
       try {
-        await apiJSON('/api/telegram/test', { method: 'POST' });
-        showToast('تم إرسال الرسالة التجريبية بنجاح ✓ راجع تيليجرام', 'success');
+        const result = await apiJSON('/api/telegram/test', { method: 'POST' });
+        const total = (result && result.chatCount) ? result.chatCount : (1 + cleaned.length);
+        showToast(`✓ تم إرسال الرسالة التجريبية إلى ${total} دردشة — راجع تيليجرام`, 'success');
       } catch (err) {
         showToast('فشل الاختبار: ' + (err.message || 'خطأ غير معروف'), 'error');
       } finally { showLoading(false); }
@@ -2488,6 +2556,7 @@
   .box { background: #f5f6fa; padding: 16px; border-radius: 10px; margin: 12px 0; }
   .highlight { background: #feca57; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
   .warn { background: #fff5f5; border-right: 4px solid #e74c3c; padding: 16px; border-radius: 10px; }
+  .info { background: #eaf6ff; border-right: 4px solid #0088cc; padding: 16px; border-radius: 10px; margin-top: 16px; }
 </style>
 </head>
 <body>
@@ -2507,6 +2576,21 @@
   <li>أرسل له <code>/start</code></li>
   <li>سيرد عليك بـ <b>Your ID</b></li>
 </ol>
+<h2>3️⃣ إضافة موظفين (معرفات متعددة)</h2>
+<ul>
+  <li>في صفحة الأدمن → الإعدادات → بوت تيليجرام، ستجد قسم <b>"معرفات دردشة إضافية (للموظفين)"</b></li>
+  <li>اضغط <b>"إضافة معرف دردشة"</b> وأضف Chat ID لكل موظف (بنفس طريقة المالك عبر <code>@userinfobot</code>)</li>
+  <li>جميع المعرفات + معرف المالك الأساسي ستستلم <b>نفس إشعارات الطلبات</b></li>
+  <li><b>مهم:</b> كل موظف يجب أن يرسل <code>/start</code> للبوت أولاً حتى يتمكن البوت من مراسلته</li>
+</ul>
+<div class="info">
+  <b style="color:#0088cc;">💡 نصيحة:</b> إذا لم يصل الإشعار لموظف، تأكد أنه:
+  <ul style="margin-top:6px;">
+    <li>أرسل <code>/start</code> للبوت</li>
+    <li>أن الـ Chat ID الذي أدخلته صحيح (يمكنه التحقق عبر @userinfobot)</li>
+    <li>أن السيرفر لا يزال يعمل وأن معرفات أخرى تستلم بنجاح</li>
+  </ul>
+</div>
 <div class="warn">
   <h2 style="color:#e74c3c; border-color:#e74c3c;">⚠️ ملاحظات أمنية</h2>
   <ul>
@@ -2640,7 +2724,7 @@
     }
 
     // ============================================================
-    // ✅ USERS (أدمن + موظف + سجل النشاط)
+    // ✅ USERS
     // ============================================================
     async function loadUsers() {
       try {
@@ -2741,7 +2825,6 @@
       } catch (err) { showToast(err.message, 'error'); }
     }
 
-    // ✅ سجل النشاط
     async function viewActivity(userId) {
       const user = usersCache.find(u => u.id === userId);
       activityUserCache = user || { id: userId, username: 'مستخدم' };
@@ -2773,7 +2856,7 @@
     function closeActivityModal() { document.getElementById('activityModal').classList.remove('show'); activityUserCache = null; }
 
     // ============================================================
-    // ✅ DELIVERY (بدون defaults + بدون سريع)
+    // ✅ DELIVERY
     // ============================================================
     async function loadDeliveryAll() {
       try {
@@ -2812,8 +2895,8 @@
           const w = input.dataset.wilaya;
           const type = input.dataset.type;
           const val = input.value.trim();
-      if (!changes[w]) changes[w] = {};
-changes[w][type] = val === '' ? 0 : Number(val);
+          if (!changes[w]) changes[w] = {};
+          changes[w][type] = val === '' ? 0 : Number(val);
         });
         for (const [wilaya, prices] of Object.entries(changes)) {
           if (Object.keys(prices).length === 0) continue;
@@ -2928,7 +3011,6 @@ changes[w][type] = val === '' ? 0 : Number(val);
       }
     }
 
-    // ✅ renderCombosRows: اسم القطعة حر (input+datalist)
     function renderCombosRows() {
       const el = document.getElementById('combosList');
       if (!comboRows.length) { el.innerHTML = ''; return; }
