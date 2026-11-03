@@ -245,7 +245,7 @@
     .order-section h4{font-size:.88rem;font-weight:800;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:8px}
     .order-section h4 i{color:var(--primary)}
     .order-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:.85rem}
-    .order-info-item{display:flex;gap:6px;color:var(--text)}
+    .order-info-item{display:flex;gap:6px;color:var(--text);flex-wrap:wrap}
     .order-info-item strong{color:var(--text-gray);font-weight:700}
     .order-items-list{display:flex;flex-direction:column;gap:10px}
     .order-item-row{display:flex;align-items:center;gap:12px;background:var(--card-bg);padding:10px;border-radius:8px}
@@ -383,7 +383,6 @@
     .activity-item{padding:12px;background:var(--bg);border-radius:10px;border-right:3px solid var(--primary);margin-bottom:8px}
     .activity-item .action{font-weight:700;color:var(--text);font-size:.9rem;margin-bottom:4px}
     .activity-item .meta{font-size:.78rem;color:var(--text-gray)}
-    /* ✅ حقل معرف الدردشة الإضافي */
     .extra-chat-row{display:flex;align-items:center;gap:10px;background:var(--bg);padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);transition:border-color .2s}
     .extra-chat-row:hover{border-color:var(--primary)}
     .extra-chat-row .chat-index{font-size:.72rem;font-weight:800;color:var(--text-gray);background:var(--card-bg);padding:3px 10px;border-radius:50px;border:1px solid var(--border);min-width:44px;text-align:center}
@@ -391,6 +390,27 @@
     .extra-chat-row input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(255,107,129,.12)}
     .extra-chat-row .remove-btn{width:34px;height:34px;border-radius:8px;border:none;background:rgba(231,76,60,.12);color:var(--danger);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
     .extra-chat-row .remove-btn:hover{background:var(--danger);color:#fff}
+    /* ✅ رابط الهاتف القابل للنقر */
+    .phone-link{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;background:rgba(255,107,129,.1);border-radius:8px;color:var(--primary);font-weight:800;text-decoration:none;transition:all .2s;border:1px solid transparent;cursor:pointer}
+    .phone-link:hover{background:var(--primary);color:#fff;border-color:var(--primary);transform:translateY(-1px);box-shadow:0 3px 10px rgba(255,107,129,.3)}
+    .phone-link i{font-size:.72rem}
+    .phone-link .phone-num{direction:ltr;display:inline-block;font-family:'Courier New',monospace;letter-spacing:.3px}
+    /* ✅ شرائح تفاصيل المنتج في الطلب */
+    .order-item-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+    .oi-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:50px;font-size:.75rem;font-weight:700;white-space:nowrap}
+    .oi-chip-color{background:rgba(108,92,231,.1);color:var(--secondary)}
+    .oi-chip-age{background:rgba(0,184,148,.1);color:var(--success)}
+    .oi-chip-qty{background:rgba(243,156,18,.12);color:var(--warning)}
+    .oi-chip i{font-size:.65rem}
+    .oi-color-dot{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.25);vertical-align:middle;margin-right:2px}
+    /* ✅ خلايا الطلبات المضغوطة */
+    .order-mini-items{display:flex;flex-direction:column;gap:5px;min-width:180px;max-width:240px}
+    .order-mini-item{display:flex;align-items:center;gap:5px;font-size:.75rem;line-height:1.3}
+    .order-mini-qty{background:var(--secondary);color:#fff;padding:1px 7px;border-radius:5px;font-size:.65rem;font-weight:800;min-width:24px;text-align:center;flex-shrink:0}
+    .order-mini-name{color:var(--text);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px;flex-shrink:1}
+    .order-mini-dot{display:inline-block;width:11px;height:11px;border-radius:50%;border:1px solid rgba(0,0,0,.15);flex-shrink:0}
+    .order-mini-age{color:var(--text-gray);font-size:.68rem;font-weight:600;white-space:nowrap;flex-shrink:0}
+    .order-mini-more{font-size:.68rem;color:var(--primary);font-weight:700;padding:2px 8px;background:rgba(255,107,129,.1);border-radius:50px;align-self:flex-start;margin-top:2px}
   </style>
 </head>
 <body>
@@ -689,7 +709,6 @@
                 </div>
               </div>
 
-              <!-- ✅ جديد: معرفات دردشة إضافية للموظفين -->
               <div class="fg" style="margin-top:20px;">
                 <label><i class="fa-solid fa-users"></i> معرفات دردشة إضافية (للموظفين)</label>
                 <div style="font-size:.78rem;color:var(--text-gray);margin-bottom:12px;padding:10px 12px;background:rgba(9,132,227,.06);border-radius:8px;border-right:3px solid var(--info);line-height:1.9;">
@@ -1081,7 +1100,7 @@
     let deliveryAllCache = { byWilaya: {} };
     let wilayasCache = [];
     let activityUserCache = null;
-    let extraChatIds = [];   // ✅ معرفات دردشة تيليجرام الإضافية (للموظفين)
+    let extraChatIds = [];
 
     function showToast(msg, type = 'success') {
       const t = document.getElementById('toast');
@@ -1425,28 +1444,53 @@
       try { const d = new Date(iso); return d.toLocaleDateString('ar-DZ') + ' ' + d.toLocaleTimeString('ar-DZ', { hour: '2-digit', minute: '2-digit' }); } catch(e) { return '-'; }
     }
 
+    // ✅ بناء رابط الهاتف القابل للنقر
+    function buildPhoneLink(phone) {
+      if (!phone) return '<span style="color:var(--text-gray);">-</span>';
+      const safe = escapeAttr(String(phone).trim());
+      return `<a href="tel:${safe}" class="phone-link" title="اضغط للاتصال ${escapeAttr(phone)}" onclick="event.stopPropagation();"><i class="fa-solid fa-phone"></i><span class="phone-num">${escapeHtml(phone)}</span></a>`;
+    }
+
+    // ✅ بناء خلية المنتجات المضغوطة لجدول الطلبات
+    function buildOrderItemsCell(items) {
+      if (!Array.isArray(items) || items.length === 0) {
+        return `<div style="font-size:.78rem;color:var(--text-gray);text-align:center;">—</div>`;
+      }
+      const shown = items.slice(0, 3);
+      const html = shown.map(it => {
+        const name = String(it.productName || 'منتج');
+        const shortName = name.length > 15 ? name.slice(0, 15) + '…' : name;
+        const dot = it.colorHex
+          ? `<span class="order-mini-dot" style="background:${escapeAttr(it.colorHex)};" title="${escapeAttr(it.colorName || '')}"></span>`
+          : '';
+        const age = it.age ? `<span class="order-mini-age">${escapeHtml(it.age)}</span>` : '';
+        return `<div class="order-mini-item">
+          <span class="order-mini-qty">${it.qty || 0}×</span>
+          <span class="order-mini-name" title="${escapeAttr(name)}">${escapeHtml(shortName)}</span>
+          ${dot}
+          ${age}
+        </div>`;
+      }).join('');
+      const more = items.length > 3
+        ? `<span class="order-mini-more">+${items.length - 3} منتج آخر</span>`
+        : '';
+      return `<div class="order-mini-items">${html}${more}</div>`;
+    }
+
     function renderOrdersTable(orders) {
       if (!orders.length) return `<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>لا توجد طلبات</p></div>`;
-      return `<table><thead><tr><th>رقم الطلب</th><th>العميل</th><th>الهاتف</th><th>المنتجات</th><th>المبلغ</th><th>الحالة</th><th>التاريخ</th><th>إجراءات</th></tr></thead><tbody>
+      return `<table><thead><tr><th>رقم الطلب</th><th>العميل</th><th>الهاتف</th><th>المنتجات (الاسم • اللون • العمر • الكمية)</th><th>المبلغ</th><th>الحالة</th><th>التاريخ</th><th>إجراءات</th></tr></thead><tbody>
         ${orders.map(o => {
-          const items = o.items || [];
-          const count = items.reduce((s, i) => s + (i.qty||0), 0);
-          const thumbs = items.slice(0, 3).map(it => {
-            const img = it.image;
-            if (img && !isVideoUrl(img)) return `<img class="order-prod-thumb" src="${escapeAttr(img)}" alt="" data-media-url="${escapeAttr(img)}">`;
-            return `<div class="order-prod-thumb" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);font-size:0.7rem;"><i class="fa-solid fa-box"></i></div>`;
-          }).join('');
-          const more = items.length > 3 ? `<span class="order-more-badge">+${items.length - 3}</span>` : '';
           return `<tr>
-            <td style="font-size:0.8rem; font-weight:700;">${escapeHtml(o.orderId || '-')}</td>
+            <td style="font-size:0.8rem; font-weight:700; white-space:nowrap;">${escapeHtml(o.orderId || '-')}</td>
             <td>${escapeHtml((o.firstName||'') + ' ' + (o.lastName||''))}</td>
-            <td>${escapeHtml(o.phone1 || '-')}</td>
-            <td><div class="order-products-cell" title="${count} منتج">${thumbs}${more}</div></td>
-            <td style="font-weight:800; color:var(--primary-dark);">${(o.total||0).toLocaleString()} د.ج</td>
+            <td>${buildPhoneLink(o.phone1)}</td>
+            <td>${buildOrderItemsCell(o.items || [])}</td>
+            <td style="font-weight:800; color:var(--primary-dark); white-space:nowrap;">${(o.total||0).toLocaleString()} د.ج</td>
             <td>${statusBadge(o.status)}</td>
-            <td style="font-size:0.8rem;">${formatDate(o.createdAt)}</td>
+            <td style="font-size:0.8rem; white-space:nowrap;">${formatDate(o.createdAt)}</td>
             <td><div class="row-actions">
-              <button class="icon-btn icon-btn-view" onclick="viewOrder('${o.orderId}')" title="عرض"><i class="fa-solid fa-eye"></i></button>
+              <button class="icon-btn icon-btn-view" onclick="viewOrder('${o.orderId}')" title="عرض التفاصيل الكاملة"><i class="fa-solid fa-eye"></i></button>
               <button class="icon-btn icon-btn-slip" onclick="printDeliverySlip('${o.orderId}')" title="طباعة وصل التوصيل"><i class="fa-solid fa-truck"></i></button>
               <button class="icon-btn icon-btn-del" onclick="deleteOrder('${o.orderId}')" title="حذف الطلب"><i class="fa-solid fa-trash"></i></button>
               <select onchange="updateOrderStatus('${o.orderId}', this.value)" style="padding:6px 10px; border-radius:8px; border:1.5px solid var(--border); background:var(--bg); color:var(--text); font-size:0.78rem; cursor:pointer;">
@@ -1544,33 +1588,68 @@
       wrap.innerHTML = renderOrdersTable(filtered);
     }
 
+    // ✅ دالة عرض تفاصيل الطلب - الآن تعرض كل تفاصيل المنتجات + هواتف قابلة للنقر
     function viewOrder(orderId) {
       const order = data.orders.find(o => o.orderId === orderId);
       if (!order) return;
       currentViewingOrderId = orderId;
       const items = order.items || [];
+
+      // ✅ بناء بطاقة كل منتج مع الصورة واللون والعمر والكمية والسعر
       const itemsHtml = items.map(it => {
         const img = it.image;
-        return img && !isVideoUrl(img)
+        const imgHtml = img && !isVideoUrl(img)
           ? `<img class="order-item-img" src="${escapeAttr(img)}" alt="" data-media-url="${escapeAttr(img)}">`
           : `<div class="order-item-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-gray);"><i class="fa-solid fa-box"></i></div>`;
+
+        const colorDot = it.colorHex
+          ? `<span class="oi-color-dot" style="background:${escapeAttr(it.colorHex)};"></span>`
+          : '';
+
+        const totalPrice = (Number(it.price) || 0) * (Number(it.qty) || 0);
+
+        return `<div class="order-item-row" style="align-items:flex-start;padding:12px;margin-bottom:10px;">
+          ${imgHtml}
+          <div class="order-item-info" style="min-width:0;flex:1;">
+            <strong style="font-size:.92rem;margin-bottom:4px;display:block;">${escapeHtml(it.productName || 'منتج')}</strong>
+            <div class="order-item-chips">
+              <span class="oi-chip oi-chip-color"><i class="fa-solid fa-palette"></i> ${escapeHtml(it.colorName || '—')} ${colorDot}</span>
+              <span class="oi-chip oi-chip-age"><i class="fa-solid fa-child"></i> ${escapeHtml(it.age || '—')}</span>
+              <span class="oi-chip oi-chip-qty"><i class="fa-solid fa-cubes"></i> ${it.qty || 0} قطعة</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;margin-top:8px;border-top:1px dashed var(--border);">
+              <span style="font-size:.78rem;color:var(--text-gray);font-weight:600;">${(Number(it.price)||0).toLocaleString()} د.ج × ${it.qty || 0}</span>
+              <strong style="color:var(--primary-dark);font-size:.95rem;font-weight:800;">${totalPrice.toLocaleString()} د.ج</strong>
+            </div>
+          </div>
+        </div>`;
       }).join('');
+
+      const itemsCount = items.reduce((s, i) => s + (Number(i.qty) || 0), 0);
+
       document.getElementById('orderDetailsBody').innerHTML = `
         <div class="order-details-grid">
           <div class="order-section"><h4><i class="fa-solid fa-receipt"></i> معلومات الطلب</h4><div class="order-info-grid">
             <div class="order-info-item"><strong>رقم الطلب:</strong> ${escapeHtml(order.orderId)}</div>
             <div class="order-info-item"><strong>التاريخ:</strong> ${formatDate(order.createdAt)}</div>
             <div class="order-info-item"><strong>الحالة:</strong> ${statusBadge(order.status)}</div>
+            <div class="order-info-item"><strong>عدد القطع:</strong> ${itemsCount}</div>
           </div></div>
+
           <div class="order-section"><h4><i class="fa-solid fa-user"></i> معلومات العميل</h4><div class="order-info-grid">
             <div class="order-info-item"><strong>الاسم:</strong> ${escapeHtml((order.firstName||'') + ' ' + (order.lastName||''))}</div>
-            <div class="order-info-item"><strong>الهاتف 1:</strong> ${escapeHtml(order.phone1 || '-')}</div>
-            <div class="order-info-item"><strong>الهاتف 2:</strong> ${escapeHtml(order.phone2 || '-')}</div>
+            <div class="order-info-item"><strong>الهاتف 1:</strong> ${buildPhoneLink(order.phone1)}</div>
+            <div class="order-info-item"><strong>الهاتف 2:</strong> ${order.phone2 ? buildPhoneLink(order.phone2) : '<span style="color:var(--text-gray);">-</span>'}</div>
             <div class="order-info-item"><strong>الولاية:</strong> ${escapeHtml(order.wilaya || '-')}</div>
             <div class="order-info-item"><strong>البلدية:</strong> ${escapeHtml(order.municipality || '-')}</div>
             <div class="order-info-item"><strong>العنوان:</strong> ${escapeHtml(order.address || '-')}</div>
           </div></div>
-          <div class="order-section"><h4><i class="fa-solid fa-box"></i> المنتجات (${items.length})</h4><div class="order-items-list">${itemsHtml || '<p style="text-align:center;color:var(--text-gray);">لا توجد منتجات</p>'}</div></div>
+
+          <div class="order-section">
+            <h4><i class="fa-solid fa-box"></i> المنتجات المطلوبة (${items.length} نوع • ${itemsCount} قطعة)</h4>
+            <div class="order-items-list">${itemsHtml || '<p style="text-align:center;color:var(--text-gray);">لا توجد منتجات</p>'}</div>
+          </div>
+
           <div class="order-section"><h4><i class="fa-solid fa-coins"></i> الملخص المالي</h4><div class="order-totals">
             <div class="order-totals-row"><span>المجموع الفرعي:</span><span>${(order.subtotal||0).toLocaleString()} د.ج</span></div>
             <div class="order-totals-row"><span>التوصيل (${deliveryLabel(order.deliveryMethod)}):</span><span>${(order.deliveryCost||0).toLocaleString()} د.ج</span></div>
@@ -1835,7 +1914,7 @@
     }
 
     // ============================================================
-    // ✅ AGES (قائمة منسدلة + مخصص)
+    // AGES
     // ============================================================
     function onAgeSelectChange(i, val) {
       if (val === '__custom__') {
@@ -1898,7 +1977,7 @@
     function removeDetailRow(i) { detailRows.splice(i, 1); renderDetailsRows(); }
 
     // ============================================================
-    // COLOR ROWS (منتج عادي)
+    // COLOR ROWS
     // ============================================================
     function onColorSelectChange(ci, value) {
       if (!colorRows[ci]) return;
@@ -2329,7 +2408,7 @@
     });
 
     // ============================================================
-    // THEME (مبسط: لونان فقط)
+    // THEME
     // ============================================================
     function loadThemeForm() {
       const t = data.theme;
@@ -2410,8 +2489,6 @@
         const el = document.getElementById(id);
         if (el) el.value = s[k] || '';
       });
-
-      // ✅ تحميل معرفات دردشة تيليجرام الإضافية
       try {
         const raw = s.telegramExtraChatIds;
         if (Array.isArray(raw)) {
@@ -2471,7 +2548,7 @@
     }
 
     // ============================================================
-    // ✅ إدارة معرفات دردشة تيليجرام الإضافية (للموظفين)
+    // TELEGRAM EXTRA CHAT IDS
     // ============================================================
     function renderExtraChatIds() {
       const el = document.getElementById('extraChatIdsList');
@@ -2506,11 +2583,8 @@
     async function saveTelegramSettings() {
       data.settings.telegramBotToken = document.getElementById('setTelegramBotToken').value.trim();
       data.settings.telegramChatId = document.getElementById('setTelegramChatId').value.trim();
-
-      // ✅ تنظيف وحفظ المعرفات الإضافية كـ JSON
       const cleaned = extraChatIds.map(s => String(s || '').trim()).filter(Boolean);
       data.settings.telegramExtraChatIds = JSON.stringify(cleaned);
-
       if (await persistSettings()) {
         const total = cleaned.length + (data.settings.telegramChatId ? 1 : 0);
         showToast(`تم حفظ إعدادات تيليجرام ✓ — إجمالي ${total} دردشة`, 'success');
@@ -2699,7 +2773,7 @@
     }
 
     // ============================================================
-    // ✅ PERMISSIONS (أدمن + موظف)
+    // PERMISSIONS
     // ============================================================
     function canAccess(view) {
       if (!currentUser) return false;
@@ -2724,7 +2798,7 @@
     }
 
     // ============================================================
-    // ✅ USERS
+    // USERS
     // ============================================================
     async function loadUsers() {
       try {
@@ -2856,7 +2930,7 @@
     function closeActivityModal() { document.getElementById('activityModal').classList.remove('show'); activityUserCache = null; }
 
     // ============================================================
-    // ✅ DELIVERY
+    // DELIVERY
     // ============================================================
     async function loadDeliveryAll() {
       try {
@@ -2909,7 +2983,7 @@
     }
 
     // ============================================================
-    // ✅ COMBO (SET) PRODUCTS
+    // COMBO (SET) PRODUCTS
     // ============================================================
     function toggleSetMode() {
       const isSet = document.getElementById('pIsSet').checked;
