@@ -1925,7 +1925,6 @@ app.delete('/api/backups/:id', authMiddleware, adminMiddleware, async (req, res)
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
-
 // ============================================================
 // 16) SPA Fallback
 // ============================================================
@@ -1936,15 +1935,21 @@ app.get('*', (req, res) => {
 });
 
 // ============================================================
-// 17) Start
+// 17) Start & Vercel Serverless Export
 // ============================================================
 initDB()
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
-      console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
-    });
     setTimeout(() => { maybeAutoBackup().catch(e => console.error('auto backup:', e)); }, 30 * 1000);
-    setInterval(() => { maybeAutoBackup().catch(e => console.error('auto backup:', e)); }, 60 * 60 * 1000);
   })
-  .catch((err) => { console.error('❌ Failed to initialize DB:', err); process.exit(1); });
+  .catch((err) => { console.error('❌ Failed to initialize DB:', err); });
+
+// تصدير التطبيق خصيصاً ليعمل كـ Serverless Function على Vercel
+module.exports = app;
+
+// التشغيل المحلي عبر app.listen (يعمل على حاسوبك فقط ولا يتعارض مع Vercel)
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
+  });
+}
