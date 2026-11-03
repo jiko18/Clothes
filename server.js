@@ -548,14 +548,14 @@ async function initDB() {
   }
 
   const settingsSeeds = [
-    ['storeName', 'بيبي شوب'],
+    ['storeName', ''],
     ['phone', '0550 00 00 00'],
     ['email', 'contact@babyshop.dz'],
     ['address', 'الجزائر العاصمة، الجزائر'],
     ['facebook', '#'], ['instagram', '#'], ['tiktok', '#'], ['whatsapp', '#'],
     ['topBarText', 'توصيل لجميع الولايات | الدفع عند الاستلام '],
     ['searchPlaceholder', 'ابحث عن ملابس، أحذية، إكسسوارات...'],
-    ['footerCopyright', '© 2025 بيبي شوب - جميع الحقوق محفوظة'],
+    ['footerCopyright', '© 2025  - جميع الحقوق محفوظة'],
     ['telegramBotToken', ''],
     ['telegramChatId', ''],
     ['telegramExtraChatIds', '[]'],

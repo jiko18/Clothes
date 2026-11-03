@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>بيبي شوب | تفاصيل المنتج</title>
+  <title> | تفاصيل المنتج</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -370,7 +370,7 @@
 
   <header class="header" id="header">
     <div class="header-inner">
-      <a href="index.html" class="logo" id="logo"><i class="fa-solid fa-child-reaching"></i> بيبي شوب</a>
+      <a href="index.html" class="logo" id="logo"><i class="fa-solid fa-child-reaching"></i> </a>
       <div class="search-bar">
         <input type="text" id="searchInput" placeholder="ابحث عن ملابس، أحذية، إكسسوارات...">
         <button id="searchBtn" aria-label="بحث"><i class="fa-solid fa-magnifying-glass"></i></button>
@@ -413,12 +413,12 @@
 
   <footer class="footer">
     <div class="footer-inner">
-      <div class="footer-col"><h4>بيبي شوب</h4><p>وجهتك الأولى لملابس وأحذية الأطفال في الجزائر. جودة عالية، أسعار منافسة، وتوصيل سريع.</p><div class="social-links"><a href="#" aria-label="فيسبوك"><i class="fa-brands fa-facebook-f"></i></a><a href="#" aria-label="إنستغرام"><i class="fa-brands fa-instagram"></i></a><a href="#" aria-label="تيك توك"><i class="fa-brands fa-tiktok"></i></a><a href="#" aria-label="واتساب"><i class="fa-brands fa-whatsapp"></i></a></div></div>
+      <div class="footer-col"><h4></h4><p>وجهتك الأولى لملابس وأحذية الأطفال في الجزائر. جودة عالية، أسعار منافسة، وتوصيل سريع.</p><div class="social-links"><a href="#" aria-label="فيسبوك"><i class="fa-brands fa-facebook-f"></i></a><a href="#" aria-label="إنستغرام"><i class="fa-brands fa-instagram"></i></a><a href="#" aria-label="تيك توك"><i class="fa-brands fa-tiktok"></i></a><a href="#" aria-label="واتساب"><i class="fa-brands fa-whatsapp"></i></a></div></div>
       <div class="footer-col"><h4>روابط سريعة</h4><ul><li><a href="index.html">الرئيسية</a></li><li><a href="index.html#productsSection">المنتجات</a></li><li><a href="index.html#categoriesSection">التصنيفات</a></li><li><a href="#" onclick="event.preventDefault(); openCart();">سلة التسوق</a></li></ul></div>
       <div class="footer-col"><h4>خدمة العملاء</h4><ul><li><a href="#">سياسة الاستبدال</a></li><li><a href="#">الشحن والتوصيل</a></li><li><a href="#">الأسئلة الشائعة</a></li><li><a href="#">اتصل بنا</a></li></ul></div>
       <div class="footer-col"><h4>تواصل معنا</h4><p><i class="fa-solid fa-location-dot"></i> الجزائر العاصمة، الجزائر</p><p><i class="fa-solid fa-phone"></i> 0550 00 00 00</p><p><i class="fa-solid fa-envelope"></i> contact@babyshop.dz</p></div>
     </div>
-    <div class="footer-bottom">© 2025 بيبي شوب - جميع الحقوق محفوظة | صُنع بحب <i class="fa-solid fa-heart" style="color: var(--primary);"></i> لأطفال الجزائر</div>
+    <div class="footer-bottom">© 2025  - جميع الحقوق محفوظة | صُنع بحب <i class="fa-solid fa-heart" style="color: var(--primary);"></i> لأطفال الجزائر</div>
   </footer>
 
   <button class="back-to-top" id="backToTop"><i class="fa-solid fa-arrow-up"></i></button>
@@ -505,7 +505,7 @@
   <script>
     // ==================== البيانات الافتراضية ====================
     const DEFAULT_PRODUCTS = [];
-    const DEFAULT_SETTINGS = { storeName: 'بيبي شوب', logo: '', phone: '0550 00 00 00', email: 'contact@babyshop.dz', address: 'الجزائر العاصمة، الجزائر', facebook: '#', instagram: '#', tiktok: '#', whatsapp: '#', topBarText: 'توصيل لجميع الولايات | الدفع عند الاستلام ', searchPlaceholder: 'ابحث عن ملابس، أحذية، إكسسوارات...', footerCopyright: '© 2025 بيبي شوب - جميع الحقوق محفوظة' };
+    const DEFAULT_SETTINGS = { storeName: '', logo: '', phone: '0550 00 00 00', email: 'contact@babyshop.dz', address: 'الجزائر العاصمة، الجزائر', facebook: '#', instagram: '#', tiktok: '#', whatsapp: '#', topBarText: 'توصيل لجميع الولايات | الدفع عند الاستلام ', searchPlaceholder: 'ابحث عن ملابس، أحذية، إكسسوارات...', footerCopyright: '© 2025  - جميع الحقوق محفوظة' };
     const DEFAULT_THEME_DATA = { primary: '#ff6b81', primaryDark: '#e8556d', secondary: '#6c5ce7', accent: '#feca57' };
     const DEFAULT_DELIVERY_DATA = { home: 0, agency: 0, express: 0, byWilaya: {} };
 
@@ -640,7 +640,7 @@
       const logoEl = document.getElementById('logo');
       if (logoEl) {
         const logoUrl = (adminSettings.logo || '').trim();
-        const storeName = adminSettings.storeName || 'بيبي شوب';
+        const storeName = adminSettings.storeName || '';
         const safeName = storeName.replace(/</g, '&lt;').replace(/>/g, '&gt;');
         if (logoUrl) {
           const safeUrl = logoUrl.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
