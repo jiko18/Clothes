@@ -548,14 +548,14 @@ async function initDB() {
   }
 
   const settingsSeeds = [
-    ['storeName', ''],
+    ['storeName', 'NOVA STORE'],
     ['phone', '0550 00 00 00'],
     ['email', 'contact@babyshop.dz'],
     ['address', 'الجزائر العاصمة، الجزائر'],
     ['facebook', '#'], ['instagram', '#'], ['tiktok', '#'], ['whatsapp', '#'],
     ['topBarText', 'توصيل لجميع الولايات | الدفع عند الاستلام '],
     ['searchPlaceholder', 'ابحث عن ملابس، أحذية، إكسسوارات...'],
-    ['footerCopyright', '© 2025  - جميع الحقوق محفوظة'],
+    ['footerCopyright', '© 2025 NOVA STORE - جميع الحقوق محفوظة'],
     ['telegramBotToken', ''],
     ['telegramChatId', ''],
     ['telegramExtraChatIds', '[]'],

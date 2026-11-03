@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> | لوحة التحكم</title>
+  <title>NOVA STORE | لوحة التحكم</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -439,7 +439,7 @@
   <div class="admin-layout" id="adminLayout" style="display:none;">
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
-        <h1><i class="fa-solid fa-child-reaching"></i> </h1>
+        <h1><i class="fa-solid fa-child-reaching"></i> NOVA STORE</h1>
         <span>لوحة التحكم</span>
       </div>
       <nav class="sidebar-nav">
@@ -633,7 +633,7 @@
                 </div>
               </div>
               <div class="form-grid">
-                <div class="fg"><label>اسم المتجر (يظهر في الشعار)</label><input type="text" id="setStoreName" placeholder=""></div>
+                <div class="fg"><label>اسم المتجر (يظهر في الشعار)</label><input type="text" id="setStoreName" placeholder="NOVA STORE"></div>
                 <div class="fg"><label>رقم الهاتف (قسم تواصل معنا)</label><input type="tel" id="setPhone" placeholder="0550 00 00 00"></div>
                 <div class="fg"><label>البريد الإلكتروني (قسم تواصل معنا)</label><input type="email" id="setEmail" placeholder="contact@babyshop.dz"></div>
                 <div class="fg"><label>العنوان (قسم تواصل معنا)</label><input type="text" id="setAddress" placeholder="الجزائر العاصمة، الجزائر"></div>
@@ -678,7 +678,7 @@
             <div class="panel-header"><h3><i class="fa-solid fa-text-height"></i> نصوص الموقع</h3></div>
             <div class="panel-body">
               <div class="fg"><label>نص الشريط العلوي</label><input type="text" id="setTopBarText" placeholder="توصيل لجميع الولايات..."></div>
-              <div class="fg"><label>حقوق الفوتر (©)</label><textarea id="setFooterCopyright" placeholder="© 2025 ..."></textarea></div>
+              <div class="fg"><label>حقوق الفوتر (©)</label><textarea id="setFooterCopyright" placeholder="© 2025 NOVA STORE..."></textarea></div>
               <button class="btn btn-primary" style="margin-top:12px;" onclick="saveTextSettings()"><i class="fa-solid fa-check"></i> حفظ النصوص</button>
             </div>
           </div>
@@ -999,11 +999,11 @@
     const DEFAULT_DELIVERY = { home: 600, agency: 400 };
     const DEFAULT_SETTINGS = {
       logo: '',
-      storeName: '', phone: '0550 00 00 00', email: 'contact@babyshop.dz', address: 'الجزائر العاصمة، الجزائر',
+      storeName: 'NOVA STORE', phone: '0550 00 00 00', email: 'contact@babyshop.dz', address: 'الجزائر العاصمة، الجزائر',
       facebook: '#', instagram: '#', tiktok: '#', whatsapp: '#',
       topBarText: 'توصيل لجميع الولايات | الدفع عند الاستلام ',
       searchPlaceholder: 'ابحث عن ملابس، أحذية، إكسسوارات...',
-      footerCopyright: '© 2025  - جميع الحقوق محفوظة',
+      footerCopyright: '© 2025 NOVA STORE - جميع الحقوق محفوظة',
       telegramBotToken: '',
       telegramChatId: '',
       telegramExtraChatIds: '[]',
@@ -1681,7 +1681,7 @@
       ).join('');
       const sc = '<' + '/script>';
       const winDoc = `<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><title>وصل التوصيل — ${escapeHtml(order.orderId)}</title><style>@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Cairo',sans-serif;padding:20px;background:#fff;color:#1a1a1a}.slip{max-width:800px;margin:0 auto;border:3px solid #222;border-radius:12px;padding:20px}.slip-header{text-align:center;border-bottom:3px double #222;padding-bottom:12px;margin-bottom:16px}.slip-header h1{font-size:1.7rem;margin-bottom:8px;color:#ff6b81}.slip-header .order-num{font-size:1.2rem;font-weight:800;background:#feca57;color:#1a1a1a;display:inline-block;padding:6px 22px;border-radius:24px;margin-top:6px}.slip-header .store-name{font-size:0.88rem;color:#666;margin-top:8px;font-weight:600}.section{margin-bottom:16px}.section-title{font-size:0.95rem;font-weight:800;background:#f5f5f5;padding:8px 14px;border-right:5px solid #ff6b81;margin-bottom:12px;border-radius:4px}.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px}.field{font-size:0.92rem;padding:8px 0;border-bottom:1px dashed #ccc}.field strong{display:inline-block;min-width:100px;color:#555;font-weight:700}.field span{font-weight:800;color:#1a1a1a}.full-row{grid-column:1/-1}table{width:100%;border-collapse:collapse;margin-top:8px;font-size:0.85rem}th,td{border:1.5px solid #555;padding:8px 6px;text-align:right}th{background:#f0f0f0;font-weight:800;text-align:center}.total-box{margin-top:18px;text-align:center;font-size:1.25rem;font-weight:800;padding:14px;background:#fde8ec;border:2px solid #ff6b81;border-radius:10px}.total-box small{display:block;font-size:0.78rem;font-weight:600;margin-top:6px;color:#666}.delivery-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}.delivery-box{border:2px dashed #888;padding:14px;border-radius:10px;min-height:120px}.delivery-box-title{font-weight:800;margin-bottom:10px;color:#333;font-size:0.95rem;border-bottom:1px solid #ddd;padding-bottom:6px}.delivery-box .line{border-bottom:1px dotted #666;height:28px;margin-top:10px}.delivery-box .line-label{font-size:0.8rem;color:#666;font-weight:600;margin-top:8px}.footer{text-align:center;margin-top:22px;font-size:0.82rem;color:#777;padding-top:14px;border-top:1px solid #eee}@media print{body{padding:0}.slip{border-width:2px;padding:14px}.no-print{display:none !important}}.print-btn{display:block;margin:20px auto 0;padding:12px 32px;background:linear-gradient(135deg,#00b894,#00a085);color:#fff;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:800;cursor:pointer}</style></head><body>
-<div class="slip"><div class="slip-header"><h1>${escapeHtml(data.settings.storeName || '')}</h1><div class="order-num">طلب رقم: ${escapeHtml(order.orderId)}</div><div class="store-name">تاريخ الطباعة: ${today}</div></div>
+<div class="slip"><div class="slip-header"><h1>${escapeHtml(data.settings.storeName || 'NOVA STORE')}</h1><div class="order-num">طلب رقم: ${escapeHtml(order.orderId)}</div><div class="store-name">تاريخ الطباعة: ${today}</div></div>
 <div class="section"><div class="section-title">📋 بيانات الزبون</div><div class="grid-2"><div class="field"><strong>الاسم:</strong> <span>${escapeHtml((order.firstName||'') + ' ' + (order.lastName||''))}</span></div><div class="field"><strong>الهاتف 1:</strong> <span>${escapeHtml(order.phone1 || '-')}</span></div><div class="field"><strong>الهاتف 2:</strong> <span>${escapeHtml(order.phone2 || '-')}</span></div><div class="field"><strong>طريقة الدفع:</strong> <span>الدفع عند الاستلام</span></div><div class="field"><strong>الولاية:</strong> <span>${escapeHtml(order.wilaya || '-')}</span></div><div class="field"><strong>البلدية:</strong> <span>${escapeHtml(order.municipality || '-')}</span></div><div class="field full-row"><strong>العنوان:</strong> <span>${escapeHtml(order.address || '-')}</span></div></div></div>
 <div class="section"><div class="section-title">📦 تفاصيل الطلب</div><div class="grid-2" style="margin-bottom:10px;"><div class="field"><strong>تاريخ الطلب:</strong> <span>${formatDate(order.createdAt)}</span></div><div class="field"><strong>طريقة التوصيل:</strong> <span>${deliveryLabel(order.deliveryMethod)}</span></div></div>
 <table><thead><tr><th style="width:36px;">#</th><th>المنتج</th><th>اللون</th><th>العمر</th><th>الكمية</th><th>السعر</th></tr></thead><tbody>${itemsRows || '<tr><td colspan="6" style="text-align:center;padding:14px;">لا توجد منتجات</td></tr>'}</tbody></table></div>
@@ -2473,7 +2473,7 @@
       const h1 = document.querySelector('.sidebar-header h1');
       if (!h1) return;
       const logo = (data.settings.logo || '').trim();
-      const storeName = data.settings.storeName || '';
+      const storeName = data.settings.storeName || 'NOVA STORE';
       if (logo) {
         h1.innerHTML = `<img src="${escapeAttr(logo)}" alt="logo" style="width:34px;height:34px;object-fit:contain;border-radius:8px;background:#fff;padding:2px;flex-shrink:0;"> ${escapeHtml(storeName)}`;
       } else {
@@ -2523,7 +2523,7 @@
     }
 
     async function saveGeneralSettings() {
-      data.settings.storeName = document.getElementById('setStoreName').value.trim() || '';
+      data.settings.storeName = document.getElementById('setStoreName').value.trim() || 'NOVA STORE';
       data.settings.phone = document.getElementById('setPhone').value.trim();
       data.settings.email = document.getElementById('setEmail').value.trim();
       data.settings.address = document.getElementById('setAddress').value.trim();
