@@ -415,8 +415,8 @@
     <div class="footer-inner">
       <div class="footer-col"><h4>NOVA STORE</h4><p>وجهتك الأولى لملابس وأحذية الأطفال في الجزائر. جودة عالية، أسعار منافسة، وتوصيل سريع.</p><div class="social-links"><a href="#" aria-label="فيسبوك"><i class="fa-brands fa-facebook-f"></i></a><a href="#" aria-label="إنستغرام"><i class="fa-brands fa-instagram"></i></a><a href="#" aria-label="تيك توك"><i class="fa-brands fa-tiktok"></i></a><a href="#" aria-label="واتساب"><i class="fa-brands fa-whatsapp"></i></a></div></div>
       <div class="footer-col"><h4>روابط سريعة</h4><ul><li><a href="index.html">الرئيسية</a></li><li><a href="index.html#productsSection">المنتجات</a></li><li><a href="index.html#categoriesSection">التصنيفات</a></li><li><a href="#" onclick="event.preventDefault(); openCart();">سلة التسوق</a></li></ul></div>
-      <div class="footer-col"><h4>خدمة العملاء</h4><ul><li><a href="#">سياسة الاستبدال</a></li><li><a href="#">الشحن والتوصيل</a></li><li><a href="#">الأسئلة الشائعة</a></li><li><a href="#">اتصل بنا</a></li></ul></div>
-      <div class="footer-col"><h4>تواصل معنا</h4><p><i class="fa-solid fa-location-dot"></i> الجزائر العاصمة، الجزائر</p><p><i class="fa-solid fa-phone"></i> 0550 00 00 00</p><p><i class="fa-solid fa-envelope"></i> contact@babyshop.dz</p></div>
+      <div class="footer-col"><h4>خدمة العملاء</h4><ul><li><a href="#"></a></li><li><a href="#">الشحن والتوصيل</a></li><li><a href="#">الأسئلة الشائعة</a></li><li><a href="#">اتصل بنا</a></li></ul></div>
+      <div class="footer-col"><h4>تواصل معنا</h4><p><i class="fa-solid fa-location-dot"></i> الجزائر العاصمة، الجزائر</p><p><i class="fa-solid fa-phone"></i> 0550 00 00 00</p><p><i class="fa-solid fa-envelope"></i></p></div>
     </div>
     <div class="footer-bottom">© 2025 NOVA STORE - جميع الحقوق محفوظة | صُنع بحب <i class="fa-solid fa-heart" style="color: var(--primary);"></i> لأطفال الجزائر</div>
   </footer>
@@ -663,13 +663,36 @@
         else if (cls.includes('fa-phone') && adminSettings.phone) p.innerHTML = `<i class="fa-solid fa-phone"></i> ${adminSettings.phone}`;
         else if (cls.includes('fa-envelope') && adminSettings.email) p.innerHTML = `<i class="fa-solid fa-envelope"></i> ${adminSettings.email}`;
       });
-      document.querySelectorAll('.social-links a').forEach(a => {
-        const label = a.getAttribute('aria-label') || '';
-        if (label.includes('فيسبوك') && adminSettings.facebook && adminSettings.facebook !== '#') a.href = adminSettings.facebook;
-        else if (label.includes('إنستغرام') && adminSettings.instagram && adminSettings.instagram !== '#') a.href = adminSettings.instagram;
-        else if (label.includes('تيك توك') && adminSettings.tiktok && adminSettings.tiktok !== '#') a.href = adminSettings.tiktok;
-        else if (label.includes('واتساب') && adminSettings.whatsapp && adminSettings.whatsapp !== '#') a.href = adminSettings.whatsapp;
-      });
+ // ✅ دالة لتطبيع الروابط: تضيف https:// إذا لزم
+function normalizeUrl(url) {
+  if (!url) return '';
+  url = String(url).trim();
+  if (!url || url === '#' || url === '') return '';
+  if (/^https?:\/\//i.test(url)) return url;
+  if (url.startsWith('//')) return 'https:' + url;
+  return 'https://' + url;
+}
+
+document.querySelectorAll('.social-links a').forEach(a => {
+  const label = a.getAttribute('aria-label') || '';
+  let url = '';
+  if (label.includes('فيسبوك')) url = adminSettings.facebook;
+  else if (label.includes('إنستغرام')) url = adminSettings.instagram;
+  else if (label.includes('تيك توك')) url = adminSettings.tiktok;
+  else if (label.includes('واتساب')) url = adminSettings.whatsapp;
+
+  const finalUrl = normalizeUrl(url);
+  if (finalUrl) {
+    a.href = finalUrl;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.style.cursor = 'pointer';
+  } else {
+    a.href = '#';
+    a.removeAttribute('target');
+    a.removeAttribute('rel');
+  }
+});
       const footerBottom = document.querySelector('.footer-bottom');
       if (footerBottom && adminSettings.footerCopyright) footerBottom.innerHTML = adminSettings.footerCopyright + ' <i class="fa-solid fa-heart" style="color: var(--primary);"></i>';
     }
