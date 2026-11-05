@@ -208,6 +208,13 @@
     .theme-toggle { transition: transform 0.4s ease; }
     .theme-toggle:hover { transform: rotate(20deg); }
 
+    /* ✅ الوضع المدمج: إخفاء البحث + تقليل ارتفاع (على Desktop فقط) */
+    .header.compact .search-bar { display: none; }
+    .header.compact .header-inner { gap: 12px; }
+    @media (min-width: 769px) {
+      .header.compact .header-inner { height: 60px; }
+    }
+
     .categories-nav {
       background: #fff;
       border-top: 1px solid #f0f0f0;
@@ -1010,7 +1017,6 @@
     }
     .form-group textarea { resize: vertical; min-height: 70px; }
 
-    /* ✅ 2 أعمدة لخيارات التوصيل فقط (تم حذف السريع) */
     .delivery-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 8px; }
     .delivery-option {
       position: relative;
@@ -1591,7 +1597,6 @@
         const res = await fetch('/api/delivery/all');
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const serverDelivery = await res.json();
-        // serverDelivery = { byWilaya: { "الجزائر": {home: 500, agency: 300} } }
         adminDelivery = serverDelivery; 
       } catch (e) { console.warn('delivery fallback:', e); }
     }
@@ -2433,12 +2438,43 @@ document.querySelectorAll('.social-links a').forEach(a => {
       }
     });
 
+    // ============================================================
+    // ✅ Scroll Handler (Anti-Jitter) — موحَّد + rAF + Hysteresis
+    // ============================================================
     const backToTop = document.getElementById('backToTop');
-    window.addEventListener('scroll', () => backToTop.classList.toggle('show', window.scrollY > 400));
-    backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-
     const header = document.getElementById('header');
-    window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 50));
+    let isTicking = false;
+    let isCompact = false; // حالة الوضع المدمج
+
+    function handleScrollUI() {
+      if (!isTicking) {
+        window.requestAnimationFrame(() => {
+          const y = window.scrollY;
+
+          // زر العودة للأعلى
+          backToTop.classList.toggle('show', y > 400);
+
+          // ظل الهيدر
+          header.classList.toggle('scrolled', y > 50);
+
+          // ✅ عتبات مزدوجة (Hysteresis): التفعيل عند 150px، الإلغاء عند 70px
+          if (!isCompact && y > 150) {
+            isCompact = true;
+            header.classList.add('compact');
+          } else if (isCompact && y < 70) {
+            isCompact = false;
+            header.classList.remove('compact');
+          }
+
+          isTicking = false;
+        });
+        isTicking = true;
+      }
+    }
+    window.addEventListener('scroll', handleScrollUI, { passive: true });
+    handleScrollUI();
+
+    backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
     // ============================================================
     // Init

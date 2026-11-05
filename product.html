@@ -1697,15 +1697,26 @@ document.querySelectorAll('.social-links a').forEach(a => {
     const backToTop = document.getElementById('backToTop');
     const header = document.getElementById('header');
     let isTicking = false;
+    let isCompact = false; // ✅ متغير حالة لمنع الاهتزاز
 
     function handleScrollUI() {
       if (!isTicking) {
         window.requestAnimationFrame(() => {
           const y = window.scrollY;
+
+          // زر العودة للأعلى + الظل
           backToTop.classList.toggle('show', y > 400);
           header.classList.toggle('scrolled', y > 50);
-          // ✅ إخفاء فوري بدون ارتعاش
-          header.classList.toggle('compact', y > 120);
+
+          // ✅ عتبات مزدوجة (Hysteresis): التفعيل عند 150px، الإلغاء عند 70px
+          if (!isCompact && y > 150) {
+            isCompact = true;
+            header.classList.add('compact');
+          } else if (isCompact && y < 70) {
+            isCompact = false;
+            header.classList.remove('compact');
+          }
+
           isTicking = false;
         });
         isTicking = true;
